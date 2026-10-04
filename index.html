@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WinCash - Premium Gaming App</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -28,6 +28,26 @@
         
         .fa-spin { animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
+
+        /* App Install Banner - Bottom Popup */
+        #installAppBanner {
+            display: flex; justify-content: space-between; align-items: center; 
+            background: #ffffff; padding: 15px 20px; border-top: 1px solid #e2e8f0; 
+            position: fixed; bottom: 0; left: 0; width: 100%; z-index: 2001; 
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            transform: translateY(100%); transition: transform 0.4s ease-in-out;
+        }
+        #installAppBanner.show-banner {
+            transform: translateY(0);
+        }
+        .banner-actions { display: flex; align-items: center; gap: 12px; }
+        .later-btn { background: transparent; border: none; color: #64748b; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; }
+        .install-app-btn {
+            background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; 
+            padding: 8px 18px; border-radius: 20px; font-size: 12px; font-weight: 700; 
+            cursor: pointer; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); text-transform: uppercase;
+        }
 
         /* Header */
         .header {
@@ -49,6 +69,23 @@
         }
         .wallet-section:active { transform: scale(0.95); }
         .wallet-section i { margin-right: 6px; font-size: 16px; }
+
+        /* Announcement Marquee Banner */
+        .announcement-container {
+            display: flex; align-items: center; background: linear-gradient(90deg, #1e293b, #0f172a);
+            color: #fbbf24; padding: 10px 15px; border-radius: 12px; margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden;
+        }
+        .announcement-icon {
+            font-size: 18px; color: #ef4444; margin-right: 12px; z-index: 2; 
+            background: #0f172a; padding-right: 10px; animation: blink 1.5s infinite;
+        }
+        .marquee-wrapper { flex: 1; overflow: hidden; position: relative; white-space: nowrap; }
+        .marquee-text {
+            display: inline-block; padding-left: 100%; font-size: 13px; font-weight: 600;
+            animation: scrollText 25s linear infinite; /* Slow scrolling speed */
+        }
+        @keyframes scrollText { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
         /* Slide Menu */
         .sidebar {
@@ -129,7 +166,7 @@
         .detail-box strong { font-size: 18px; font-weight: 800; color: #0f172a; }
         .detail-box .green-text { color: #10b981; }
         
-        .join-btn { width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 700; text-transform: uppercase; cursor: pointer; margin-top:10px; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3); display: inline-flex; justify-content: center; align-items: center; gap: 8px; }
+        .join-btn { width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 700; text-transform: uppercase; cursor: pointer; margin-top:10px; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3); display: inline-flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s;}
         .join-btn.joined { background: #cbd5e1; color: #475569; cursor: not-allowed; box-shadow: none; }
         .join-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
@@ -154,9 +191,7 @@
 
         .admin-action-group { display: flex; gap: 8px; margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 12px; }
         .btn-action { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 5px; }
-        .btn-approve { background: #dcfce7; color: #16a34a; } 
-        .btn-edit { background: #eff6ff; color: #3b82f6; } 
-        .btn-reject { background: #fef2f2; color: #ef4444; }
+        .btn-approve { background: #dcfce7; color: #16a34a; } .btn-edit { background: #eff6ff; color: #3b82f6; } .btn-reject { background: #fef2f2; color: #ef4444; }
         .btn-action:disabled { opacity: 0.7; cursor: not-allowed; }
 
         /* Dashboard Stat Cards */
@@ -180,6 +215,21 @@
 
     <!-- 100% Invisible Background Syncing -->
     <div id="globalLoader"></div>
+
+    <!-- App Install Bottom Popup Banner -->
+    <div id="installAppBanner">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/2933/2933116.png" alt="WinCash Earning" style="width: 42px; height: 42px; border-radius: 10px;">
+            <div>
+                <div style="font-size: 15px; font-weight: 800; color: #0f172a;">WinCash App</div>
+                <div style="font-size: 11px; color: #64748b; font-weight: 600;">Play & Win Real Cash</div>
+            </div>
+        </div>
+        <div class="banner-actions">
+            <button class="later-btn" onclick="closeInstallBanner()">Later</button>
+            <button class="install-app-btn" onclick="installWinCashApp()"><i class="fas fa-download" style="margin-right: 5px;"></i> INSTALL</button>
+        </div>
+    </div>
 
     <!-- App Header -->
     <header class="header" id="appHeader">
@@ -299,7 +349,8 @@
         <!-- LOGIN SCREEN -->
         <div id="loginView" class="view-section active">
             <div class="auth-fullscreen-box">
-                <div class="auth-logo-left">WinCash</div>
+                <img src="https://cdn-icons-png.flaticon.com/512/2933/2933116.png" alt="WinCash" style="width: 80px; margin-bottom: 15px;">
+                <div class="auth-logo-left" style="text-align: center;">WinCash</div>
                 <div class="input-group">
                     <label>Mobile Number</label>
                     <input type="number" id="loginPhone" placeholder="Enter mobile number">
@@ -373,7 +424,7 @@
                     <label>Mobile Number</label>
                     <input type="number" id="forgotPhone" placeholder="Enter mobile number">
                 </div>
-                <button class="submit-btn green" onclick="submitForgotPassword()">GET PASSWORD</button>
+                <button id="btnForgotPass" class="submit-btn green" onclick="submitForgotPassword('btnForgotPass')">GET PASSWORD</button>
                 <div class="auth-switch-text">
                     Remembered password? <span onclick="switchView('loginView')">Login here</span>
                 </div>
@@ -382,6 +433,16 @@
 
         <!-- HOME -->
         <div id="homeView" class="view-section">
+            
+            <!-- Announcement Marquee Banner -->
+            <div class="announcement-container">
+                <i class="fas fa-bullhorn announcement-icon"></i>
+                <div class="marquee-wrapper">
+                    <span class="marquee-text" id="announcement-text">🎉 Welcome to WinCash! Play live draws and win real cash daily. Instant withdrawals available. Invite your friends to earn ₹50 bonus! 💸 Play & Win BIG!</span>
+                </div>
+            </div>
+
+            <!-- Referral Banner -->
             <div class="refer-banner" onclick="shareReferralLink()">
                 <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <div class="text" style="flex: 1;">
@@ -396,6 +457,7 @@
                     </div>
                 </div>
             </div>
+            
             <div class="section-title"><i class="fas fa-circle"></i> LIVE DRAWS</div>
             <div id="live-draws-container"></div>
         </div>
@@ -467,11 +529,12 @@
                 <i class="fas fa-arrow-left"></i> Withdraw Cash
             </div>
             <div class="admin-form" style="text-align: center;">
-                <p style="font-size:13px; color:#64748b; margin-bottom:15px; font-weight:600;">Min Withdraw: ₹<span id="txtMinWit">200</span> | Winning Balance: ₹<span id="txtWitBal">0</span></p>
+                <p style="font-size:14px; font-weight:700; color:#10b981; margin-bottom:15px; background: #ecfdf5; padding: 10px; border-radius: 8px; border: 1px dashed #10b981;">Available Winning Balance: ₹<span id="txtWitBal">0</span></p>
                 <div class="input-group">
                     <label>Enter Amount (₹)</label>
                     <input type="number" id="witAmount" placeholder="e.g. 500">
                 </div>
+                <p style="font-size:12px; color:#ef4444; margin-top:-5px; margin-bottom:15px; font-weight:600;">* Minimum Withdrawal: ₹<span id="txtMinWit">200</span></p>
                 <button id="btnWitSubmit" class="submit-btn" onclick="submitWithdraw('btnWitSubmit')">SUBMIT REQUEST</button>
             </div>
         </div>
@@ -513,9 +576,19 @@
         <!-- BANK DETAILS -->
         <div id="bankView" class="view-section">
             <div class="page-back-header" onclick="switchView('homeView')">
-                <i class="fas fa-arrow-left"></i> Add Bank Details
+                <i class="fas fa-arrow-left"></i> Bank Details
             </div>
-            <div class="admin-form">
+            
+            <div id="bankDisplayCard" class="draw-card" style="display: none; border-left: 4px solid #3b82f6; text-align: left;">
+                <div style="font-weight: 800; font-size: 16px; margin-bottom: 15px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 10px;">Saved Bank Details</div>
+                <div style="font-size: 13px; color: #475569; margin-bottom: 8px;"><strong>Bank Name:</strong> <span id="dispBankName">---</span></div>
+                <div style="font-size: 13px; color: #475569; margin-bottom: 8px;"><strong>A/C No:</strong> <span id="dispBankAcc">---</span></div>
+                <div style="font-size: 13px; color: #475569; margin-bottom: 8px;"><strong>IFSC Code:</strong> <span id="dispBankIfsc">---</span></div>
+                <div style="font-size: 13px; color: #475569; margin-bottom: 15px;"><strong>UPI ID:</strong> <span id="dispBankUpi">---</span></div>
+                <button class="submit-btn" style="background:#eff6ff; color:#3b82f6; box-shadow: none;" onclick="showBankForm()">EDIT DETAILS</button>
+            </div>
+
+            <div id="bankEditForm" class="admin-form">
                 <div class="input-group">
                     <label>Bank Name</label>
                     <input type="text" id="addBankName" placeholder="e.g. State Bank of India">
@@ -538,6 +611,7 @@
                     <input type="text" id="addBankUpi" placeholder="e.g. user@paytm">
                 </div>
                 <button id="btnBankSubmit" class="submit-btn" style="background:#3b82f6;" onclick="submitBank('btnBankSubmit')">SAVE DETAILS</button>
+                <button id="btnBankCancel" class="submit-btn" style="background:#fef2f2; color:#ef4444; display:none; margin-top:10px; box-shadow:none;" onclick="cancelBankEdit()">CANCEL</button>
             </div>
         </div>
 
@@ -623,6 +697,10 @@
                 <div class="section-title"><i class="fas fa-cogs"></i> APP SETTINGS</div>
                 <div class="admin-form">
                     <div class="input-group">
+                        <label>Announcement Marquee Text</label>
+                        <input type="text" id="setAnnouncement">
+                    </div>
+                    <div class="input-group">
                         <label>Admin UPI ID (For Deposits)</label>
                         <input type="text" id="setAdminUpi">
                     </div>
@@ -642,7 +720,16 @@
                         <label>Minimum Withdrawal (₹)</label>
                         <input type="number" id="setMinWit">
                     </div>
-                    <button id="btnSaveSettings" class="submit-btn green" onclick="saveAdminSettings('btnSaveSettings')">SAVE SETTINGS</button>
+                    <button id="btnSaveSettings" class="submit-btn green" style="margin-bottom:20px;" onclick="saveAdminSettings('btnSaveSettings')">SAVE SETTINGS</button>
+                </div>
+
+                <div class="section-title" style="margin-top: 15px;"><i class="fas fa-bullhorn"></i> DASHBOARD ANNOUNCEMENT</div>
+                <div class="admin-form">
+                    <div class="input-group">
+                        <label>Update Dashboard Notice (Frontend Only)</label>
+                        <input type="text" id="adminAnnouncement" placeholder="Leave empty to remove announcement...">
+                    </div>
+                    <button class="submit-btn" style="background:#f59e0b;" onclick="saveAnnouncement()">UPDATE ANNOUNCEMENT</button>
                 </div>
             </div>
         </div>
@@ -650,9 +737,70 @@
 
     <script>
         // ==========================================
+        // PWA App Install Logistics
+        // ==========================================
+        const manifest = {
+            "name": "WinCash",
+            "short_name": "WinCash",
+            "start_url": ".",
+            "display": "standalone",
+            "background_color": "#f4f6f9",
+            "theme_color": "#ffffff",
+            "icons": [{
+                "src": "https://cdn-icons-png.flaticon.com/512/2933/2933116.png",
+                "sizes": "192x192",
+                "type": "image/png"
+            }, {
+                "src": "https://cdn-icons-png.flaticon.com/512/2933/2933116.png",
+                "sizes": "512x512",
+                "type": "image/png"
+            }]
+        };
+        const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        document.querySelector('head').insertAdjacentHTML('beforeend', `<link rel="manifest" href="${manifestURL}">`);
+
+        const swCode = `
+            self.addEventListener('install', (e) => { self.skipWaiting(); });
+            self.addEventListener('activate', (e) => { e.waitUntil(clients.claim()); });
+            self.addEventListener('fetch', (e) => { 
+                e.respondWith(fetch(e.request).catch(() => new Response('Offline - Please check your internet connection.'))); 
+            });
+        `;
+        const swBlob = new Blob([swCode], {type: 'application/javascript'});
+        const swURL = URL.createObjectURL(swBlob);
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register(swURL).catch(console.error);
+        }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installAppBanner').classList.add('show-banner');
+        });
+
+        function closeInstallBanner() {
+            document.getElementById('installAppBanner').classList.remove('show-banner');
+            deferredPrompt = null;
+        }
+
+        function installWinCashApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        document.getElementById('installAppBanner').classList.remove('show-banner');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        // ==========================================
         // YAHAN APNA APPS SCRIPT WEB APP URL DALEIN
         // ==========================================
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxOfR2NZOjS4XOEXTNzPWsvD58PqgA-D1m1TrWpLPctdByd5NsP_U5LhzklX7S9Vj29/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyR0qtfHhPKqe3ssYD0w2LP0cF_io-ZPqLxAigY45yM2mlw2TH6XmWR_RTt6NTLrFQ/exec';
 
         // Custom Prompts & Alert
         function showAlert(msg) { 
@@ -663,7 +811,7 @@
             document.getElementById('customAlert').style.display = 'none'; 
         }
         
-        function showConfirm(msg, onConfirm) { 
+        function showConfirm(msg, onConfirm, onCancel) { 
             document.getElementById('confirmMessage').innerText = msg; 
             document.getElementById('customConfirm').style.display = 'flex'; 
             
@@ -671,13 +819,18 @@
             let newYesBtn = yesBtn.cloneNode(true);
             yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
             
+            let noBtn = document.getElementById('confirmNoBtn');
+            let newNoBtn = noBtn.cloneNode(true);
+            noBtn.parentNode.replaceChild(newNoBtn, noBtn);
+            
             newYesBtn.onclick = function() {
                 document.getElementById('customConfirm').style.display = 'none'; 
-                onConfirm(); 
+                if(onConfirm) onConfirm(); 
             }; 
             
-            document.getElementById('confirmNoBtn').onclick = function() {
+            newNoBtn.onclick = function() {
                 document.getElementById('customConfirm').style.display = 'none';
+                if(onCancel) onCancel();
             }; 
         }
 
@@ -710,7 +863,6 @@
             return Math.floor(1000000000 + Math.random() * 9000000000).toString(); 
         } 
         
-        // Accurate Short Date formatting for Asia/Kolkata
         function getCurrentDateTime() { 
             const options = { 
                 timeZone: 'Asia/Kolkata', 
@@ -756,7 +908,6 @@
         let editingDrawId = null; 
         let editingUserId = null;
 
-        // Navigation Methods
         function openNav() { document.getElementById("mySidebar").style.left = "0"; document.getElementById("overlay").style.display = "block"; }
         function closeNav() { document.getElementById("mySidebar").style.left = "-280px"; document.getElementById("overlay").style.display = "none"; }
         
@@ -840,7 +991,6 @@
             }
         }
 
-        // Silent HTTP Request handler with double click protection
         function sendPost(payload, callback, btnElement) {
             let btnEl = typeof btnElement === 'string' ? document.getElementById(btnElement) : btnElement;
             let originalText = '';
@@ -907,7 +1057,10 @@
                         
                         if (currentUser) {
                             let updatedMe = allUsers.find(u => u.id == currentUser.id);
-                            if (updatedMe) currentUser = updatedMe;
+                            if (updatedMe) {
+                                currentUser = updatedMe;
+                                localStorage.setItem('winCashUser', JSON.stringify(currentUser));
+                            }
                             updateWalletUI();
                             updateSidebar();
                         }
@@ -917,11 +1070,46 @@
                         if (document.getElementById('transactionsView').classList.contains('active')) renderUserTransactions();
                         if (document.getElementById('myReferralView').classList.contains('active')) renderMyReferrals();
                         if (document.getElementById('adminView').classList.contains('active')) { 
-                            renderAdminRequests(); renderAdminUsers(); renderAdminDraws(); 
+                            renderAdminRequests(); 
+                            renderAdminUsers(); 
+                            renderAdminDraws(); 
                         }
                     }
                 } catch(e) {}
             }).catch(e => {});
+        }
+
+        // =====================================
+        // ANNOUNCEMENT LOGIC (Frontend Only)
+        // =====================================
+        function loadAnnouncement() {
+            let ann = localStorage.getItem('winCashAnnouncement');
+            
+            if (!ann || ann.trim() === '') {
+                ann = "🎉 Welcome to WinCash! Play live draws and win real cash daily. Instant withdrawals available. Invite your friends to earn ₹50 bonus! 💸 Play & Win BIG!";
+            }
+            
+            document.getElementById('announcement-text').innerText = ann;
+            
+            if(document.getElementById('setAnnouncement')) {
+                document.getElementById('setAnnouncement').value = localStorage.getItem('winCashAnnouncement') || '';
+            }
+            if(document.getElementById('adminAnnouncement')) {
+                document.getElementById('adminAnnouncement').value = localStorage.getItem('winCashAnnouncement') || '';
+            }
+        }
+
+        function saveAnnouncement() {
+            let val = document.getElementById('adminAnnouncement').value;
+            if (val.trim() === '') {
+                localStorage.removeItem('winCashAnnouncement');
+                loadAnnouncement(); 
+                showAlert('Announcement Reset to Default!');
+            } else {
+                localStorage.setItem('winCashAnnouncement', val);
+                document.getElementById('announcement-text').innerText = val;
+                showAlert('Announcement Updated on Dashboard!');
+            }
         }
 
         // =====================================
@@ -935,6 +1123,7 @@
             sendPost({action: 'login', phone, password: pass}, res => {
                 if (res.status === 'success') {
                     currentUser = res.user; 
+                    localStorage.setItem('winCashUser', JSON.stringify(currentUser));
                     updateSidebar(); 
                     switchView('homeView', true, true); 
                     setWalletLoading();
@@ -964,8 +1153,9 @@
                 if (res.status === 'success') {
                     currentUser = {
                         id: res.userId, name, phone, email, password: pass, 
-                        depositWallet: appSettings.welcomeBonus, winningWallet: 0
+                        depositWallet: appSettings.welcomeBonus, winningWallet: 0, bank: "", upi: ""
                     };
+                    localStorage.setItem('winCashUser', JSON.stringify(currentUser));
                     updateSidebar(); 
                     if(parseInt(appSettings.welcomeBonus) > 0) {
                         showAlert(`Account created! 🎁 Welcome Bonus of ₹${appSettings.welcomeBonus} added to Wallet!`); 
@@ -981,15 +1171,25 @@
             }, btnId);
         }
 
-        function submitForgotPassword() { 
-            showAlert('कृपया अपना मोबाइल नंबर दर्ज करें। आपका पासवर्ड आपके रजिस्टर्ड ईमेल आईडी पर भेज दिया जाएगा।'); 
-            switchView('loginView'); 
+        function submitForgotPassword(btnId) { 
+            const phone = document.getElementById('forgotPhone').value;
+            if(!phone) return showAlert('कृपया अपना मोबाइल नंबर दर्ज करें!');
+            
+            sendPost({action: 'forgotPassword', phone: phone}, res => {
+                if(res.status === 'success') {
+                    showAlert('आपका पासवर्ड आपके रजिस्टर्ड ईमेल पर भेज दिया गया है!');
+                    switchView('loginView');
+                } else {
+                    showAlert(res.message || 'Error occurred!');
+                }
+            }, btnId);
         }
 
         function logoutUser() { 
             closeNav(); 
             currentUser = null; 
             isAdminAuthenticated = false;
+            localStorage.removeItem('winCashUser');
             switchView('loginView', true, true); 
         }
 
@@ -1014,7 +1214,6 @@
             let utr = document.getElementById('pageDepUtr').value;
             if (!utr || utr.length < 6) return showAlert('Enter valid UTR or Ref Number!');
             
-            setWalletLoading();
             sendPost({
                 action: 'addTransaction', id: generateTxnID(), type: 'Deposit', 
                 user: currentUser.name, userId: currentUser.id, 
@@ -1034,7 +1233,6 @@
             let winWallet = parseInt(currentUser.winningWallet) || 0;
             if (amt > winWallet) return showAlert('Insufficient Winning Wallet Balance!');
             
-            setWalletLoading();
             sendPost({
                 action: 'addTransaction', id: generateTxnID(), type: 'Withdrawal', 
                 user: currentUser.name, userId: currentUser.id, amount: amt, 
@@ -1042,48 +1240,121 @@
             }, res => {
                 showAlert('Withdraw Request Submitted Successfully!'); 
                 currentUser.winningWallet = winWallet - amt; 
+                localStorage.setItem('winCashUser', JSON.stringify(currentUser));
                 switchView('walletView'); 
                 setTimeout(fetchSheetData, 1000);
             }, btnId);
         }
 
+        function renderBankDetails() {
+            if (!currentUser) return;
+            
+            let bInfo = currentUser.bank || "";
+            let uInfo = currentUser.upi || "";
+            
+            if (bInfo || uInfo) {
+                document.getElementById('bankDisplayCard').style.display = 'block';
+                document.getElementById('bankEditForm').style.display = 'none';
+                
+                let bName = "---", bAcc = "---", bIfsc = "---";
+                if(bInfo.includes('Bank:')) {
+                    try {
+                        let parts = bInfo.split(',');
+                        bName = parts[0].split(':')[1].trim();
+                        bAcc = parts[1].split(':')[1].trim();
+                        bIfsc = parts[2].split(':')[1].trim();
+                    } catch(e) {
+                        bName = bInfo;
+                    }
+                } else if(bInfo) {
+                    bName = bInfo; 
+                }
+                
+                document.getElementById('dispBankName').innerText = bName;
+                document.getElementById('dispBankAcc').innerText = bAcc;
+                document.getElementById('dispBankIfsc').innerText = bIfsc;
+                document.getElementById('dispBankUpi').innerText = uInfo ? uInfo : "---";
+                
+                document.getElementById('addBankName').value = bName !== "---" ? bName : "";
+                document.getElementById('addBankAcc').value = bAcc !== "---" ? bAcc : "";
+                document.getElementById('addBankConfAcc').value = bAcc !== "---" ? bAcc : "";
+                document.getElementById('addBankIfsc').value = bIfsc !== "---" ? bIfsc : "";
+                document.getElementById('addBankUpi').value = uInfo;
+                document.getElementById('btnBankCancel').style.display = 'inline-flex';
+            } else {
+                document.getElementById('bankDisplayCard').style.display = 'none';
+                document.getElementById('bankEditForm').style.display = 'block';
+                document.getElementById('btnBankCancel').style.display = 'none';
+                
+                document.getElementById('addBankName').value = "";
+                document.getElementById('addBankAcc').value = "";
+                document.getElementById('addBankConfAcc').value = "";
+                document.getElementById('addBankIfsc').value = "";
+                document.getElementById('addBankUpi').value = "";
+            }
+        }
+        
+        function showBankForm() {
+            document.getElementById('bankDisplayCard').style.display = 'none';
+            document.getElementById('bankEditForm').style.display = 'block';
+        }
+        
+        function cancelBankEdit() {
+            renderBankDetails();
+        }
+
         function submitBank(btnId) {
             let name = document.getElementById('addBankName').value; 
             let acc = document.getElementById('addBankAcc').value; 
+            let confAcc = document.getElementById('addBankConfAcc').value;
             let ifsc = document.getElementById('addBankIfsc').value; 
             let upi = document.getElementById('addBankUpi').value;
             
+            if(acc !== confAcc) return showAlert('Account numbers do not match!');
             if (!upi && (!name || !acc || !ifsc)) return showAlert('Please provide either Bank Details or UPI ID!');
-            let bankDetails = name ? `Bank:${name}, A/c:${acc}, IFSC:${ifsc}` : 'UPI Only';
+            
+            let bankDetails = name ? `Bank:${name}, A/c:${acc}, IFSC:${ifsc}` : '';
             
             sendPost({
-                action: 'addTransaction', id: generateTxnID(), type: 'Add Bank', 
-                user: currentUser.name, userId: currentUser.id, amount: 0, 
-                details: bankDetails, upiId: upi, dateTime: getCurrentDateTime()
+                action: 'updateUser', userId: currentUser.id, name: currentUser.name, 
+                phone: currentUser.phone, email: currentUser.email, password: currentUser.password, 
+                bank: bankDetails, upi: upi
             }, res => {
-                showAlert('Bank Update Request Submitted!'); 
-                switchView('homeView'); 
+                showAlert('Bank Details Saved Successfully!'); 
+                currentUser.bank = bankDetails;
+                currentUser.upi = upi;
+                localStorage.setItem('winCashUser', JSON.stringify(currentUser));
+                renderBankDetails();
                 setTimeout(fetchSheetData, 1000);
             }, btnId);
         }
 
         function submitPassword(btnId) {
-            const oldP = document.getElementById('oldPass').value; 
-            const newP = document.getElementById('newPass').value; 
-            const confP = document.getElementById('confPass').value;
+            const oldP = document.getElementById('oldPass').value.trim(); 
+            const newP = document.getElementById('newPass').value.trim(); 
+            const confP = document.getElementById('confPass').value.trim();
             
             if(!oldP || !newP || !confP) return showAlert('Please fill all password fields!');
-            if(oldP !== currentUser.password) return showAlert('Old password is incorrect!'); 
+            
+            if(String(oldP) !== String(currentUser.password).trim()) {
+                return showAlert('Old password is incorrect!'); 
+            }
             if(newP !== confP) return showAlert('New passwords do not match!');
             
             sendPost({
-                action: 'updateUser', userId: currentUser.id, name: currentUser.name, 
-                phone: currentUser.phone, email: currentUser.email, password: newP, 
-                bank: currentUser.bank, upi: currentUser.upi
+                action: 'changePassword', userId: currentUser.id, newPassword: newP
             }, res => {
-                showAlert('Password updated successfully!');
-                currentUser.password = newP;
-                switchView('homeView');
+                if(res && res.status === 'success') {
+                    showAlert('Password updated successfully and sent to your Email!');
+                    currentUser.password = newP;
+                    localStorage.setItem('winCashUser', JSON.stringify(currentUser));
+                    document.getElementById('oldPass').value = '';
+                    document.getElementById('newPass').value = '';
+                    document.getElementById('confPass').value = '';
+                    switchView('homeView');
+                } else {
+                    showAlert(res.message || "Failed to update password!");
+                }
             }, btnId);
         }
 
@@ -1168,7 +1439,7 @@
         }
 
         // =====================================
-        // DRAW ACTIONS (User - Transaction Based)
+        // DRAW ACTIONS (User)
         // =====================================
         function renderLiveDraws() {
             const container = document.getElementById('live-draws-container'); 
@@ -1181,7 +1452,6 @@
             }
             
             liveDraws.forEach(draw => {
-                // Determine if user is already joined via Transactions match
                 const isJoined = allTransactions.some(t => t.userId == currentUser.id && t.type === 'Draw Entry Fee' && t.details.includes(draw.id));
                 
                 container.innerHTML += `
@@ -1194,12 +1464,12 @@
                         <div class="detail-box"><span>Entry Fee</span><strong>₹ ${draw.fee}</strong></div>
                         <div class="detail-box"><span>Prize Pool</span><strong class="green-text">₹ ${draw.prize}</strong></div>
                     </div>
-                    ${isJoined ? `<button class="join-btn joined">Already Joined</button>` : `<button id="btnJoin_${draw.id}" class="join-btn" onclick="joinDraw('${draw.id}', 'btnJoin_${draw.id}')">Join Now</button>`}
+                    ${isJoined ? `<button class="join-btn joined" disabled>Already Joined</button>` : `<button id="btnJoin_${draw.id}" class="join-btn" onclick="joinDraw('${draw.id}', 'btnJoin_${draw.id}')">Join Now</button>`}
                 </div>`;
             });
         }
 
-        function joinDraw(drawId, btnElement) {
+        function joinDraw(drawId, btnElementId) {
             const draw = allDraws.find(d => d.id == drawId);
             if (!draw) return;
             
@@ -1207,16 +1477,35 @@
                 return showAlert("Insufficient Wallet Balance! Please deposit cash to join.");
             }
             
-            showConfirm(`Do you want to join ${draw.name} for ₹${draw.fee}?`, function() {
-                setWalletLoading();
-                sendPost({
-                    action: 'joinDraw', drawId: drawId, userId: currentUser.id, 
-                    userName: currentUser.name, fee: draw.fee, dateTime: getCurrentDateTime()
-                }, res => {
-                    showAlert('Successfully Joined!'); 
-                    setTimeout(fetchSheetData, 1000); 
-                }, btnElement);
-            });
+            let btn = document.getElementById(btnElementId);
+            let origText = btn ? btn.innerHTML : "Join Now";
+            
+            if(btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Wait...';
+            }
+            
+            showConfirm(`Do you want to join ${draw.name} for ₹${draw.fee}?`, 
+                function() {
+                    sendPost({
+                        action: 'joinDraw', drawId: drawId, userId: currentUser.id, 
+                        userName: currentUser.name, fee: draw.fee, dateTime: getCurrentDateTime()
+                    }, res => {
+                        if(res && res.status === 'error') {
+                            showAlert(res.message || 'Error occurred');
+                        } else {
+                            showAlert('Successfully Joined!'); 
+                        }
+                        setTimeout(fetchSheetData, 1000); 
+                    }, btnElementId);
+                },
+                function() {
+                    if(btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = origText;
+                    }
+                }
+            );
         }
 
         function renderMyDraws() {
@@ -1430,7 +1719,6 @@
             }); 
         }
         
-        // Joined Users Fetch Logic -> from Transactions
         function loadJoinedUsers() {
             const dId = document.getElementById("adminDrawSelect").value; 
             const dDate = document.getElementById("adminDate").value; 
@@ -1439,10 +1727,8 @@
             
             if(!dId) return; 
             
-            // Search all Entry Fee transactions matching Draw ID
             let jTxns = allTransactions.filter(x => x.type === 'Draw Entry Fee' && x.details.includes(dId));
             
-            // Filter by Admin Date if selected
             if (dDate) {
                 jTxns = jTxns.filter(x => {
                     let dStr = getLocalDateStr(x.dateTime);
@@ -1455,7 +1741,6 @@
                 return;
             }
             
-            // Ensure unique users (if multiple transactions found)
             let uniqueUsers = {};
             jTxns.forEach(t => {
                 if(!uniqueUsers[t.userId]) uniqueUsers[t.userId] = t.userName;
@@ -1499,6 +1784,9 @@
         }
 
         function renderAdminSettings() {
+            if(document.getElementById('setAnnouncement')) {
+                document.getElementById('setAnnouncement').value = document.getElementById('announcement-text').innerText;
+            }
             document.getElementById('setAdminUpi').value = appSettings.adminUpi; 
             document.getElementById('setRefBonus').value = appSettings.refBonus;
             document.getElementById('setWelcomeBonus').value = appSettings.welcomeBonus; 
@@ -1573,6 +1861,7 @@
                 document.getElementById('pageDepAmount').value = '';
             }
             if(viewId === 'walletView') updateWalletUI();
+            if(viewId === 'bankView') renderBankDetails();
 
             if (pushHistory) { 
                 if (replace) {
@@ -1601,24 +1890,38 @@
 
         // Initialize App on Load
         window.onload = function() {
+            let savedUser = localStorage.getItem('winCashUser');
+            if (savedUser) {
+                try { currentUser = JSON.parse(savedUser); } catch(e) {}
+            }
+            
             setWalletLoading(); 
             fetchSheetData();
+            loadAnnouncement();
             
             const hash = window.location.hash;
             if (hash.includes('ref=')) { 
                 let m = hash.match(/ref=([^&]+)/); 
                 if (m && m[1]) document.getElementById('regReferral').value = m[1]; 
+                
+                setTimeout(() => {
+                    if (currentUser) {
+                        switchView('homeView', false, true);
+                    } else {
+                        switchView('registerView', false, true);
+                    }
+                }, 500);
+            } else {
+                setTimeout(() => {
+                    if (currentUser) {
+                        switchView('homeView', false, true);
+                    } else if (hash.includes('registerView')) {
+                        switchView('registerView', false, true);
+                    } else {
+                        switchView('loginView', false, true);
+                    }
+                }, 500); 
             }
-            
-            setTimeout(() => {
-                if (hash.includes('homeView') && currentUser) {
-                    switchView('homeView', false, true);
-                } else if (hash.includes('registerView') || (hash.includes('ref=') && !currentUser)) {
-                    switchView('registerView', false, true);
-                } else {
-                    switchView('loginView', false, true);
-                }
-            }, 800); 
         };
     </script>
 </body>
