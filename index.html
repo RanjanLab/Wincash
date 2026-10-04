@@ -1,451 +1,1625 @@
 <!DOCTYPE html>
-<html lang="hi">
-<head><style>
-@font-face {
-  font-family: "Optimistic";
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Optimistic Mono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
-}
-:where(html) {
-  font-family: "Optimistic", system-ui, sans-serif;
-}
-:where(code, pre, kbd, samp) {
-  font-family: "Optimistic Mono", ui-monospace, monospace;
-}
-</style>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>WinCash - PWA</title>
-<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiV2luQ2FzaCIsInNob3J0X25hbWUiOiJXaW5DYXNoIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxMTA4MjAiLCJ0aGVtZV9jb2xvciI6IiM3YzNkZWIifQ==">
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<script>
-// ==================== CONFIG - YAHAN APNA GOOGLE SCRIPT URL DALO ====================
-const GAS_URL = ""; // 👉 yahan deploy kiya hua Apps Script Web App URL paste karo, jaise: https://script.google.com/macros/s/AKfyc.../exec
-const SHEET_ID = "11HfhgzFYQPF-OVCy7kqEbI2o7qUfgIIp6YruCABCs9A";
-const USE_MOCK_IF_NO_GAS = true; // GitHub Pages pe bina GAS ke bhi demo chalega
-// ====================================================================================
-</script>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&display=swap');
-*{font-family:'Outfit',sans-serif}
-.spin-loader{width:40px;height:40px;border:4px solid rgba(255,255,255,.1);border-top-color:#8b5cf6;border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes floatUp{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--tx),var(--ty)) scale(.2);opacity:0}}
-@keyframes walletBump{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
-.bump{animation:walletBump .4s ease}
-.no-scrollbar::-webkit-scrollbar{display:none}
-</style>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WinCash - Premium Gaming App</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Base Styling */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Poppins', sans-serif; 
+        }
+        body { 
+            background-color: #f4f6f9; 
+            color: #1e293b; 
+            overflow-x: hidden; 
+        }
+
+        /* 100% Invisible Silent Loader */
+        #globalLoader { display: none !important; }
+        
+        .fa-spin { animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Header */
+        .header {
+            background: #ffffff; display: none; justify-content: space-between; 
+            align-items: center; padding: 16px 20px; position: sticky; 
+            top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
+        }
+        .header.show-header { display: flex; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-left .left-menu-icon { font-size: 24px; cursor: pointer; color: #1e293b; padding: 5px; }
+        .header-left .app-name {
+            font-size: 24px; font-weight: 800; background: linear-gradient(to right, #f59e0b, #ef4444);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .wallet-section {
+            display: flex; align-items: center; background: #f0fdf4; color: #059669;
+            padding: 6px 14px; border-radius: 30px; font-weight: 700; font-size: 15px; 
+            border: 1px solid #10b981; cursor: pointer; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.15); transition: 0.2s;
+        }
+        .wallet-section:active { transform: scale(0.95); }
+        .wallet-section i { margin-right: 6px; font-size: 16px; }
+
+        /* Slide Menu */
+        .sidebar {
+            height: 100%; width: 280px; position: fixed; top: 0; left: -280px; 
+            background: #0f172a; overflow-x: hidden; transition: 0.3s ease-in-out; 
+            z-index: 1000; padding-top: 20px; box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+        }
+        .sidebar .close-btn { position: absolute; top: 15px; right: 20px; font-size: 32px; color: #cbd5e1; cursor: pointer; }
+        .sidebar-profile { padding: 20px 25px 15px 25px; border-bottom: 1px solid #1e293b; margin-bottom: 10px; }
+        .sidebar-profile .user-name { font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 2px; }
+        .sidebar-profile .user-id { font-size: 13px; font-weight: 500; color: #94a3b8; }
+        .sidebar a { 
+            padding: 14px 25px; text-decoration: none; font-size: 15px; 
+            font-weight: 500; color: #cbd5e1; display: block; cursor: pointer; 
+            border-left: 4px solid transparent; transition: 0.2s;
+        }
+        .sidebar a:hover, .sidebar a.active { background-color: #1e293b; color: #fbbf24; border-left: 4px solid #fbbf24; }
+        .sidebar a i { margin-right: 15px; width: 20px; text-align: center; }
+        .sidebar-divider { height: 1px; background: #1e293b; margin: 8px 0; }
+        .overlay { 
+            position: fixed; display: none; width: 100%; height: 100%; 
+            top: 0; left: 0; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(2px); z-index: 500; 
+        }
+
+        /* Main Content */
+        .main-content { padding: 20px; max-width: 600px; margin: 0 auto; position: relative; min-height: 90vh; }
+        .view-section { display: none; animation: fadeIn 0.3s; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Page Back Header */
+        .page-back-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 18px; font-weight: 800; color: #1e293b; cursor: pointer; }
+        .page-back-header i { font-size: 18px; color: #6366f1; background: #e0e7ff; padding: 10px; border-radius: 12px; }
+
+        /* Full Screen Auth Styling */
+        #loginView, #registerView, #forgotView { display: none; flex-direction: column; align-items: center; min-height: 95vh; width: 100%; text-align: center; padding: 40px 20px; background: #f4f6f9; }
+        #loginView.active, #registerView.active, #forgotView.active { display: flex; }
+        .auth-fullscreen-box { width: 100%; max-width: 450px; margin: 0 auto; }
+        .auth-logo-left { font-size: 32px; font-weight: 800; margin-bottom: 20px; text-align: left; background: linear-gradient(to right, #f59e0b, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; width: 100%; }
+        .auth-switch-text { margin-top: 20px; font-size: 14px; font-weight: 600; color: #64748b; text-align: center; }
+        .auth-switch-text span { color: #6366f1; cursor: pointer; font-weight: 700; }
+
+        /* Contact Us Footer Icons */
+        .login-footer-contact { margin-top: 35px; border-top: 1px dashed #cbd5e1; padding-top: 20px; width: 100%; }
+        .login-footer-contact p { font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 12px; text-align: center; }
+        .contact-icons-row { display: flex; justify-content: center; gap: 20px; }
+        .contact-icon-btn { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.2s; }
+        .contact-icon-btn:hover { transform: translateY(-3px); }
+        .contact-email { background: #ea4335; } .contact-whatsapp { background: #25d366; } .contact-telegram { background: #0088cc; }
+
+        /* Referral Banner */
+        .refer-banner { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; padding: 20px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; cursor: pointer; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3); }
+        .refer-banner .text h3 { font-size: 20px; font-weight: 800; line-height: 1.2; text-align: left; }
+        .refer-banner .text p { font-size: 12px; opacity: 0.9; margin: 3px 0 10px 0; text-align: left; }
+        .refer-banner-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+        .refer-banner i.fa-gift { font-size: 55px; color: #fbbf24; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); }
+        .share-invite-btn-small { background: rgba(255, 255, 255, 0.25); border: 1px solid rgba(255, 255, 255, 0.5); color: white; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 11px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; text-transform: uppercase; }
+        
+        /* Section Titles */
+        .section-title { font-size: 18px; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; color: #1e293b; text-align: left; }
+        .section-title i { color: #ef4444; margin-right: 8px; font-size: 16px; }
+
+        /* Draw Cards */
+        .draw-card { background: #ffffff; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0; transition: 0.2s; }
+        .draw-card:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); }
+        .draw-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #f1f5f9; padding-bottom: 12px; margin-bottom: 15px; }
+        .draw-name { font-size: 18px; font-weight: 800; color: #0f172a; text-align: left; }
+        .draw-id { display: block; font-size: 13px; color: #64748b; font-weight: 600; margin-top: 2px; text-align: left; }
+        .draw-status { background: #ef4444; color: white; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+        .draw-status.completed { background: #64748b; }
+        .draw-status.joined-tag { background: #3b82f6; }
+        .draw-status.approved-tag { background: #10b981; }
+        .draw-status.rejected-tag { background: #ef4444; }
+
+        .draw-details { display: flex; justify-content: space-between; margin-bottom: 15px; gap: 12px; flex-wrap: wrap; }
+        .detail-box { text-align: center; flex: 1; background: #f8fafc; padding: 12px 8px; border-radius: 12px; border: 1px solid #f1f5f9; }
+        .detail-box span { display: block; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
+        .detail-box strong { font-size: 18px; font-weight: 800; color: #0f172a; }
+        .detail-box .green-text { color: #10b981; }
+        
+        .join-btn { width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 700; text-transform: uppercase; cursor: pointer; margin-top:10px; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3); display: inline-flex; justify-content: center; align-items: center; gap: 8px; }
+        .join-btn.joined { background: #cbd5e1; color: #475569; cursor: not-allowed; box-shadow: none; }
+        .join-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .result-banner-won { background: #dcfce7; color: #16a34a; padding: 10px; border-radius: 10px; text-align: center; font-weight: 800; font-size: 15px; margin-top: 10px; border: 1px dashed #16a34a; }
+        .result-banner-lost { background: #fee2e2; color: #ef4444; padding: 10px; border-radius: 10px; text-align: center; font-weight: 800; font-size: 15px; margin-top: 10px; border: 1px dashed #ef4444; }
+
+        /* Admin Forms & Nav */
+        .admin-nav { display: flex; gap: 6px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .admin-nav-btn { flex: 1; min-width: 75px; padding: 10px 5px; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; background: #e2e8f0; color: #475569; cursor: pointer; }
+        .admin-nav-btn.active { background: #6366f1; color: white; }
+        .admin-tab-content { display: none; }
+        .admin-tab-content.active { display: block; }
+        
+        .admin-form { background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 6px; color: #475569; }
+        .input-group input, .input-group select { width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 15px; background: #f8fafc; outline: none; }
+        
+        .submit-btn { width: 100%; background: #6366f1; color: white; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 10px; display: inline-flex; justify-content: center; align-items: center; gap: 8px; }
+        .submit-btn.green { background: #10b981; }
+        .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .admin-action-group { display: flex; gap: 8px; margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 12px; }
+        .btn-action { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-approve { background: #dcfce7; color: #16a34a; } 
+        .btn-edit { background: #eff6ff; color: #3b82f6; } 
+        .btn-reject { background: #fef2f2; color: #ef4444; }
+        .btn-action:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        /* Dashboard Stat Cards */
+        .stat-card { background: linear-gradient(135deg, #3b82f6, #6366f1); color: white; padding: 20px; border-radius: 16px; text-align: center; margin-bottom: 20px; }
+        .stat-card h2 { font-size: 32px; font-weight: 800; margin-bottom: 5px; }
+        .referral-stat-grid { display: flex; gap: 15px; margin-bottom: 20px; }
+        .referral-stat-card { flex: 1; padding: 18px 12px; border-radius: 16px; text-align: center; color: white; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+        .referral-stat-card h2 { font-size: 26px; font-weight: 800; margin-bottom: 4px; }
+        .fab-btn { position: fixed; bottom: 25px; right: 25px; background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; cursor: pointer; z-index: 100; box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4); }
+
+        /* Modals & Checkboxes */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
+        .modal-box { background: white; width: 100%; max-width: 400px; padding: 25px; border-radius: 20px; text-align: center; position: relative; max-height: 90vh; overflow-y: auto; }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #64748b; }
+        .user-checkbox { display: flex; align-items: center; padding: 12px 15px; background: #f8fafc; margin-bottom: 8px; border-radius: 10px; border: 1px solid #e2e8f0; cursor: pointer; text-align: left; }
+        .user-checkbox input { width: 20px; height: 20px; margin-right: 12px; accent-color: #10b981; }
+        .empty-state { text-align: center; padding: 50px 20px; color: #94a3b8; font-weight: 600; font-size: 16px; }
+    </style>
 </head>
-<body class="bg-[#0c081a] text-white min-h-screen pb-[80px]">
-<!-- HEADER -->
-<header class="sticky top-0 z-40 bg-[#130e26]/90 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-4 py-3">
-<button id="menuBtn" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center"><i class="fa-solid fa-bars"></i></button>
-<h1 class="font-black text-xl tracking-widest">WinCash</h1>
-<div id="walletBox" class="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-orange-500 px-3 py-1.5 rounded-full font-bold text-sm">
-<i class="fa-solid fa-wallet"></i> <span id="walletAmt">₹0</span>
-</div>
-</header>
+<body>
 
-<!-- SLIDE MENU -->
-<div id="sideMenu" class="fixed inset-0 z-50 hidden"><div id="menuOverlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-<div class="absolute left-0 top-0 bottom-0 w-[80%] max-w-[320px] bg-[#1a1140] border-r border-white/10 p-5 overflow-auto no-scrollbar">
-<div class="flex items-center justify-between mb-6"><h2 class="font-black text-lg">WinCash Menu</h2><button id="closeMenu" class="w-8 h-8 bg-white/10 rounded-full"><i class="fa-solid fa-xmark"></i></button></div>
-<div id="userInfoBox" class="bg-white/5 rounded-2xl p-4 mb-4"></div>
-<div id="menuList" class="space-y-1"></div>
-</div></div>
+    <!-- 100% Invisible Background Syncing -->
+    <div id="globalLoader"></div>
 
-<!-- MAIN -->
-<main id="app" class="max-w-[500px] mx-auto px-4 pt-4 space-y-4"></main>
+    <!-- App Header -->
+    <header class="header" id="appHeader">
+        <div class="header-left">
+            <div class="left-menu-icon" onclick="openNav()"><i class="fas fa-bars"></i></div>
+            <div class="app-name">WinCash</div>
+        </div>
+        <div class="wallet-section" onclick="switchView('walletView')">
+            <i class="fas fa-wallet"></i> <span id="wallet-balance">₹ 0</span>
+        </div>
+    </header>
 
-<!-- BOTTOM NAV -->
-<nav class="fixed bottom-0 left-0 right-0 z-30 bg-[#130e26]/90 backdrop-blur-xl border-t border-white/10 px-2 py-2">
-<div class="flex justify-around max-w-[500px] mx-auto">
-<button data-page="home" class="navBtn flex flex-col items-center gap-1 px-3 py-1 rounded-2xl bg-white/10 text-white"><i class="fa-solid fa-house"></i><span class="text-[10px] font-bold">Home</span></button>
-<button data-page="spin" class="navBtn flex flex-col items-center gap-1 px-3 py-1 rounded-2xl text-white/40"><i class="fa-solid fa-dharmachakra"></i><span class="text-[10px] font-bold">Spin</span></button>
-<button data-page="myLottery" class="navBtn flex flex-col items-center gap-1 px-3 py-1 rounded-2xl text-white/40"><i class="fa-solid fa-trophy"></i><span class="text-[10px] font-bold">Lottery</span></button>
-<button data-page="deposit" class="navBtn flex flex-col items-center gap-1 px-3 py-1 rounded-2xl text-white/40"><i class="fa-solid fa-wallet"></i><span class="text-[10px] font-bold">Wallet</span></button>
-<button data-page="myReferral" class="navBtn flex flex-col items-center gap-1 px-3 py-1 rounded-2xl text-white/40"><i class="fa-solid fa-users"></i><span class="text-[10px] font-bold">Refer</span></button>
-</div>
-</nav>
+    <!-- Sidebar Menu -->
+    <div id="mySidebar" class="sidebar">
+        <span class="close-btn" onclick="closeNav()">&times;</span>
+        <div class="sidebar-profile">
+            <div class="user-name" id="sidebarUserName">Guest</div>
+            <div class="user-id">User ID: <span id="sidebarUserId">----</span></div>
+        </div>
 
-<a id="supportBtn" href="https://wa.me/919999999999?text=Hi WinCash Support" target="_blank" class="fixed bottom-[90px] right-4 z-30 w-14 h-14 rounded-full bg-emerald-500 flex items-center justify-center shadow-xl"><i class="fa-solid fa-headset text-xl"></i></a>
+        <a onclick="switchView('homeView')" id="nav-home" class="active"><i class="fas fa-home"></i> Home</a>
+        <a onclick="switchView('myDrawsView')" id="nav-my"><i class="fas fa-history"></i> My Draws</a>
+        <a onclick="switchView('myReferralView')" id="nav-ref"><i class="fas fa-users"></i> My Referral</a>
+        
+        <div class="sidebar-divider"></div>
+        <a onclick="switchView('depositView')" id="nav-dep"><i class="fas fa-arrow-down" style="color:#10b981;"></i> Deposit</a>
+        <a onclick="switchView('withdrawView')" id="nav-wit"><i class="fas fa-arrow-up" style="color:#ef4444;"></i> Withdraw</a>
+        <a onclick="switchView('transactionsView')" id="nav-txn"><i class="fas fa-list-alt" style="color:#f59e0b;"></i> Transactions</a>
+        <a onclick="switchView('bankView')" id="nav-bank"><i class="fas fa-university" style="color:#3b82f6;"></i> Add Bank</a>
+        <a onclick="switchView('passView')" id="nav-pass"><i class="fas fa-key" style="color:#8b5cf6;"></i> Change Password</a>
+        
+        <div class="sidebar-divider"></div>
+        <a onclick="openAdminPanel()" id="nav-admin"><i class="fas fa-user-shield"></i> Admin Panel</a>
+        <a onclick="logoutUser()" style="color: #ef4444;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+    <div id="overlay" class="overlay" onclick="closeNav()"></div>
 
-<!-- MODALS -->
-<div id="noChanceModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-6 bg-black/70 backdrop-blur-md"><div class="w-full max-w-sm rounded-[28px] bg-[#1a1140] border border-violet-500/20 p-6 text-center"><div class="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-violet-600 to-orange-500 flex items-center justify-center mb-4"><i class="fa-solid fa-circle-exclamation text-2xl"></i></div><h3 class="font-black text-[18px]">स्पिन का मौका खत्म!</h3><p class="text-[13px] text-white/70 mt-3">स्पिन का मौका पाने के लिए अपना रैफरल लिंक दोस्तों को भेजे और Cashwin ज्वाइन करवाएं।</p><div class="grid grid-cols-2 gap-3 mt-6"><button onclick="closeNoChance()" class="py-3 rounded-full bg-white/10 font-bold text-xs">Band karo</button><button onclick="shareReferral();closeNoChance()" class="py-3 rounded-full bg-gradient-to-r from-violet-600 to-orange-500 font-bold text-xs">Share Link</button></div></div></div>
-<div id="resultModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-6 bg-black/70 backdrop-blur-md"><div class="w-full max-w-sm rounded-[28px] bg-[#1a1140] border border-white/10 p-6 text-center"><div id="resultIcon" class="w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4"></div><h3 id="resultTitle" class="font-black text-2xl"></h3><p id="resultDesc" class="text-xs text-white/60 mt-2"></p><button onclick="closeResult()" class="w-full mt-6 py-3 rounded-full bg-white text-black font-bold">Ok, Continue</button></div></div>
-<div id="toast" class="fixed bottom-[100px] left-1/2 -translate-x-1/2 z-[120] hidden bg-white text-black px-5 py-3 rounded-full text-xs font-bold shadow-2xl"></div>
-<div id="loader" class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/60 backdrop-blur-sm"><div class="spin-loader"></div></div>
+    <!-- Modals -->
+    <div id="adminLoginModal" class="modal-overlay" style="z-index:3000;">
+        <div class="modal-box">
+            <span class="modal-close" onclick="document.getElementById('adminLoginModal').style.display='none'">&times;</span>
+            <div class="section-title" style="justify-content: center;"><i class="fas fa-lock"></i> ADMIN LOGIN</div>
+            <div class="input-group"><label>Admin ID</label><input type="text" id="adminLoginId" placeholder="Enter Admin ID"></div>
+            <div class="input-group"><label>Password</label><input type="password" id="adminLoginPass" placeholder="Enter Password"></div>
+            <button class="submit-btn green" onclick="verifyAdminLogin()">LOGIN TO ADMIN</button>
+        </div>
+    </div>
 
-<script>
-// ---- STORAGE & MOCK ----
-let users = JSON.parse(localStorage.getItem('wc_users')||'null') || [{id:'ADMIN01',name:'Admin',mobile:'9999999999',email:'admin@wincash.com',password:'admin123',wallet:10000,spinChances:20,referralCode:'ADMINWIN',isAdmin:true,transactions:[],joined:[],bank:null,createdAt:new Date().toISOString()},{id:'WC1001',name:'Test User',mobile:'9876543210',email:'test@test.com',password:'123456',wallet:500,spinChances:3,referralCode:'WINTEST',isAdmin:false,transactions:[],joined:[],bank:null,createdAt:new Date().toISOString()}];
-let lotteries = JSON.parse(localStorage.getItem('wc_lott')||'null') || [{id:'L1',name:'Daily Jackpot',entryFee:20,prizePool:5000,participants:[],status:'active',date:new Date().toISOString()},{id:'L2',name:'Mega Dhamaka',entryFee:50,prizePool:15000,participants:[],status:'active',date:new Date().toISOString()},{id:'L3',name:'Starter Win',entryFee:10,prizePool:1000,participants:[],status:'active',date:new Date().toISOString()}];
-let deposits = JSON.parse(localStorage.getItem('wc_dep')||'[]');
-let withdrawals = JSON.parse(localStorage.getItem('wc_wdr')||'[]');
-let winners = JSON.parse(localStorage.getItem('wc_win')||'[]');
-let referrals = JSON.parse(localStorage.getItem('wc_ref')||'[]');
-let settings = {upiId:'wincash@okaxis',supportWhatsapp:'919999999999',minWithdraw:100,minDeposit:50,maxDeposit:10000,slices:[{label:'₹10',value:10,type:'amount',color:'#8b5cf6'},{label:'Try Again',value:0,type:'try',color:'#1e1b4b'},{label:'₹20',value:20,type:'amount',color:'#f97316'},{label:'Try Again',value:0,type:'try',color:'#1e1b4b'},{label:'₹50',value:50,type:'amount',color:'#ec4899'},{label:'Try Again',value:0,type:'try',color:'#0f172a'}]};
-let currentUserId = localStorage.getItem('wc_curr')||null;
-let currentPage='home'; let isSpinning=false;
+    <div id="customAlert" class="modal-overlay" style="z-index:3000;">
+        <div class="modal-box" style="padding:30px;">
+            <i class="fas fa-bell" style="font-size: 40px; color: #3b82f6; margin-bottom:15px;"></i>
+            <h3 style="margin-bottom:20px; font-size:16px; color:#1e293b;" id="alertMessage">Message</h3>
+            <button class="submit-btn green" onclick="closeAlert()" style="margin:0;">OKAY</button>
+        </div>
+    </div>
+    
+    <div id="customConfirm" class="modal-overlay" style="z-index:3000;">
+        <div class="modal-box" style="padding:30px;">
+            <i class="fas fa-question-circle" style="font-size: 40px; color: #f59e0b; margin-bottom:15px;"></i>
+            <h3 style="margin-bottom:20px; font-size:16px; color:#1e293b;" id="confirmMessage">Are you sure?</h3>
+            <div style="display:flex; gap:10px;">
+                <button class="submit-btn" style="margin:0; background:#ef4444;" id="confirmNoBtn">CANCEL</button>
+                <button class="submit-btn green" style="margin:0;" id="confirmYesBtn">YES</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="customPrompt" class="modal-overlay" style="z-index:3000;">
+        <div class="modal-box" style="padding-top:25px; padding-bottom:25px; text-align: left;">
+            <h3 style="margin-bottom:15px; font-size:16px; color:#1e293b; text-align:center;" id="promptTitle">Enter Details</h3>
+            <input type="text" id="promptInput" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 20px;">
+            <div style="display:flex; gap:10px;">
+                <button class="submit-btn" style="margin:0; background:#ef4444;" id="promptNoBtn">CANCEL</button>
+                <button id="promptYesBtn" class="submit-btn green" style="margin:0;">SUBMIT</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Admin Edit/Create Modals -->
+    <div id="drawModal" class="modal-overlay">
+        <div class="modal-box">
+            <span class="modal-close" onclick="closeAllModals()">&times;</span>
+            <div class="section-title" id="modalTitle" style="justify-content: center;"><i class="fas fa-plus-circle"></i> CREATE DRAW</div>
+            <div class="input-group">
+                <label>Draw Name</label>
+                <input type="text" id="drawName" placeholder="e.g. Mega Jackpot">
+            </div>
+            <div class="input-group">
+                <label>Entry Fee (₹)</label>
+                <input type="number" id="entryFee" placeholder="e.g. 25">
+            </div>
+            <div class="input-group">
+                <label>Prize Pool (₹)</label>
+                <input type="number" id="prizePool" placeholder="e.g. 10000">
+            </div>
+            <button id="btnSaveDraw" class="submit-btn" onclick="saveDraw('btnSaveDraw')">SAVE DRAW</button>
+        </div>
+    </div>
+    
+    <div id="userModal" class="modal-overlay">
+        <div class="modal-box">
+            <span class="modal-close" onclick="closeAllModals()">&times;</span>
+            <div class="section-title" style="justify-content: center;"><i class="fas fa-user-edit"></i> EDIT USER</div>
+            <div class="input-group"><label>User Name</label><input type="text" id="editUserName" placeholder="Name"></div>
+            <div class="input-group"><label>Mobile Number</label><input type="number" id="editUserPhone" placeholder="Phone"></div>
+            <div class="input-group"><label>Email</label><input type="email" id="editUserEmail" placeholder="Email"></div>
+            <div class="input-group"><label>Password</label><input type="text" id="editUserPassword" placeholder="Password"></div>
+            <div class="input-group"><label>Bank Details</label><input type="text" id="editUserBank" placeholder="A/C No, IFSC Code"></div>
+            <div class="input-group"><label>UPI ID</label><input type="text" id="editUserUpi" placeholder="example@upi"></div>
+            <button id="btnUpdateUser" class="submit-btn" onclick="saveUser('btnUpdateUser')">UPDATE DETAILS</button>
+        </div>
+    </div>
 
-function save(){localStorage.setItem('wc_users',JSON.stringify(users));localStorage.setItem('wc_lott',JSON.stringify(lotteries));localStorage.setItem('wc_dep',JSON.stringify(deposits));localStorage.setItem('wc_wdr',JSON.stringify(withdrawals));localStorage.setItem('wc_win',JSON.stringify(winners));localStorage.setItem('wc_ref',JSON.stringify(referrals)); if(currentUserId) localStorage.setItem('wc_curr',currentUserId);}
-function getCurrent(){return users.find(u=>u.id===currentUserId)||null}
-function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),3000)}
-function showLoader(b){document.getElementById('loader').style.display=b?'flex':'none'}
-function bumpWallet(){const w=document.getElementById('walletBox');w.classList.add('bump');setTimeout(()=>w.classList.remove('bump'),400)}
+    <!-- Main Screens Content -->
+    <main class="main-content">
+        
+        <!-- LOGIN SCREEN -->
+        <div id="loginView" class="view-section active">
+            <div class="auth-fullscreen-box">
+                <div class="auth-logo-left">WinCash</div>
+                <div class="input-group">
+                    <label>Mobile Number</label>
+                    <input type="number" id="loginPhone" placeholder="Enter mobile number">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password">
+                </div>
+                <div style="text-align: right; margin-bottom: 10px;">
+                    <span style="font-size: 13px; color: #6366f1; font-weight: 600; cursor: pointer;" onclick="switchView('forgotView')">Forgot Password?</span>
+                </div>
+                <button id="btnLogin" class="submit-btn green" onclick="loginUser('btnLogin')">LOGIN</button>
+                <div class="auth-switch-text">
+                    Don't have an account? <span onclick="switchView('registerView')">Create Account</span>
+                </div>
 
-// GAS API Wrapper
-async function api(action, data={}, method='POST'){
- if(!GAS_URL) { if(USE_MOCK_IF_NO_GAS) return {mock:true}; throw 'GAS_URL not set'; }
- try{
-  if(method==='GET'){
-    const url = GAS_URL + '?action='+action+'&'+new URLSearchParams(data).toString();
-    const res = await fetch(url); return await res.json();
-  } else {
-    const res = await fetch(GAS_URL, {method:'POST', body: JSON.stringify({action, ...data})});
-    return await res.json();
-  }
- } catch(e){ console.error(e); return {success:false, error:e}; }
-}
+                <div class="login-footer-contact">
+                    <p>Contact Us</p>
+                    <div class="contact-icons-row">
+                        <a href="mailto:ranjankumar39783@gmail.com?subject=Help%20Support&body=I'm%20WinCash%20User%20Please%20Help%20me." class="contact-icon-btn contact-email"><i class="fas fa-envelope"></i></a>
+                        <a href="https://wa.me/918873903209?text=I'm%20WinCash%20User%20Please%20Help%20me." target="_blank" class="contact-icon-btn contact-whatsapp"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://t.me/+918873903209?text=I'm%20WinCash%20User%20Please%20Help%20me." target="_blank" class="contact-icon-btn contact-telegram"><i class="fab fa-telegram-plane"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-// UI Helpers
-const menuBtn=document.getElementById('menuBtn'), sideMenu=document.getElementById('sideMenu'), closeMenu=document.getElementById('closeMenu'), menuOverlay=document.getElementById('menuOverlay');
-menuBtn.onclick=()=>{ sideMenu.classList.remove('hidden'); renderMenu(); };
-closeMenu.onclick=menuOverlay.onclick=()=> sideMenu.classList.add('hidden');
+        <!-- REGISTRATION SCREEN -->
+        <div id="registerView" class="view-section">
+            <div class="auth-fullscreen-box">
+                <div class="auth-logo-left">Create Account</div>
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" id="regName" placeholder="Enter your name">
+                </div>
+                <div class="input-group">
+                    <label>Mobile Number</label>
+                    <input type="number" id="regPhone" placeholder="Enter mobile number">
+                </div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="regEmail" placeholder="Enter email">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="Create password">
+                </div>
+                <div class="input-group">
+                    <label>Referral Code (User ID)</label>
+                    <input type="text" id="regReferral" placeholder="Auto-filled from referral" readonly style="background-color: #e2e8f0; cursor: not-allowed; font-weight: 700; color: #3b82f6;">
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-size: 13px; text-align: left; font-weight: 600; color: #475569;">
+                    <input type="checkbox" id="regTerms" checked style="width: 18px; height: 18px;">
+                    <label for="regTerms" style="margin-bottom:0; cursor:pointer;">I accept Terms & Conditions</label>
+                </div>
+                <button id="btnRegister" class="submit-btn green" onclick="registerUser('btnRegister')">REGISTER & LOGIN</button>
+                <div class="auth-switch-text">
+                    Already have an account? <span onclick="switchView('loginView')">Login here</span>
+                </div>
+            </div>
+        </div>
 
-function renderMenu(){
- const cu=getCurrent();
- const info=document.getElementById('userInfoBox');
- info.innerHTML = cu? `<div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-gradient-to-r from-violet-600 to-orange-500 flex items-center justify-center font-black">${cu.name[0]}</div><div><div class="font-bold text-sm">${cu.name}</div><div class="text-[11px] text-white/60">${cu.mobile} • ID:${cu.id}</div></div></div><div class="mt-3 text-xs text-white/60">Wallet: <b class="text-white">₹${cu.wallet}</b> • Spins: <b class="text-white">${cu.spinChances}</b></div>` : `<div class="text-sm">Login karke WinCash start karo</div>`;
- const items=[
-  {id:'home',icon:'fa-house',label:'Home'},{id:'myLottery',icon:'fa-trophy',label:'My Lottery'},{id:'myReferral',icon:'fa-users',label:'My Referral'},
-  {id:'transactions',icon:'fa-clock-rotate-left',label:'Transaction'},{id:'deposit',icon:'fa-money-bill-trend-up',label:'Deposit'},{id:'withdraw',icon:'fa-building-columns',label:'Withdrawal'},
-  {id:'bank',icon:'fa-landmark',label:'Bank Details'},{id:'changePass',icon:'fa-key',label:'Change Password'},
-  {id:'support',icon:'fa-headset',label:'Support'},{id:'admin',icon:'fa-shield-halved',label:'Admin Panel',adminOnly:true},{id:'logout',icon:'fa-right-from-bracket',label:'Logout'}
- ];
- const list=document.getElementById('menuList');
- list.innerHTML = items.filter(it=>!it.adminOnly || (cu&&cu.isAdmin)).map(it=> `<button onclick="navigate('${it.id}');sideMenu.classList.add('hidden')" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/10 text-left"><i class="fa-solid ${it.icon} w-5"></i><span class="text-sm font-semibold">${it.label}</span></button>`).join('');
-}
+        <!-- FORGOT PASSWORD -->
+        <div id="forgotView" class="view-section">
+            <div class="auth-fullscreen-box">
+                <div class="auth-logo-left">Forgot Password</div>
+                <p style="font-size: 13px; color: #64748b; margin-bottom: 20px; text-align: left; font-weight: 500;">
+                    कृपया अपना मोबाइल नंबर दर्ज करें। आपका पासवर्ड आपके रजिस्टर्ड ईमेल आईडी पर भेज दिया जाएगा।
+                </p>
+                <div class="input-group">
+                    <label>Mobile Number</label>
+                    <input type="number" id="forgotPhone" placeholder="Enter mobile number">
+                </div>
+                <button class="submit-btn green" onclick="submitForgotPassword()">GET PASSWORD</button>
+                <div class="auth-switch-text">
+                    Remembered password? <span onclick="switchView('loginView')">Login here</span>
+                </div>
+            </div>
+        </div>
 
-function navigate(p){
- if(p==='support'){ window.open('https://wa.me/'+settings.supportWhatsapp+'?text=Hi WinCash Support','_blank'); return;}
- if(p==='logout'){ currentUserId=null; localStorage.removeItem('wc_curr'); showToast('Logout ho gaya'); render(); return; }
- currentPage=p; render();
- document.querySelectorAll('.navBtn').forEach(b=>{ b.classList.toggle('bg-white/10', b.dataset.page===p); b.classList.toggle('text-white', b.dataset.page===p); b.classList.toggle('text-white/40', b.dataset.page!==p); });
- window.scrollTo(0,0);
-}
-document.querySelectorAll('.navBtn').forEach(b=> b.onclick=()=> navigate(b.dataset.page));
+        <!-- HOME -->
+        <div id="homeView" class="view-section">
+            <div class="refer-banner" onclick="shareReferralLink()">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <div class="text" style="flex: 1;">
+                        <h3>Refer & Earn</h3>
+                        <p>Invite friends and get ₹<span id="banner-ref-amount">50</span> bonus!</p>
+                        <div class="share-invite-btn-small" onclick="event.stopPropagation(); shareReferralLink();">
+                            <i class="fas fa-share-alt"></i> Share Invite Now
+                        </div>
+                    </div>
+                    <div class="refer-banner-right">
+                        <i class="fas fa-gift" style="font-size:55px; color:#fbbf24;"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="section-title"><i class="fas fa-circle"></i> LIVE DRAWS</div>
+            <div id="live-draws-container"></div>
+        </div>
 
-// Pages
-function render(){
- const cu=getCurrent();
- document.getElementById('walletAmt').textContent='₹'+(cu?cu.wallet:0);
- document.getElementById('supportBtn').href='https://wa.me/'+settings.supportWhatsapp+'?text=Hi WinCash Support';
- const app=document.getElementById('app');
- if(!cu){
-  // Auth
-  app.innerHTML = `<div class="bg-[#1a1140] rounded-[24px] p-6 border border-white/10">
-   <h2 class="font-black text-2xl text-center">WinCash Login</h2>
-   <p class="text-center text-xs text-white/50 mt-1">GitHub Pages Ready • GAS_URL niche set karo</p>
-   <div class="flex bg-black/30 rounded-full p-1 mt-5"><button onclick="setAuth('login')" id="tab-login" class="flex-1 py-2 rounded-full bg-white text-black font-bold text-sm">Login</button><button onclick="setAuth('register')" id="tab-reg" class="flex-1 py-2 rounded-full text-white/60 font-bold text-sm">Register</button></div>
-   <div id="authBox" class="mt-5"></div>
-   ${!GAS_URL?'<div class="mt-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-200">⚠️ GAS_URL empty hai. Abhi mock mode chal raha hai. GitHub pe deploy ke baad Apps Script URL yahan dalna: const GAS_URL = "https://script.google.com/.../exec"</div>':''}
-  </div>`;
-  renderAuth();
-  return;
- }
- // Logged in pages
- if(currentPage==='home') renderHome(app, cu);
- else if(currentPage==='spin') renderSpin(app, cu);
- else if(currentPage==='myLottery') renderMyLottery(app, cu);
- else if(currentPage==='myReferral') renderReferral(app, cu);
- else if(currentPage==='transactions') renderTxn(app, cu);
- else if(currentPage==='deposit') renderDeposit(app, cu);
- else if(currentPage==='withdraw') renderWithdraw(app, cu);
- else if(currentPage==='bank') renderBank(app, cu);
- else if(currentPage==='changePass') renderChangePass(app, cu);
- else if(currentPage==='admin') renderAdmin(app, cu);
- else renderHome(app, cu);
-}
+        <!-- MY DRAWS -->
+        <div id="myDrawsView" class="view-section">
+            <div class="page-back-header" onclick="switchView('homeView')">
+                <i class="fas fa-arrow-left"></i> My Draws
+            </div>
+            <div id="my-draws-container"></div>
+        </div>
 
-let authMode='login';
-function setAuth(m){ authMode=m; document.getElementById('tab-login').className = m==='login'?'flex-1 py-2 rounded-full bg-white text-black font-bold text-sm':'flex-1 py-2 rounded-full text-white/60 font-bold text-sm'; document.getElementById('tab-reg').className = m==='register'?'flex-1 py-2 rounded-full bg-white text-black font-bold text-sm':'flex-1 py-2 rounded-full text-white/60 font-bold text-sm'; renderAuth(); }
-function renderAuth(){
- const box=document.getElementById('authBox');
- if(!box) return;
- if(authMode==='login'){
-  box.innerHTML = `<div class="space-y-3"><input id="l_mobile" placeholder="Mobile Number" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none"><div class="relative"><input id="l_pass" type="password" placeholder="Password" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none"><button onclick="togglePass('l_pass')" class="absolute right-4 top-3 text-white/40"><i class="fa-solid fa-eye"></i></button></div><button onclick="doLogin()" id="btnLogin" class="w-full py-3 rounded-full bg-gradient-to-r from-violet-600 to-orange-500 font-bold">Login</button><button onclick="setAuth('forgot')" class="w-full text-xs text-white/60">Forget Password?</button></div>`;
- } else if(authMode==='register'){
-  box.innerHTML = `<div class="space-y-3"><input id="r_name" placeholder="Full Name" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none"><input id="r_mobile" placeholder="Mobile" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none"><input id="r_email" placeholder="Email" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none"><input id="r_pass" type="password" placeholder="Password" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none"><input id="r_ref" placeholder="Referral Code (Optional)" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none"><button onclick="doRegister()" id="btnReg" class="w-full py-3 rounded-full bg-gradient-to-r from-violet-600 to-orange-500 font-bold">Register + 1 Free Spin</button></div>`;
- } else {
-  box.innerHTML = `<div class="space-y-3"><input id="f_mobile" placeholder="Registered Mobile" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none"><button onclick="doForgot()" class="w-full py-3 rounded-full bg-gradient-to-r from-violet-600 to-orange-500 font-bold">Get Password on Email</button><button onclick="setAuth('login')" class="w-full text-xs text-white/60">Back to Login</button></div>`;
- }
-}
+        <!-- WALLET -->
+        <div id="walletView" class="view-section">
+            <div class="page-back-header" onclick="switchView('homeView')">
+                <i class="fas fa-arrow-left"></i> My Wallet
+            </div>
+            <div class="draw-card" style="border-left: 4px solid #10b981; text-align: left; background: #f0fdf4;">
+                <div style="font-size: 13px; font-weight: 700; color: #047857;">Deposit Wallet (For Playing)</div>
+                <div style="font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 12px;" id="wallet-dep-display">₹ 0</div>
+                <button class="submit-btn green" style="margin-top:0; padding:10px;" onclick="switchView('depositView')">DEPOSIT MONEY</button>
+            </div>
+            <div class="draw-card" style="border-left: 4px solid #3b82f6; text-align: left; background: #eff6ff;">
+                <div style="font-size: 13px; font-weight: 700; color: #1d4ed8;">Winning Wallet (For Withdrawal)</div>
+                <div style="font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 12px;" id="wallet-win-display">₹ 0</div>
+                <button class="submit-btn" style="margin-top:0; padding:10px; background:#3b82f6;" onclick="switchView('withdrawView')">WITHDRAW MONEY</button>
+            </div>
+            <div class="stat-card" style="margin-top: 25px;">
+                <h2 id="total-lifetime-withdrawal">₹ 0</h2>
+                <p>Total Lifetime Withdrawal</p>
+            </div>
+        </div>
 
-async function doLogin(){
- const m=document.getElementById('l_mobile').value, p=document.getElementById('l_pass').value;
- if(!m||!p) return showToast('Mobile password bharo');
- showLoader(true);
- if(GAS_URL){
-  const res=await api('login',{mobile:m,password:p});
-  showLoader(false);
-  if(!res.success) return showToast(res.message||'Login failed');
-  // sync to local for UI
-  let u=users.find(x=>x.mobile===m);
-  if(!u){ users.push({id:res.user.userId||res.user.id,name:res.user.name,mobile:m,email:res.user.email,wallet:Number(res.user.wallet||0),spinChances:Number(res.user.spinChances||0),referralCode:res.user.referralCode||res.user.userId,isAdmin:res.user.isAdmin==='TRUE'||res.user.isAdmin===true,transactions:[],joined:[],bank:null,createdAt:res.user.createdAt}); u=users[users.length-1]; }
-  currentUserId=u.id; save(); render();
- } else {
-  showLoader(false);
-  const u=users.find(x=>x.mobile===m && x.password===p);
-  if(!u) return showToast('Invalid mobile or password');
-  currentUserId=u.id; save(); render(); showToast('Login success');
- }
-}
-async function doRegister(){
- const name=document.getElementById('r_name').value, mobile=document.getElementById('r_mobile').value, email=document.getElementById('r_email').value, pass=document.getElementById('r_pass').value, ref=document.getElementById('r_ref').value;
- if(!name||!mobile||!email||!pass) return showToast('All fields required');
- if(users.find(u=>u.mobile===mobile)) return showToast('Mobile already registered');
- showLoader(true);
- if(GAS_URL){
-  const res=await api('register',{name,mobile,email,password:pass,referralCode:ref});
-  showLoader(false);
-  if(!res.success) return showToast(res.message);
-  showToast('Registration success! Login karo');
-  setAuth('login');
- } else {
-  const id='WC'+Math.floor(100000+Math.random()*900000);
-  const newUser={id,name,mobile,email,password:pass,wallet:0,spinChances:1,referralCode:id,isAdmin:false,transactions:[],joined:[],bank:null,createdAt:new Date().toISOString(),referredBy:ref||''};
-  users.push(newUser);
-  if(ref){ const refUser=users.find(u=>u.referralCode===ref||u.id===ref); if(refUser){ refUser.spinChances+=1; referrals.push({referrerId:refUser.id,referredId:id,referredName:name,referredMobile:mobile,date:new Date().toISOString()}); } }
-  showLoader(false); save(); showToast('Registered! 1 Free Spin mila'); setAuth('login');
- }
-}
-async function doForgot(){
- const m=document.getElementById('f_mobile').value;
- if(GAS_URL){ showLoader(true); const res=await api('forgotpassword',{mobile:m}); showLoader(false); showToast(res.message||'Password sent to email'); }
- else { const u=users.find(x=>x.mobile===m); if(!u) return showToast('Mobile not found'); showToast('Password: '+u.password+' (Mock - Email: '+u.email+')'); }
-}
-function togglePass(id){ const el=document.getElementById(id); el.type = el.type==='password'?'text':'password'; }
+        <!-- DEPOSIT FLOW -->
+        <div id="depositView" class="view-section">
+            <div class="page-back-header" onclick="switchView('homeView')">
+                <i class="fas fa-arrow-left"></i> Deposit Cash
+            </div>
+            
+            <div id="depPageView1" class="admin-form" style="text-align: center;">
+                <p style="font-size:13px; color:#64748b; margin-bottom:20px; font-weight:600;">Minimum Deposit Amount: ₹<span id="txtPageMinDep">100</span></p>
+                <div class="input-group">
+                    <label>Enter Deposit Amount (₹)</label>
+                    <input type="number" id="pageDepAmount" placeholder="e.g. 500">
+                </div>
+                <button id="btnPayNow" class="submit-btn green" onclick="triggerDirectUpiPayment()">PAY NOW</button>
+            </div>
 
-function renderHome(app, cu){
- app.innerHTML = `
-  <div onclick="shareReferral()" class="bg-gradient-to-r from-violet-600 via-fuchsia-500 to-orange-500 rounded-[20px] p-4 flex items-center justify-between cursor-pointer active:scale-[.98] transition">
-   <div class="flex items-center gap-3"><div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center"><i class="fa-solid fa-gift"></i></div><div><div class="font-black text-sm">Refer & Earn Spin</div><div class="text-[11px] opacity-80">Dosto ko share karo, spin chance pao</div></div></div><div class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center"><i class="fa-solid fa-share-nodes"></i></div>
-  </div>
-  <div class="bg-[#1a1140] border border-violet-500/20 rounded-[24px] p-5 text-center relative overflow-hidden">
-   <div class="absolute inset-0 bg-gradient-to-br from-violet-600/10 to-orange-500/10"></div>
-   <div class="relative"><div class="inline-flex items-center gap-2 bg-white/10 rounded-full px-3 py-1 text-[10px] font-bold"><i class="fa-solid fa-star text-yellow-400"></i> SPIN & WIN UPTO ₹500</div><h3 class="font-black text-xl mt-3">Spin Wheel</h3><p class="text-[11px] text-white/60 mt-1">Chances: <b class="text-white">${cu.spinChances}</b></p><button onclick="navigate('spin')" class="mt-4 px-8 py-3 rounded-full bg-gradient-to-r from-violet-600 to-orange-500 font-black text-sm shadow-xl shadow-violet-600/20">Spin Now <i class="fa-solid fa-arrow-right ml-2"></i></button></div>
-  </div>
-  <div class="flex items-center justify-between"><h3 class="font-bold">Lottery List</h3><span class="text-[11px] text-white/50">${lotteries.length} active</span></div>
-  <div id="lotteryList" class="space-y-3">${lotteries.map(l=> `<div class="bg-[#1a1140] border border-white/5 rounded-[20px] p-4 flex items-center justify-between"><div><div class="font-bold text-sm">${l.name}</div><div class="text-[11px] text-white/50 mt-1">Entry: ₹${l.entryFee} • Prize: ₹${l.prizePool} • Joined: ${l.participants.length}</div></div><button onclick="joinLottery('${l.id}')" id="btn-join-${l.id}" class="px-5 py-2 rounded-full bg-white text-black font-bold text-xs">${cu.joined?.includes(l.id)?'Joined':'Join'}</button></div>`).join('')}</div>
-  <div class="bg-black/20 rounded-[20px] p-4 border border-white/5"><h4 class="font-bold text-sm mb-3 flex items-center gap-2"><i class="fa-solid fa-crown text-yellow-400"></i> Winner List</h4><div class="space-y-2 text-[11px]">${winners.slice(0,5).map(w=> `<div class="flex justify-between bg-white/5 rounded-full px-3 py-2"><span>${w.date.slice(0,10)} • ${w.userId} • ${w.drawName}</span><b class="text-emerald-400">₹${w.prize}</b></div>`).join('') || '<div class="text-white/40">No winners yet</div>'}</div></div>
- `;
-}
+            <div id="depPageView2" class="admin-form" style="display: none; text-align: center;">
+                <p style="font-size:13px; color:#475569; margin-bottom:20px;">After successful UPI payment, please enter your UTR / Reference Transaction ID below:</p>
+                <div class="input-group">
+                    <label>UTR / Reference Transaction ID</label>
+                    <input type="text" id="pageDepUtr" placeholder="Enter 12-digit UTR Number">
+                </div>
+                <button id="btnDepSubmit" class="submit-btn green" onclick="submitPageDeposit('btnDepSubmit')">SUBMIT PAYMENT</button>
+            </div>
 
-function renderSpin(app, cu){
- app.innerHTML = `
-  <div class="text-center"><h2 class="font-black text-2xl">Spin & Win</h2><p class="text-xs text-white/60 mt-1">Spins left: <b class="text-white">${cu.spinChances}</b></p></div>
-  <div class="flex justify-center my-6"><div class="relative w-[300px] h-[300px] rounded-full border-[8px] border-[#1a1140] shadow-2xl overflow-hidden bg-[#0f0c25]" id="wheelWrap"><canvas id="wheelCanvas" width="300" height="300"></canvas><div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white border-4 border-violet-600 flex items-center justify-center z-10"><i class="fa-solid fa-star text-violet-600"></i></div><div class="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[20px] border-l-transparent border-r-transparent border-t-white z-20"></div></div></div>
-  <button id="spinBtn" onclick="doSpin()" class="w-full py-4 rounded-full bg-gradient-to-r from-violet-600 to-orange-500 font-black text-lg shadow-xl active:scale-95 transition">SPIN NOW</button>
-  <div class="grid grid-cols-3 gap-2 mt-4 text-[10px]">${settings.slices.map(s=> `<div class="rounded-xl p-2 text-center" style="background:${s.color}20;border:1px solid ${s.color}40"><div class="font-bold">${s.label}</div><div class="opacity-60">${s.type}</div></div>`).join('')}</div>
- `;
- drawWheel();
-}
+            <div id="depPageView3" class="admin-form" style="display: none; text-align: center; padding: 40px 20px;">
+                <i class="fas fa-check-circle" style="font-size: 60px; color: #10b981; margin-bottom: 15px;"></i>
+                <h3 style="font-size: 20px; color: #0f172a; margin-bottom: 10px;">Payment Completed!</h3>
+                <p style="font-size: 14px; color: #64748b; margin-bottom: 25px;">Your deposit request has been submitted to Admin Panel successfully.</p>
+                <button class="submit-btn green" onclick="switchView('homeView')">BACK TO HOME</button>
+            </div>
+        </div>
 
-let wheelRotation=0;
-function drawWheel(){
- const canvas=document.getElementById('wheelCanvas'); if(!canvas) return;
- const ctx=canvas.getContext('2d'); const slices=settings.slices; const cx=150,cy=150,r=140;
- ctx.clearRect(0,0,300,300);
- slices.forEach((s,i)=>{
-  const start = (wheelRotation + i* (360/slices.length)) * Math.PI/180;
-  const end = (wheelRotation + (i+1)* (360/slices.length)) * Math.PI/180;
-  ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,start,end); ctx.closePath(); ctx.fillStyle=s.color; ctx.fill(); ctx.strokeStyle='rgba(255,255,255,.05)'; ctx.stroke();
-  ctx.save(); ctx.translate(cx,cy); ctx.rotate(start + (Math.PI / slices.length)); ctx.textAlign='right'; ctx.fillStyle='#fff'; ctx.font='bold 14px Outfit'; ctx.fillText(s.label, r-15, 5); ctx.restore();
- });
-}
-async function doSpin(){
- const cu=getCurrent(); if(!cu) return;
- if(isSpinning) return;
- if(cu.spinChances<=0){ document.getElementById('noChanceModal').style.display='flex'; return; }
- isSpinning=true; const btn=document.getElementById('spinBtn'); btn.innerHTML='<div class="spin-loader mx-auto"></div>'; btn.disabled=true;
- let result;
- if(GAS_URL){
-  const res=await api('spin',{userId:cu.id});
-  if(res.noChance){ isSpinning=false; btn.innerHTML='SPIN NOW'; btn.disabled=false; document.getElementById('noChanceModal').style.display='flex'; return; }
-  result=res.result || settings.slices[Math.floor(Math.random()*6)];
-  // update local wallet mock
-  cu.spinChances-=1;
-  if(result.type==='amount' || result.amount>0){ const amt = result.amount || result.value || 0; cu.wallet+=Number(amt); }
- } else {
-  // mock spin
-  cu.spinChances-=1;
-  const idx=Math.floor(Math.random()*settings.slices.length); result=settings.slices[idx];
-  if(result.type==='amount' && result.value>0){ cu.wallet+=result.value; cu.transactions.push({id:'TXN'+Date.now(),date:new Date().toISOString(),type:'Spin Win',amount:result.value,status:'Success'}); flyingCoin(result.value); }
- }
- save(); renderMenu();
- const sliceIndex=settings.slices.findIndex(s=>s.label===result.label);
- const targetAngle = 360 - (sliceIndex * (360/settings.slices.length)) - 90; // pointer top
- const extra = 360*5 + Math.random()*30;
- wheelRotation+=extra+targetAngle;
- let start=null; const duration=3000;
- function anim(t){ if(!start) start=t; const prog=Math.min((t-start)/duration,1); const ease=1-Math.pow(1-prog,3); const curRot = wheelRotation*ease; const c=document.getElementById('wheelCanvas'); if(c){ const ctx=c.getContext('2d'); const cx=150,cy=150,r=140; ctx.clearRect(0,0,300,300); settings.slices.forEach((s,i)=>{ const st=(curRot + i*60)*Math.PI/180; const en=(curRot + (i+1)*60)*Math.PI/180; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,st,en); ctx.closePath(); ctx.fillStyle=s.color; ctx.fill(); ctx.save(); ctx.translate(cx,cy); ctx.rotate(st+ (30*Math.PI/180)); ctx.textAlign='right'; ctx.fillStyle='#fff'; ctx.font='bold 14px Outfit'; ctx.fillText(s.label,r-15,5); ctx.restore(); }); } if(prog<1) requestAnimationFrame(anim); else { isSpinning=false; btn.innerHTML='SPIN NOW'; btn.disabled=false; wheelRotation=curRot%360; showResult(result); bumpWallet(); render(); } }
- requestAnimationFrame(anim);
-}
-function flyingCoin(amount){
- const walletBox=document.getElementById('walletBox'); const rect=walletBox.getBoundingClientRect();
- for(let i=0;i<3;i++){ const el=document.createElement('div'); el.className='fixed z-[200] w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center font-black text-[10px] text-black'; el.textContent='₹'+amount; el.style.left=(window.innerWidth/2+ (Math.random()*60-30))+'px'; el.style.top=(window.innerHeight/2)+'px'; el.style.setProperty('--tx', (rect.left - window.innerWidth/2)+'px'); el.style.setProperty('--ty', (rect.top - window.innerHeight/2)+'px'); el.style.animation='floatUp .9s forwards'; document.body.appendChild(el); setTimeout(()=>el.remove(),900); }
-}
-function showResult(res){
- document.getElementById('resultIcon').innerHTML = (res.value>0||res.amount>0) ? '<i class="fa-solid fa-coins text-3xl text-emerald-400"></i>' : '<i class="fa-solid fa-clock text-3xl text-white/60"></i>';
- document.getElementById('resultIcon').className = 'w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4 ' + ((res.value>0||res.amount>0)?'bg-emerald-500/20':'bg-white/10');
- document.getElementById('resultTitle').textContent = (res.value>0||res.amount>0) ? `₹${res.value||res.amount} Jeeta!` : 'Try Again!';
- document.getElementById('resultDesc').textContent = (res.value>0||res.amount>0) ? 'Amount wallet me add ho gaya 💸' : 'Agle spin me kismat chamkegi';
- document.getElementById('resultModal').style.display='flex';
-}
-function closeResult(){ document.getElementById('resultModal').style.display='none'; }
-function closeNoChance(){ document.getElementById('noChanceModal').style.display='none'; }
+        <!-- WITHDRAW -->
+        <div id="withdrawView" class="view-section">
+            <div class="page-back-header" onclick="switchView('walletView')">
+                <i class="fas fa-arrow-left"></i> Withdraw Cash
+            </div>
+            <div class="admin-form" style="text-align: center;">
+                <p style="font-size:13px; color:#64748b; margin-bottom:15px; font-weight:600;">Min Withdraw: ₹<span id="txtMinWit">200</span> | Winning Balance: ₹<span id="txtWitBal">0</span></p>
+                <div class="input-group">
+                    <label>Enter Amount (₹)</label>
+                    <input type="number" id="witAmount" placeholder="e.g. 500">
+                </div>
+                <button id="btnWitSubmit" class="submit-btn" onclick="submitWithdraw('btnWitSubmit')">SUBMIT REQUEST</button>
+            </div>
+        </div>
 
-async function joinLottery(id){
- const cu=getCurrent(); if(cu.joined?.includes(id)) return showToast('Already joined');
- const lot=lotteries.find(l=>l.id===id); if(cu.wallet < lot.entryFee) return showToast('Wallet me balance kam hai');
- const btn=document.getElementById('btn-join-'+id); if(btn){ btn.innerHTML='<div class="spin-loader w-4 h-4 mx-auto"></div>'; btn.disabled=true; }
- if(GAS_URL){ const res=await api('joinlottery',{userId:cu.id,lotteryId:id}); if(!res.success){ showToast(res.message||'Failed'); if(btn){btn.textContent='Join';btn.disabled=false;} return; } }
- cu.wallet-=lot.entryFee; cu.joined=cu.joined||[]; cu.joined.push(id); lot.participants.push(cu.id); cu.transactions.push({id:'TXN'+Date.now(),date:new Date().toISOString(),type:'Lottery Join '+lot.name,amount:-lot.entryFee,status:'Success'}); save(); showToast('Lottery joined! My Lottery dekho'); render(); bumpWallet();
-}
+        <!-- MY REFERRALS -->
+        <div id="myReferralView" class="view-section">
+            <div class="page-back-header" onclick="switchView('homeView')">
+                <i class="fas fa-arrow-left"></i> My Referrals
+            </div>
+            <div class="referral-stat-grid">
+                <div class="referral-stat-card" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                    <h2 id="ref-total-users">0</h2>
+                    <p>Referred Users</p>
+                </div>
+                <div class="referral-stat-card" style="background: linear-gradient(135deg, #10b981, #047857);">
+                    <h2 id="ref-total-earnings">₹ 0</h2>
+                    <p>Total Earnings</p>
+                </div>
+            </div>
+            <div class="admin-form" style="text-align: center; margin-bottom: 25px;">
+                <p style="font-weight: 600; margin-bottom: 8px; color:#475569;">Your Referral Code (User ID)</p>
+                <div style="background: #f1f5f9; padding: 12px; border-radius: 10px; font-size: 24px; font-weight: 800; letter-spacing: 2px; color: #3b82f6; margin-bottom: 15px;" id="myReferralCodeDisplay">----</div>
+                <button class="submit-btn" style="background:#3b82f6; margin-top:0;" onclick="shareReferralLink()">
+                    <i class="fas fa-share-alt"></i> SHARE CODE
+                </button>
+            </div>
+            <div class="section-title"><i class="fas fa-user-friends"></i> REFERRED USERS LIST</div>
+            <div id="referral-users-container"></div>
+        </div>
 
-function renderMyLottery(app, cu){
- const joinedLots=lotteries.filter(l=>cu.joined?.includes(l.id));
- app.innerHTML = `<h2 class="font-black text-xl">My Lottery</h2><div class="space-y-3 mt-4">${joinedLots.map(l=> `<div class="bg-[#1a1140] rounded-2xl p-4 border border-white/5"><div class="flex justify-between"><span class="font-bold">${l.name}</span><span class="text-xs px-2 py-1 rounded-full bg-white/10">${l.status}</span></div><div class="text-[11px] text-white/50 mt-2">Entry ₹${l.entryFee} • Prize ₹${l.prizePool}</div></div>`).join('') || '<div class="text-white/40 text-sm">Koi lottery join nahi ki</div>'}</div><h3 class="font-bold mt-6">My Winnings</h3><div class="space-y-2 mt-3">${winners.filter(w=>w.userId===cu.id).map(w=> `<div class="flex justify-between bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 text-xs"><span>${w.drawName} • ${w.date.slice(0,10)}</span><b class="text-emerald-400">+₹${w.prize}</b></div>`).join('') || '<div class="text-white/30 text-xs">No wins yet</div>'}</div>`;
-}
+        <!-- TRANSACTIONS -->
+        <div id="transactionsView" class="view-section">
+            <div class="page-back-header" onclick="switchView('homeView')">
+                <i class="fas fa-arrow-left"></i> Transactions History
+            </div>
+            <div id="user-transactions-container"></div>
+        </div>
 
-function renderReferral(app, cu){
- const myRefs=referrals.filter(r=>r.referrerId===cu.id);
- const link = window.location.origin + window.location.pathname + '?ref=' + cu.referralCode;
- app.innerHTML = `<div class="bg-gradient-to-r from-violet-600 to-orange-500 rounded-[20px] p-5 text-center"><h3 class="font-black text-lg">Refer & Earn Spin</h3><p class="text-xs opacity-80 mt-1">Har referral pe 1 Spin Chance</p><div class="mt-4 bg-black/20 rounded-full px-4 py-3 flex items-center justify-between text-xs"><span class="truncate">${link}</span><button onclick="copyLink('${link}')" class="ml-2 w-8 h-8 bg-white text-black rounded-full flex items-center justify-center"><i class="fa-solid fa-copy"></i></button></div><button onclick="shareReferral()" class="mt-4 w-full py-3 rounded-full bg-white text-black font-bold text-sm">Share Now</button></div><div class="bg-[#1a1140] rounded-2xl p-4 border border-white/5 mt-4 flex justify-between"><span class="text-sm">Total Referrals</span><b class="text-lg">${myRefs.length}</b></div><div class="space-y-2 mt-4">${myRefs.map(r=> `<div class="bg-[#1a1140] rounded-xl p-3 flex items-center justify-between border border-white/5"><div><div class="font-bold text-sm">${r.referredName}</div><div class="text-[11px] text-white/50">${r.referredMobile} • ${new Date(r.date).toLocaleDateString()}</div></div><a href="https://wa.me/91${r.referredMobile}" target="_blank" class="w-9 h-9 rounded-full bg-emerald-500 flex items-center justify-center"><i class="fa-brands fa-whatsapp"></i></a></div>`).join('') || '<div class="text-white/30 text-xs">Abhi tak koi referral nahi</div>'}</div>`;
-}
-function copyLink(l){ navigator.clipboard.writeText(l); showToast('Link copied!'); }
-function shareReferral(){
- const cu=getCurrent(); if(!cu) return; const link=window.location.origin+window.location.pathname+'?ref='+cu.referralCode;
- if(navigator.share){ navigator.share({title:'WinCash Join karo',text:'WinCash pe spin karke paisa jeeto!',url:link}); } else { navigator.clipboard.writeText(link); showToast('Referral link copied!'); }
-}
+        <!-- BANK DETAILS -->
+        <div id="bankView" class="view-section">
+            <div class="page-back-header" onclick="switchView('homeView')">
+                <i class="fas fa-arrow-left"></i> Add Bank Details
+            </div>
+            <div class="admin-form">
+                <div class="input-group">
+                    <label>Bank Name</label>
+                    <input type="text" id="addBankName" placeholder="e.g. State Bank of India">
+                </div>
+                <div class="input-group">
+                    <label>Account Number</label>
+                    <input type="number" id="addBankAcc" placeholder="Enter A/c Number">
+                </div>
+                <div class="input-group">
+                    <label>Confirm Account Number</label>
+                    <input type="number" id="addBankConfAcc" placeholder="Confirm A/c Number">
+                </div>
+                <div class="input-group">
+                    <label>IFSC Code</label>
+                    <input type="text" id="addBankIfsc" placeholder="e.g. SBIN0001234">
+                </div>
+                <div style="text-align:center; font-weight:700; color:#94a3b8; margin: 10px 0;">OR</div>
+                <div class="input-group">
+                    <label>UPI ID (Optional)</label>
+                    <input type="text" id="addBankUpi" placeholder="e.g. user@paytm">
+                </div>
+                <button id="btnBankSubmit" class="submit-btn" style="background:#3b82f6;" onclick="submitBank('btnBankSubmit')">SAVE DETAILS</button>
+            </div>
+        </div>
 
-function renderTxn(app, cu){
- app.innerHTML = `<h2 class="font-black text-xl">Transactions</h2><div class="space-y-2 mt-4">${cu.transactions.slice().reverse().map(t=> `<div class="bg-[#1a1140] rounded-xl p-3 flex justify-between border border-white/5"><div><div class="font-bold text-xs">${t.type}</div><div class="text-[10px] text-white/40">${new Date(t.date).toLocaleString()} • ${t.status}</div></div><div class="font-bold text-sm ${t.amount>=0?'text-emerald-400':'text-red-400'}">${t.amount>=0?'+':''}₹${t.amount}</div></div>`).join('') || '<div class="text-white/30 text-sm">No transactions</div>'}</div>`;
-}
+        <!-- CHANGE PASSWORD -->
+        <div id="passView" class="view-section">
+            <div class="page-back-header" onclick="switchView('homeView')">
+                <i class="fas fa-arrow-left"></i> Change Password
+            </div>
+            <div class="admin-form">
+                <div class="input-group">
+                    <label>Old Password</label>
+                    <input type="text" id="oldPass" placeholder="Enter old password">
+                </div>
+                <div class="input-group">
+                    <label>New Password</label>
+                    <input type="text" id="newPass" placeholder="Enter new password">
+                </div>
+                <div class="input-group">
+                    <label>Confirm Password</label>
+                    <input type="text" id="confPass" placeholder="Confirm new password">
+                </div>
+                <button id="btnPassSubmit" class="submit-btn" style="background:#8b5cf6;" onclick="submitPassword('btnPassSubmit')">UPDATE PASSWORD</button>
+            </div>
+        </div>
 
-function renderDeposit(app, cu){
- app.innerHTML = `<h2 class="font-black text-xl">Deposit</h2><div class="bg-[#1a1140] rounded-[20px] p-5 border border-white/5 mt-4"><input id="depAmt" type="number" value="100" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none"><div class="grid grid-cols-4 gap-2 mt-3">${[50,100,200,1000].map(v=> `<button onclick="document.getElementById('depAmt').value=${v}" class="py-2 rounded-full bg-white/10 text-xs font-bold">₹${v}</button>`).join('')}</div><button onclick="doDepositStep1()" class="w-full mt-4 py-3 rounded-full bg-gradient-to-r from-violet-600 to-orange-500 font-bold">Pay Now</button><div class="text-[10px] text-white/40 mt-2 text-center">Min ₹${settings.minDeposit} Max ₹${settings.maxDeposit}</div></div><div id="depStep2" class="hidden mt-4"></div>`;
-}
-async function doDepositStep1(){
- const amt=Number(document.getElementById('depAmt').value); if(amt < settings.minDeposit || amt > settings.maxDeposit) return showToast(`Min ${settings.minDeposit} Max ${settings.maxDeposit}`);
- const upiUrl=`upi://pay?pa=${settings.upiId}&pn=WinCash&am=${amt}&cu=INR`;
- document.getElementById('depStep2').classList.remove('hidden');
- document.getElementById('depStep2').innerHTML=`<div class="bg-[#1a1140] rounded-[20px] p-5 border border-white/5 text-center"><h4 class="font-bold">UPI Payment</h4><p class="text-xs text-white/50 mt-1">UPI ID: <b class="text-white">${settings.upiId}</b></p><a href="${upiUrl}" class="mt-4 block py-3 rounded-full bg-emerald-500 font-bold">Open UPI Apps</a><p class="text-[11px] text-white/40 mt-2">Payment ke baad UTR dalo</p><input id="utrInput" placeholder="UTR / Reference No" class="w-full mt-3 bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none"><button onclick="submitUTR(${amt})" class="w-full mt-3 py-3 rounded-full bg-white text-black font-bold text-sm">Submit UTR</button></div>`;
- window.location.href=upiUrl;
-}
-async function submitUTR(amt){
- const utr=document.getElementById('utrInput').value.trim(); if(!utr) return showToast('UTR bharo');
- if(deposits.find(d=>d.utr===utr)) return showToast('Duplicate UTR not allowed');
- if(GAS_URL){ showLoader(true); const res=await api('depositrequest',{userId:getCurrent().id,amount:amt,utr}); showLoader(false); if(!res.success) return showToast(res.message); showToast('Deposit pending approval'); navigate('transactions'); return; }
- const cu=getCurrent(); deposits.push({id:'DEP'+Date.now(),userId:cu.id,amount:amt,utr,status:'pending',date:new Date().toISOString()}); cu.transactions.push({id:'TXN'+Date.now(),date:new Date().toISOString(),type:'Deposit',amount:amt,status:'Pending',note:utr}); save(); showToast('Deposit pending - Admin approval ke baad wallet update hoga'); navigate('transactions');
-}
+        <!-- ADMIN PANEL -->
+        <div id="adminView" class="view-section">
+            <div class="page-back-header" onclick="switchView('homeView')">
+                <i class="fas fa-arrow-left"></i> Admin Panel
+            </div>
+            
+            <div class="admin-nav">
+                <button class="admin-nav-btn active" onclick="switchAdminTab(event, 'allRequestsSec')">Requests</button>
+                <button class="admin-nav-btn" onclick="switchAdminTab(event, 'allUsersSec')">Users</button>
+                <button class="admin-nav-btn" onclick="switchAdminTab(event, 'allDrawsSec')">Draws</button>
+                <button class="admin-nav-btn" onclick="switchAdminTab(event, 'declareWinnerSec')">Winner</button>
+                <button class="admin-nav-btn" onclick="switchAdminTab(event, 'settingsSec')">Settings</button>
+            </div>
 
-function renderWithdraw(app, cu){
- app.innerHTML = `<h2 class="font-black text-xl">Withdraw</h2><div class="bg-[#1a1140] rounded-[20px] p-5 border border-white/5 mt-4"><input id="wdrAmt" type="number" placeholder="Amount" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none"><div class="text-[10px] text-white/40 mt-2">Min withdraw ₹${settings.minWithdraw} • Wallet ₹${cu.wallet}</div><button onclick="doWithdraw()" class="w-full mt-4 py-3 rounded-full bg-gradient-to-r from-violet-600 to-orange-500 font-bold">Withdraw Now</button></div>`;
-}
-async function doWithdraw(){
- const amt=Number(document.getElementById('wdrAmt').value); const cu=getCurrent();
- if(!cu.bank) return showToast('Pehle Bank Details add karo'); if(amt < settings.minWithdraw) return showToast('Min withdraw ₹'+settings.minWithdraw); if(cu.wallet < amt) return showToast('Insufficient wallet'); if(cu.wallet-amt<0) return showToast('Wallet negative nahi ho sakta');
- if(GAS_URL){ showLoader(true); const res=await api('withdrawrequest',{userId:cu.id,amount:amt}); showLoader(false); if(res.needBank) return showToast('Bank add karo'); if(!res.success) return showToast(res.message); showToast('Withdraw pending'); cu.wallet-=amt; save(); navigate('transactions'); return; }
- cu.wallet-=amt; withdrawals.push({id:'WDR'+Date.now(),userId:cu.id,amount:amt,status:'pending',date:new Date().toISOString()}); cu.transactions.push({id:'TXN'+Date.now(),date:new Date().toISOString(),type:'Withdrawal',amount:-amt,status:'Pending'}); save(); showToast('Withdraw pending'); navigate('transactions');
-}
+            <!-- Admin: All Requests -->
+            <div id="allRequestsSec" class="admin-tab-content active">
+                <div class="section-title"><i class="fas fa-inbox"></i> USER REQUESTS</div>
+                <div id="admin-requests-container"></div>
+            </div>
 
-function renderBank(app, cu){
- app.innerHTML = `<h2 class="font-black text-xl">Bank Details</h2>
- <div class="bg-[#1a1140] rounded-[20px] p-5 border border-white/5 mt-4 space-y-3">
-  <input id="b_name" placeholder="Name (auto)" value="${cu.name}" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none">
-  <input id="b_bank" placeholder="Bank Name" value="${cu.bank?.bankName||''}" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none">
-  <input id="b_acc" placeholder="Account Number" value="${cu.bank?.account||''}" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none">
-  <input id="b_cacc" placeholder="Confirm Account Number" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none">
-  <input id="b_ifsc" placeholder="IFSC Code" value="${cu.bank?.ifsc||''}" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none">
-  <input id="b_upi" placeholder="UPI ID" value="${cu.bank?.upi||''}" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none">
-  <button onclick="saveBank()" class="w-full py-3 rounded-full bg-gradient-to-r from-violet-600 to-orange-500 font-bold">Save Bank Details</button>
-  <div onclick="fetchBank()" class="text-center text-xs text-white/60 mt-2 cursor-pointer"><i class="fa-solid fa-rotate"></i> My Bank Card - Fetch from Google Sheet <span id="bankSpin" class="hidden"><i class="fa-solid fa-spinner fa-spin"></i></span></div>
-  ${cu.bank?`<div class="mt-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs">Status: ${cu.bank.verified?'Approved':'Pending approval'}</div>`:''}
- </div>`;
-}
-async function saveBank(){
- const name=document.getElementById('b_name').value, bankName=document.getElementById('b_bank').value, acc=document.getElementById('b_acc').value, cacc=document.getElementById('b_cacc').value, ifsc=document.getElementById('b_ifsc').value, upi=document.getElementById('b_upi').value;
- if(acc!==cacc) return showToast('Account number mismatch'); if(!bankName||!acc||!ifsc) return showToast('All fields required');
- if(GAS_URL){ showLoader(true); const res=await api('updatebank',{userId:getCurrent().id,name,bankName,accountNumber:acc,confirmAccount:cacc,ifsc,upiId:upi}); showLoader(false); if(!res.success) return showToast(res.message); showToast('Bank pending approval'); navigate('home'); return; }
- getCurrent().bank={name,bankName,account:acc,ifsc,upi,verified:false}; save(); showToast('Bank saved - Pending approval'); navigate('home');
-}
-async function fetchBank(){
- document.getElementById('bankSpin').classList.remove('hidden');
- if(GAS_URL){ const res=await api('getbank',{userId:getCurrent().id},'GET'); document.getElementById('bankSpin').classList.add('hidden'); if(res.bank){ const cu=getCurrent(); cu.bank={name:res.bank.name,bankName:res.bank.bankName,account:res.bank.accountNumber,ifsc:res.bank.ifsc,upi:res.bank.upiId,verified:res.bank.status==='Approved'}; save(); render(); showToast('Bank fetched'); } else showToast('No bank found'); return; }
- setTimeout(()=>{ document.getElementById('bankSpin').classList.add('hidden'); showToast('Bank fetched (mock)'); },1000);
-}
+            <!-- Admin: All Users -->
+            <div id="allUsersSec" class="admin-tab-content">
+                <div class="stat-card">
+                    <h2 id="total-users-count">0</h2>
+                    <p>Total Registered Users</p>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="userSearch" placeholder="Search users by name or phone..." onkeyup="filterUsers()">
+                </div>
+                <div id="admin-users-container"></div>
+            </div>
 
-function renderChangePass(app, cu){
- app.innerHTML = `<h2 class="font-black text-xl">Change Password</h2><div class="bg-[#1a1140] rounded-[20px] p-5 border border-white/5 mt-4 space-y-3"><input id="oldP" type="password" placeholder="Old Password" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none"><input id="newP" type="password" placeholder="New Password" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none"><input id="confP" type="password" placeholder="Confirm Password" class="w-full bg-black/30 border border-white/10 rounded-full px-5 py-3 text-sm outline-none"><button onclick="doChangePass()" class="w-full py-3 rounded-full bg-gradient-to-r from-violet-600 to-orange-500 font-bold">Submit</button></div>`;
-}
-async function doChangePass(){
- const oldP=document.getElementById('oldP').value, newP=document.getElementById('newP').value, conf=document.getElementById('confP').value;
- if(newP!==conf) return showToast('Confirm mismatch'); const cu=getCurrent();
- if(GAS_URL){ const res=await api('changepassword',{userId:cu.id,oldPassword:oldP,newPassword:newP,confirmPassword:conf}); if(!res.success) return showToast(res.message); showToast('Password changed'); navigate('home'); return; }
- // mock handled via users array
- const userObj=users.find(u=>u.id===cu.id); if(userObj.password!==oldP) return showToast('Old password wrong'); userObj.password=newP; save(); showToast('Password changed success'); navigate('home');
-}
+            <!-- Admin: All Draws -->
+            <div id="allDrawsSec" class="admin-tab-content">
+                <div id="admin-draws-container"></div>
+                <button class="fab-btn" onclick="openDrawModal()"><i class="fas fa-plus"></i></button>
+            </div>
 
-function renderAdmin(app, cu){
- if(!cu.isAdmin) { app.innerHTML='<div class="text-center py-10">Admin only</div>'; return; }
- app.innerHTML = `
- <h2 class="font-black text-xl">Admin Panel</h2>
- <div class="flex gap-2 mt-4 overflow-auto no-scrollbar"><button onclick="setAdminTab('users')" class="px-4 py-2 rounded-full bg-white text-black text-xs font-bold">Users (${users.length})</button><button onclick="setAdminTab('req')" class="px-4 py-2 rounded-full bg-white/10 text-xs font-bold">All Requests</button><button onclick="setAdminTab('lottery')" class="px-4 py-2 rounded-full bg-white/10 text-xs font-bold">Lottery Approval</button><button onclick="setAdminTab('settings')" class="px-4 py-2 rounded-full bg-white/10 text-xs font-bold">Settings</button></div>
- <div id="adminBox" class="mt-4"></div>
- `;
- setAdminTab('users');
-}
-function setAdminTab(t){
- const box=document.getElementById('adminBox'); if(!box) return;
- if(t==='users'){
-  box.innerHTML = `<div class="space-y-2">${users.map(u=> `<div class="bg-[#1a1140] rounded-xl p-3 flex justify-between border border-white/5 text-xs"><span>${u.name} • ${u.id} • ${u.mobile} • ₹${u.wallet}</span><span>${u.isAdmin?'Admin':''}</span></div>`).join('')}</div>`;
- } else if(t==='req'){
-  box.innerHTML = `<div class="space-y-4"><h4 class="font-bold text-sm">Deposits Pending (${deposits.filter(d=>d.status==='pending').length})</h4>${deposits.filter(d=>d.status==='pending').map(d=> `<div class="bg-[#1a1140] rounded-xl p-3 flex justify-between items-center border border-white/5 text-xs"><span>${d.userId} • ₹${d.amount} • UTR:${d.utr}</span><button onclick="approveDeposit('${d.id}')" class="px-3 py-1 rounded-full bg-emerald-500 font-bold">Approve</button></div>`).join('')||'<div class="text-white/30 text-xs">No pending deposits</div>'}<h4 class="font-bold text-sm mt-4">Withdraw Pending (${withdrawals.filter(w=>w.status==='pending').length})</h4>${withdrawals.filter(w=>w.status==='pending').map(w=> { const u=users.find(x=>x.id===w.userId); const bank=u?.bank; return `<div class="bg-[#1a1140] rounded-xl p-3 border border-white/5 text-xs"><div class="flex justify-between"><span>${w.userId} • ₹${w.amount}</span><button onclick="approveWithdraw('${w.id}')" class="px-3 py-1 rounded-full bg-emerald-500 font-bold">Approve</button></div>${bank?`<div class="mt-2 text-[11px] text-white/60">Bank: ${bank.bankName} • ${bank.account} • IFSC:${bank.ifsc} ${bank.upi?`• UPI:${bank.upi} <a href="upi://pay?pa=${bank.upi}&am=${w.amount}&pn=${u.name}" class="ml-2 px-2 py-1 bg-violet-600 rounded-full">Pay Now</a>`:''}</div>`:''}</div>`}).join('')||'<div class="text-white/30 text-xs">No pending withdraw</div>'}</div>`;
- } else if(t==='lottery'){
-  box.innerHTML = `<div class="space-y-4">${lotteries.map(l=> `<div class="bg-[#1a1140] rounded-xl p-4 border border-white/5"><div class="flex justify-between"><b class="text-sm">${l.name} • Entry ₹${l.entryFee} • Pool ₹${l.prizePool}</b><span class="text-xs">${l.participants.length} joined</span></div><div class="mt-3 space-y-1 max-h-[150px] overflow-auto">${l.participants.map(pid=>{ const pu=users.find(u=>u.id===pid); return `<div class="flex justify-between bg-black/30 rounded-full px-3 py-2 text-[11px]"><span>${pu?.name} • ${pid}</span><button onclick="winSelect('${l.id}','${pid}')" class="px-3 py-1 rounded-full bg-white/10">Win Select</button></div>`}).join('')||'<div class="text-white/30 text-xs">No participants</div>'}</div><button onclick="finalizeWinners('${l.id}')" class="mt-3 w-full py-2 rounded-full bg-gradient-to-r from-violet-600 to-orange-500 text-xs font-bold">Final Win - Divide Pool</button></div>`).join('')}<div class="mt-6 p-4 bg-white/5 rounded-xl"><h4 class="font-bold text-sm">Add Lottery</h4><input id="lotName" placeholder="Lottery Name" class="w-full mt-2 bg-black/30 border border-white/10 rounded-full px-4 py-2 text-xs"><div class="grid grid-cols-2 gap-2 mt-2"><input id="lotFee" type="number" placeholder="Entry Fee" class="bg-black/30 border border-white/10 rounded-full px-4 py-2 text-xs"><input id="lotPool" type="number" placeholder="Prize Pool" class="bg-black/30 border border-white/10 rounded-full px-4 py-2 text-xs"></div><button onclick="addLottery()" class="w-full mt-3 py-2 rounded-full bg-white text-black font-bold text-xs">Add Lottery</button></div></div>`;
- } else if(t==='settings'){
-  box.innerHTML = `<div class="bg-[#1a1140] rounded-xl p-4 border border-white/5 space-y-3"><h4 class="font-bold text-sm">Settings (Sheet se fetch hoga)</h4><input id="set_upi" value="${settings.upiId}" placeholder="UPI ID" class="w-full bg-black/30 border border-white/10 rounded-full px-4 py-2 text-xs"><input id="set_wa" value="${settings.supportWhatsapp}" placeholder="Support WhatsApp" class="w-full bg-black/30 border border-white/10 rounded-full px-4 py-2 text-xs"><div class="grid grid-cols-2 gap-2"><input id="set_minW" value="${settings.minWithdraw}" placeholder="Min Withdraw" class="bg-black/30 border border-white/10 rounded-full px-4 py-2 text-xs"><input id="set_minD" value="${settings.minDeposit}" placeholder="Min Deposit" class="bg-black/30 border border-white/10 rounded-full px-4 py-2 text-xs"></div><button onclick="saveSettings()" class="w-full py-2 rounded-full bg-emerald-500 font-bold text-xs">Save Settings to Sheet</button><div class="text-[10px] text-white/40 mt-2">GitHub pe ye local save hoga, GAS_URL hone par sheet me save hoga</div></div>`;
- }
-}
-let winSelections={};
-function winSelect(lotId,userId){ winSelections[lotId]=winSelections[lotId]||[]; if(winSelections[lotId].includes(userId)) winSelections[lotId]=winSelections[lotId].filter(x=>x!==userId); else winSelections[lotId].push(userId); showToast((winSelections[lotId].length)+' selected'); }
-async function finalizeWinners(lotId){
- const lot=lotteries.find(l=>l.id===lotId); const selected=winSelections[lotId]||[]; if(selected.length===0) return showToast('Koi winner select nahi kiya');
- const per = Math.floor(lot.prizePool/selected.length);
- if(GAS_URL){ showLoader(true); const res=await api('admin_declarewinners',{entryFee:lot.entryFee,winnerUserIds:selected,lotteryId:lotId}); showLoader(false); showToast(res.message||'Winners declared'); return; }
- selected.forEach(uid=>{ const u=users.find(x=>x.id===uid); u.wallet+=per; u.transactions.push({id:'TXN'+Date.now(),date:new Date().toISOString(),type:'Lottery Win '+lot.name,amount:per,status:'Success'}); winners.push({id:'WIN'+Date.now()+uid,date:new Date().toISOString(),userId:uid,drawName:lot.name,prize:per}); });
- save(); showToast(selected.length+' winners ko ₹'+per+' mila'); render();
-}
-function approveDeposit(id){ const d=deposits.find(x=>x.id===id); const u=users.find(x=>x.id===d.userId); u.wallet+=d.amount; d.status='approved'; u.transactions.push({id:'TXN'+Date.now(),date:new Date().toISOString(),type:'Deposit Success',amount:d.amount,status:'Success'}); save(); showToast('Deposit approved'); setAdminTab('req'); }
-function approveWithdraw(id){ const w=withdrawals.find(x=>x.id===id); w.status='approved'; const u=users.find(x=>x.id===w.userId); u.transactions.push({id:'TXN'+Date.now(),date:new Date().toISOString(),type:'Withdrawal Success',amount:-w.amount,status:'Success'}); save(); showToast('Withdraw approved'); setAdminTab('req'); }
-function addLottery(){ const name=document.getElementById('lotName').value, fee=Number(document.getElementById('lotFee').value), pool=Number(document.getElementById('lotPool').value); if(!name||!fee||!pool) return showToast('All fields'); lotteries.push({id:'L'+Date.now(),name,entryFee:fee,prizePool:pool,participants:[],status:'active',date:new Date().toISOString()}); save(); showToast('Lottery added'); setAdminTab('lottery'); }
-function saveSettings(){ settings.upiId=document.getElementById('set_upi').value; settings.supportWhatsapp=document.getElementById('set_wa').value; settings.minWithdraw=Number(document.getElementById('set_minW').value); settings.minDeposit=Number(document.getElementById('set_minD').value); if(GAS_URL){ api('admin_updatesettings',{settings}); } showToast('Settings saved'); }
+            <!-- Admin: Declare Winner -->
+            <div id="declareWinnerSec" class="admin-tab-content">
+                <div class="section-title"><i class="fas fa-trophy"></i> DECLARE WINNER</div>
+                <div class="admin-form">
+                    <div class="input-group">
+                        <label>Filter By Date</label>
+                        <input type="date" id="adminDate" onchange="loadJoinedUsers()">
+                    </div>
+                    <div class="input-group">
+                        <label>Select Live Draw</label>
+                        <select id="adminDrawSelect" onchange="loadJoinedUsers()"></select>
+                    </div>
+                    <div id="usersContainer" style="margin-bottom: 20px;"></div>
+                    <button id="btnDeclareWinner" class="submit-btn green" onclick="declareWinners('btnDeclareWinner')">DECLARE WINNER(S)</button>
+                </div>
+            </div>
 
-// Init
-render(); renderMenu();
-if(GAS_URL){ api('getsettings',{},'GET').then(r=>{ if(r.settings){ settings.upiId=r.settings.upiId||settings.upiId; settings.supportWhatsapp=r.settings.supportWhatsapp||settings.supportWhatsapp; settings.minWithdraw=Number(r.settings.minWithdraw||settings.minWithdraw); settings.minDeposit=Number(r.settings.minDeposit||settings.minDeposit); render(); } }); }
-</script>
-<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
+            <!-- Admin: Settings -->
+            <div id="settingsSec" class="admin-tab-content">
+                <div class="section-title"><i class="fas fa-cogs"></i> APP SETTINGS</div>
+                <div class="admin-form">
+                    <div class="input-group">
+                        <label>Admin UPI ID (For Deposits)</label>
+                        <input type="text" id="setAdminUpi">
+                    </div>
+                    <div class="input-group">
+                        <label>Welcome Bonus (₹)</label>
+                        <input type="number" id="setWelcomeBonus">
+                    </div>
+                    <div class="input-group">
+                        <label>Referral Bonus (₹)</label>
+                        <input type="number" id="setRefBonus">
+                    </div>
+                    <div class="input-group">
+                        <label>Minimum Deposit (₹)</label>
+                        <input type="number" id="setMinDep">
+                    </div>
+                    <div class="input-group">
+                        <label>Minimum Withdrawal (₹)</label>
+                        <input type="number" id="setMinWit">
+                    </div>
+                    <button id="btnSaveSettings" class="submit-btn green" onclick="saveAdminSettings('btnSaveSettings')">SAVE SETTINGS</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ==========================================
+        // YAHAN APNA APPS SCRIPT WEB APP URL DALEIN
+        // ==========================================
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxOfR2NZOjS4XOEXTNzPWsvD58PqgA-D1m1TrWpLPctdByd5NsP_U5LhzklX7S9Vj29/exec';
+
+        // Custom Prompts & Alert
+        function showAlert(msg) { 
+            document.getElementById('alertMessage').innerText = msg; 
+            document.getElementById('customAlert').style.display = 'flex'; 
+        }
+        function closeAlert() { 
+            document.getElementById('customAlert').style.display = 'none'; 
+        }
+        
+        function showConfirm(msg, onConfirm) { 
+            document.getElementById('confirmMessage').innerText = msg; 
+            document.getElementById('customConfirm').style.display = 'flex'; 
+            
+            let yesBtn = document.getElementById('confirmYesBtn');
+            let newYesBtn = yesBtn.cloneNode(true);
+            yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
+            
+            newYesBtn.onclick = function() {
+                document.getElementById('customConfirm').style.display = 'none'; 
+                onConfirm(); 
+            }; 
+            
+            document.getElementById('confirmNoBtn').onclick = function() {
+                document.getElementById('customConfirm').style.display = 'none';
+            }; 
+        }
+
+        function showPrompt(title, cb) { 
+            document.getElementById('promptTitle').innerText = title; 
+            document.getElementById('promptInput').value = '';
+            document.getElementById('customPrompt').style.display = 'flex'; 
+            
+            let yesBtn = document.getElementById('promptYesBtn');
+            let newYesBtn = yesBtn.cloneNode(true);
+            yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
+            
+            newYesBtn.onclick = function() {
+                document.getElementById('customPrompt').style.display = 'none'; 
+                cb(document.getElementById('promptInput').value);
+            }; 
+            document.getElementById('promptNoBtn').onclick = function() {
+                document.getElementById('customPrompt').style.display = 'none'; 
+                cb(null);
+            }; 
+        }
+        
+        function closeAllModals() {
+            document.getElementById('drawModal').style.display = 'none';
+            document.getElementById('userModal').style.display = 'none';
+            editingDrawId = null; editingUserId = null;
+        }
+
+        function generateTxnID() { 
+            return Math.floor(1000000000 + Math.random() * 9000000000).toString(); 
+        } 
+        
+        // Accurate Short Date formatting for Asia/Kolkata
+        function getCurrentDateTime() { 
+            const options = { 
+                timeZone: 'Asia/Kolkata', 
+                day: '2-digit', month: 'short', year: 'numeric', 
+                hour: '2-digit', minute: '2-digit', hour12: true 
+            };
+            return new Intl.DateTimeFormat('en-IN', options).format(new Date()); 
+        }
+        
+        function formatDateIST(dateStr) {
+            if (!dateStr) return '---';
+            try {
+                let d = new Date(dateStr);
+                if (isNaN(d.getTime())) return dateStr; 
+                return new Intl.DateTimeFormat('en-IN', {
+                    timeZone: 'Asia/Kolkata',
+                    day: '2-digit', month: 'short', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit', hour12: true
+                }).format(d);
+            } catch(e) { return dateStr; }
+        }
+        
+        function getLocalDateStr(dateStr) {
+            try {
+                let d = new Date(dateStr);
+                if(isNaN(d)) return null;
+                let year = new Intl.DateTimeFormat('en-IN', { year: 'numeric', timeZone: 'Asia/Kolkata' }).format(d);
+                let month = new Intl.DateTimeFormat('en-IN', { month: '2-digit', timeZone: 'Asia/Kolkata' }).format(d);
+                let day = new Intl.DateTimeFormat('en-IN', { day: '2-digit', timeZone: 'Asia/Kolkata' }).format(d);
+                return `${year}-${month}-${day}`;
+            } catch(e) { return null; }
+        }
+
+        // Global States
+        let appSettings = { adminUpi: 'ranjankumar3209@nyes', minDeposit: 100, minWithdraw: 200, refBonus: 50, welcomeBonus: 50 };
+        let currentUser = null; 
+        let allUsers = []; 
+        let allTransactions = []; 
+        let allDraws = []; 
+        let isAdminAuthenticated = false;
+        
+        let depositAmountTemp = 0; 
+        let editingDrawId = null; 
+        let editingUserId = null;
+
+        // Navigation Methods
+        function openNav() { document.getElementById("mySidebar").style.left = "0"; document.getElementById("overlay").style.display = "block"; }
+        function closeNav() { document.getElementById("mySidebar").style.left = "-280px"; document.getElementById("overlay").style.display = "none"; }
+        
+        function updateSidebar() {
+            if (currentUser) {
+                document.getElementById("sidebarUserName").innerText = currentUser.name;
+                document.getElementById("sidebarUserId").innerText = currentUser.id;
+                if(document.getElementById("myReferralCodeDisplay")) {
+                    document.getElementById("myReferralCodeDisplay").innerText = currentUser.id;
+                }
+            }
+        }
+        
+        function openAdminPanel() {
+            closeNav();
+            if (isAdminAuthenticated) {
+                switchView('adminView');
+            } else {
+                document.getElementById('adminLoginId').value = '';
+                document.getElementById('adminLoginPass').value = '';
+                document.getElementById('adminLoginModal').style.display = 'flex';
+            }
+        }
+
+        function verifyAdminLogin() {
+            let id = document.getElementById('adminLoginId').value;
+            let pass = document.getElementById('adminLoginPass').value;
+            if (id === 'Admin' && pass === 'admin@8873') {
+                isAdminAuthenticated = true;
+                document.getElementById('adminLoginModal').style.display = 'none';
+                switchView('adminView');
+            } else {
+                showAlert("Invalid Admin ID or Password!");
+            }
+        }
+
+        function getTotalWallet() {
+            if (!currentUser) return 0;
+            let dep = parseInt(currentUser.depositWallet);
+            if (isNaN(dep)) dep = parseInt(currentUser.wallet) || 0; 
+            let win = parseInt(currentUser.winningWallet) || 0;
+            return dep + win;
+        }
+
+        function setWalletLoading() {
+            let spin = '<i class="fas fa-spinner fa-spin"></i>';
+            if(document.getElementById("wallet-balance")) document.getElementById("wallet-balance").innerHTML = spin;
+            if(document.getElementById("wallet-dep-display")) document.getElementById("wallet-dep-display").innerHTML = spin;
+            if(document.getElementById("wallet-win-display")) document.getElementById("wallet-win-display").innerHTML = spin;
+            if(document.getElementById("txtWitBal")) document.getElementById("txtWitBal").innerHTML = spin;
+        }
+
+        function updateWalletUI() {
+            if (!currentUser) return;
+            let dep = parseInt(currentUser.depositWallet);
+            if (isNaN(dep)) dep = parseInt(currentUser.wallet) || 0; 
+            let win = parseInt(currentUser.winningWallet) || 0;
+            
+            let tWit = 0;
+            allTransactions.forEach(t => {
+                if (t.userId == currentUser.id && t.type == 'Withdrawal' && t.status == 'Approved') {
+                    tWit += parseInt(t.amount);
+                }
+            });
+
+            if(document.getElementById("wallet-balance")) document.getElementById("wallet-balance").innerText = `₹ ${dep + win}`;
+            if(document.getElementById("wallet-dep-display")) document.getElementById("wallet-dep-display").innerText = `₹ ${dep}`;
+            if(document.getElementById("wallet-win-display")) document.getElementById("wallet-win-display").innerText = `₹ ${win}`;
+            if(document.getElementById("txtWitBal")) document.getElementById("txtWitBal").innerText = win;
+            if (document.getElementById("total-lifetime-withdrawal")) {
+                document.getElementById("total-lifetime-withdrawal").innerText = `₹ ${tWit}`;
+            }
+        }
+
+        function resetBtn(btnEl, originalText) {
+            if (btnEl) { 
+                btnEl.disabled = false; 
+                btnEl.innerHTML = originalText; 
+                btnEl.style.opacity = '1';
+                btnEl.style.cursor = 'pointer';
+            }
+        }
+
+        // Silent HTTP Request handler with double click protection
+        function sendPost(payload, callback, btnElement) {
+            let btnEl = typeof btnElement === 'string' ? document.getElementById(btnElement) : btnElement;
+            let originalText = '';
+            
+            if (btnEl) {
+                originalText = btnEl.innerHTML;
+                btnEl.disabled = true;
+                btnEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Please Wait...';
+                btnEl.style.opacity = '0.7';
+                btnEl.style.cursor = 'not-allowed';
+            }
+
+            if (SCRIPT_URL === 'YOUR_WEB_APP_URL_HERE') { 
+                resetBtn(btnEl, originalText);
+                showAlert('Please configure SCRIPT_URL in HTML code!'); 
+                return; 
+            }
+
+            fetch(SCRIPT_URL, { 
+                redirect: "follow", 
+                method: 'POST', 
+                headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+                body: JSON.stringify(payload) 
+            })
+            .then(r => r.text())
+            .then(text => {
+                resetBtn(btnEl, originalText);
+                let data;
+                try { data = JSON.parse(text); } 
+                catch(e) { data = { status: 'success' }; }
+                callback(data); 
+            })
+            .catch(e => { 
+                resetBtn(btnEl, originalText);
+                callback({ status: 'success' }); 
+            });
+        }
+
+        function fetchSheetData() {
+            if (SCRIPT_URL === 'YOUR_WEB_APP_URL_HERE') return;
+            
+            fetch(SCRIPT_URL + '?action=getData')
+            .then(r => r.text())
+            .then(text => {
+                try {
+                    let data = JSON.parse(text);
+                    if(data.status === 'success') {
+                        if (data.users) allUsers = data.users;
+                        let txns = data.transactions || [];
+                        let reqs = data.requests || [];
+                        allTransactions = [...txns, ...reqs].reverse();
+
+                        if (data.draws) allDraws = data.draws;
+                        
+                        if (data.settings) {
+                            data.settings.forEach(s => { 
+                                if (appSettings[s.key] !== undefined) appSettings[s.key] = s.value; 
+                            });
+                        }
+                        
+                        document.getElementById('banner-ref-amount').innerText = appSettings.refBonus;
+                        document.getElementById('txtPageMinDep').innerText = appSettings.minDeposit;
+                        document.getElementById('txtMinWit').innerText = appSettings.minWithdraw;
+                        
+                        if (currentUser) {
+                            let updatedMe = allUsers.find(u => u.id == currentUser.id);
+                            if (updatedMe) currentUser = updatedMe;
+                            updateWalletUI();
+                            updateSidebar();
+                        }
+                        
+                        if (document.getElementById('homeView').classList.contains('active')) renderLiveDraws();
+                        if (document.getElementById('myDrawsView').classList.contains('active')) renderMyDraws();
+                        if (document.getElementById('transactionsView').classList.contains('active')) renderUserTransactions();
+                        if (document.getElementById('myReferralView').classList.contains('active')) renderMyReferrals();
+                        if (document.getElementById('adminView').classList.contains('active')) { 
+                            renderAdminRequests(); renderAdminUsers(); renderAdminDraws(); 
+                        }
+                    }
+                } catch(e) {}
+            }).catch(e => {});
+        }
+
+        // =====================================
+        // AUTHENTICATION
+        // =====================================
+        function loginUser(btnId) {
+            const phone = document.getElementById('loginPhone').value; 
+            const pass = document.getElementById('loginPassword').value;
+            if (!phone || !pass) return showAlert('Please enter credentials!');
+            
+            sendPost({action: 'login', phone, password: pass}, res => {
+                if (res.status === 'success') {
+                    currentUser = res.user; 
+                    updateSidebar(); 
+                    switchView('homeView', true, true); 
+                    setWalletLoading();
+                    fetchSheetData();
+                } else { 
+                    showAlert(res.message || 'Invalid details'); 
+                }
+            }, btnId);
+        }
+
+        function registerUser(btnId) {
+            const name = document.getElementById('regName').value; 
+            const phone = document.getElementById('regPhone').value;
+            const email = document.getElementById('regEmail').value; 
+            const pass = document.getElementById('regPassword').value;
+            const refCode = document.getElementById('regReferral').value; 
+            const terms = document.getElementById('regTerms').checked;
+            
+            if (!name || !phone || !pass || !email) return showAlert('Please fill all fields!');
+            if (!terms) return showAlert('Please accept Terms & Conditions!');
+
+            sendPost({
+                action: 'register', name, phone, email, password: pass, 
+                refCode, welcomeBonus: appSettings.welcomeBonus, 
+                refBonus: appSettings.refBonus, dateTime: getCurrentDateTime()
+            }, res => {
+                if (res.status === 'success') {
+                    currentUser = {
+                        id: res.userId, name, phone, email, password: pass, 
+                        depositWallet: appSettings.welcomeBonus, winningWallet: 0
+                    };
+                    updateSidebar(); 
+                    if(parseInt(appSettings.welcomeBonus) > 0) {
+                        showAlert(`Account created! 🎁 Welcome Bonus of ₹${appSettings.welcomeBonus} added to Wallet!`); 
+                    } else {
+                        showAlert('Account created successfully!');
+                    }
+                    switchView('homeView', true, true); 
+                    setWalletLoading();
+                    fetchSheetData();
+                } else { 
+                    showAlert(res.message || 'Mobile number already registered!'); 
+                }
+            }, btnId);
+        }
+
+        function submitForgotPassword() { 
+            showAlert('कृपया अपना मोबाइल नंबर दर्ज करें। आपका पासवर्ड आपके रजिस्टर्ड ईमेल आईडी पर भेज दिया जाएगा।'); 
+            switchView('loginView'); 
+        }
+
+        function logoutUser() { 
+            closeNav(); 
+            currentUser = null; 
+            isAdminAuthenticated = false;
+            switchView('loginView', true, true); 
+        }
+
+        // =====================================
+        // WALLET ACTIONS
+        // =====================================
+        function triggerDirectUpiPayment() {
+            depositAmountTemp = parseInt(document.getElementById('pageDepAmount').value);
+            if (!depositAmountTemp || depositAmountTemp < appSettings.minDeposit) {
+                return showAlert(`Minimum deposit amount is ₹${appSettings.minDeposit}`);
+            }
+            
+            const upiUrl = `upi://pay?pa=${appSettings.adminUpi}&pn=WinCashApp&am=${depositAmountTemp}&cu=INR`;
+            window.location.href = upiUrl;
+
+            document.getElementById('depPageView1').style.display = 'none'; 
+            document.getElementById('pageDepUtr').value = ''; 
+            document.getElementById('depPageView2').style.display = 'block';
+        }
+
+        function submitPageDeposit(btnId) {
+            let utr = document.getElementById('pageDepUtr').value;
+            if (!utr || utr.length < 6) return showAlert('Enter valid UTR or Ref Number!');
+            
+            setWalletLoading();
+            sendPost({
+                action: 'addTransaction', id: generateTxnID(), type: 'Deposit', 
+                user: currentUser.name, userId: currentUser.id, 
+                amount: depositAmountTemp, details: `UTR: ${utr}`, 
+                upiId: '', dateTime: getCurrentDateTime()
+            }, res => {
+                document.getElementById('depPageView2').style.display = 'none'; 
+                document.getElementById('depPageView3').style.display = 'block'; 
+                setTimeout(fetchSheetData, 1000);
+            }, btnId);
+        }
+
+        function submitWithdraw(btnId) {
+            let amt = parseInt(document.getElementById('witAmount').value);
+            if (!amt || amt < appSettings.minWithdraw) return showAlert(`Minimum withdrawal is ₹${appSettings.minWithdraw}`);
+            
+            let winWallet = parseInt(currentUser.winningWallet) || 0;
+            if (amt > winWallet) return showAlert('Insufficient Winning Wallet Balance!');
+            
+            setWalletLoading();
+            sendPost({
+                action: 'addTransaction', id: generateTxnID(), type: 'Withdrawal', 
+                user: currentUser.name, userId: currentUser.id, amount: amt, 
+                details: `Transfer to Bank/UPI`, upiId: currentUser.upi || '', dateTime: getCurrentDateTime()
+            }, res => {
+                showAlert('Withdraw Request Submitted Successfully!'); 
+                currentUser.winningWallet = winWallet - amt; 
+                switchView('walletView'); 
+                setTimeout(fetchSheetData, 1000);
+            }, btnId);
+        }
+
+        function submitBank(btnId) {
+            let name = document.getElementById('addBankName').value; 
+            let acc = document.getElementById('addBankAcc').value; 
+            let ifsc = document.getElementById('addBankIfsc').value; 
+            let upi = document.getElementById('addBankUpi').value;
+            
+            if (!upi && (!name || !acc || !ifsc)) return showAlert('Please provide either Bank Details or UPI ID!');
+            let bankDetails = name ? `Bank:${name}, A/c:${acc}, IFSC:${ifsc}` : 'UPI Only';
+            
+            sendPost({
+                action: 'addTransaction', id: generateTxnID(), type: 'Add Bank', 
+                user: currentUser.name, userId: currentUser.id, amount: 0, 
+                details: bankDetails, upiId: upi, dateTime: getCurrentDateTime()
+            }, res => {
+                showAlert('Bank Update Request Submitted!'); 
+                switchView('homeView'); 
+                setTimeout(fetchSheetData, 1000);
+            }, btnId);
+        }
+
+        function submitPassword(btnId) {
+            const oldP = document.getElementById('oldPass').value; 
+            const newP = document.getElementById('newPass').value; 
+            const confP = document.getElementById('confPass').value;
+            
+            if(!oldP || !newP || !confP) return showAlert('Please fill all password fields!');
+            if(oldP !== currentUser.password) return showAlert('Old password is incorrect!'); 
+            if(newP !== confP) return showAlert('New passwords do not match!');
+            
+            sendPost({
+                action: 'updateUser', userId: currentUser.id, name: currentUser.name, 
+                phone: currentUser.phone, email: currentUser.email, password: newP, 
+                bank: currentUser.bank, upi: currentUser.upi
+            }, res => {
+                showAlert('Password updated successfully!');
+                currentUser.password = newP;
+                switchView('homeView');
+            }, btnId);
+        }
+
+        // =====================================
+        // REFERRALS
+        // =====================================
+        function shareReferralLink() {
+            const refCode = currentUser ? currentUser.id : "100001"; 
+            const currentUrl = window.location.href.split('#')[0];
+            const link = `${currentUrl}#ref=${refCode}`;
+            const msg = `🔥 घर बैठे गेम खेलो और असली पैसे जीतो! WinCash ऐप डाउनलोड करो और तुरंत ₹50 का फ्री बोनस पाओ!\n\n🎁 मेरा रेफरल कोड (User ID): ${refCode}\n👇 अभी ज्वाइन करें:\n${link}`;
+            
+            if (navigator.share) {
+                navigator.share({ title: 'WinCash Referral', text: msg, url: link }).catch(e => console.log(e));
+            } else { 
+                navigator.clipboard.writeText(msg); 
+                showAlert('Referral link and text copied to clipboard!'); 
+            }
+        }
+
+        function renderMyReferrals() {
+            const container = document.getElementById('referral-users-container'); 
+            container.innerHTML = '';
+            
+            let myRefs = allUsers.filter(u => u.referredBy == currentUser.id);
+            let totalEarned = 0;
+            
+            allTransactions.forEach(t => {
+                if (t.type == 'Referral Bonus' && t.userId == currentUser.id && t.status == 'Approved') {
+                    totalEarned += parseInt(t.amount);
+                }
+            });
+
+            document.getElementById('ref-total-users').innerText = myRefs.length; 
+            document.getElementById('ref-total-earnings').innerText = `₹ ${totalEarned}`;
+            
+            if (myRefs.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-user-plus" style="font-size:40px; margin-bottom:10px;"></i><br>No referral users joined yet.</div>`;
+                return;
+            }
+            
+            myRefs.forEach(r => { 
+                container.innerHTML += `
+                <div class="draw-card" style="padding:15px; margin-bottom:10px; text-align: left; border-left: 4px solid #10b981;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <strong>${r.name}</strong>
+                        <span class="draw-status approved-tag">Joined</span>
+                    </div>
+                    <div style="font-size: 12px; color: #64748b; margin-top: 5px;">User ID: ${r.id}</div>
+                </div>`; 
+            });
+        }
+
+        function renderUserTransactions() {
+            const container = document.getElementById('user-transactions-container'); 
+            container.innerHTML = '';
+            if (!currentUser) return;
+            
+            const myReqs = allTransactions.filter(r => r.userId == currentUser.id);
+            if (myReqs.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-receipt" style="font-size:40px; margin-bottom:10px;"></i><br>No transactions found.</div>`; 
+                return;
+            }
+            
+            myReqs.forEach(req => {
+                let sc = req.status === 'Pending' ? '#f59e0b' : (req.status === 'Approved' ? '#10b981' : '#ef4444');
+                container.innerHTML += `
+                <div class="draw-card" style="border-left:4px solid ${sc}; padding:15px; text-align: left; margin-bottom: 12px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px; align-items: center;">
+                        <strong style="font-size: 15px;">${req.type}</strong>
+                        <span style="background:${sc}; color:white; padding: 4px 10px; border-radius: 12px; font-weight:700; font-size:10px;">${req.status}</span>
+                    </div>
+                    <div style="font-size:12px; color:#64748b; margin-bottom:8px;">
+                        Txn ID: ${req.id} <br> ${formatDateIST(req.dateTime)}
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:13px; align-items: center;">
+                        <span style="color: #475569;">${req.details}</span>
+                        <strong style="color:${sc}; font-size: 16px;">${req.amount ? '₹'+req.amount : ''}</strong>
+                    </div>
+                </div>`;
+            });
+        }
+
+        // =====================================
+        // DRAW ACTIONS (User - Transaction Based)
+        // =====================================
+        function renderLiveDraws() {
+            const container = document.getElementById('live-draws-container'); 
+            container.innerHTML = ''; 
+            
+            const liveDraws = allDraws.filter(d => d.status === 'LIVE');
+            if (liveDraws.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-box-open" style="font-size:40px; margin-bottom:10px;"></i><br>No live draws available.</div>`; 
+                return; 
+            }
+            
+            liveDraws.forEach(draw => {
+                // Determine if user is already joined via Transactions match
+                const isJoined = allTransactions.some(t => t.userId == currentUser.id && t.type === 'Draw Entry Fee' && t.details.includes(draw.id));
+                
+                container.innerHTML += `
+                <div class="draw-card">
+                    <div class="draw-card-header">
+                        <div class="draw-name">${draw.name} <span class="draw-id">ID: ${draw.id}</span></div>
+                        <div class="draw-status" style="animation: blink 2s infinite;">LIVE</div>
+                    </div>
+                    <div class="draw-details">
+                        <div class="detail-box"><span>Entry Fee</span><strong>₹ ${draw.fee}</strong></div>
+                        <div class="detail-box"><span>Prize Pool</span><strong class="green-text">₹ ${draw.prize}</strong></div>
+                    </div>
+                    ${isJoined ? `<button class="join-btn joined">Already Joined</button>` : `<button id="btnJoin_${draw.id}" class="join-btn" onclick="joinDraw('${draw.id}', 'btnJoin_${draw.id}')">Join Now</button>`}
+                </div>`;
+            });
+        }
+
+        function joinDraw(drawId, btnElement) {
+            const draw = allDraws.find(d => d.id == drawId);
+            if (!draw) return;
+            
+            if (getTotalWallet() < parseInt(draw.fee)) {
+                return showAlert("Insufficient Wallet Balance! Please deposit cash to join.");
+            }
+            
+            showConfirm(`Do you want to join ${draw.name} for ₹${draw.fee}?`, function() {
+                setWalletLoading();
+                sendPost({
+                    action: 'joinDraw', drawId: drawId, userId: currentUser.id, 
+                    userName: currentUser.name, fee: draw.fee, dateTime: getCurrentDateTime()
+                }, res => {
+                    showAlert('Successfully Joined!'); 
+                    setTimeout(fetchSheetData, 1000); 
+                }, btnElement);
+            });
+        }
+
+        function renderMyDraws() {
+            const container = document.getElementById('my-draws-container'); 
+            container.innerHTML = ''; 
+            
+            let myJoinedTxns = allTransactions.filter(t => t.userId == currentUser.id && t.type === 'Draw Entry Fee');
+            
+            if (myJoinedTxns.length === 0) {
+                container.innerHTML = `<div class="empty-state">No joined draws.</div>`; 
+                return;
+            }
+            
+            myJoinedTxns.forEach(txn => {
+                let dIdMatch = txn.details.match(/ID:\s*(\d+)/);
+                let dId = dIdMatch ? dIdMatch[1] : null;
+                
+                let draw = allDraws.find(d => d.id == dId);
+                let drawName = draw ? draw.name : "Draw"; 
+                let drawPrize = draw ? draw.prize : '---';
+                
+                let isComp = draw ? (draw.status === 'COMPLETED') : false;
+                let txt = isComp ? 'RESULT OUT' : 'JOINED';
+                let tagClass = isComp ? 'completed' : 'joined-tag';
+                
+                let res = '';
+                if(isComp) {
+                    let wonTxn = allTransactions.find(t => t.userId == currentUser.id && t.type === 'Winning Prize' && (t.details.includes(drawName) || t.details.includes(dId)));
+                    if(wonTxn) {
+                        res = `<div class="result-banner-won">🎉 YOU WON ₹${wonTxn.amount}</div>`;
+                    } else {
+                        res = `<div class="result-banner-lost">😔 Next Luck</div>`;
+                    }
+                }
+                
+                container.innerHTML += `
+                <div class="draw-card">
+                    <div class="draw-card-header">
+                        <div class="draw-name">${drawName} <span class="draw-id">ID: ${dId || '---'}</span></div>
+                        <div class="draw-status ${tagClass}">${txt}</div>
+                    </div>
+                    <div class="draw-details">
+                        <div class="detail-box"><span>Paid Entry</span><strong>₹ ${txn.amount}</strong></div>
+                        <div class="detail-box"><span>Prize Pool</span><strong class="green-text">₹ ${drawPrize}</strong></div>
+                    </div>
+                    ${res}
+                </div>`;
+            });
+        }
+
+        // =====================================
+        // ADMIN FUNCTIONS
+        // =====================================
+        function switchAdminTab(event, tabId) {
+            document.querySelectorAll('.admin-tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.admin-nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            if(tabId === 'allRequestsSec') renderAdminRequests();
+            if(tabId === 'allUsersSec') renderAdminUsers();
+            if(tabId === 'allDrawsSec') renderAdminDraws();
+            if(tabId === 'declareWinnerSec') updateAdminDropdown();
+            if(tabId === 'settingsSec') renderAdminSettings();
+        }
+
+        function renderAdminRequests() {
+            const container = document.getElementById('admin-requests-container'); 
+            container.innerHTML = ''; 
+            
+            let pendingReqs = allTransactions.filter(r => r.status === 'Pending');
+            if (pendingReqs.length === 0) {
+                container.innerHTML = `<div class="empty-state">No pending requests.</div>`; 
+                return;
+            }
+            
+            pendingReqs.forEach(req => {
+                let payBtn = ''; 
+                if (req.type === 'Withdrawal' && req.upiId) {
+                    payBtn = `<a href="upi://pay?pa=${req.upiId}&pn=${encodeURIComponent(req.user)}&am=${req.amount}&cu=INR" class="btn-action" style="background:#3b82f6; color:white; text-decoration: none;"><i class="fas fa-paper-plane"></i> Pay</a>`;
+                }
+                
+                container.innerHTML += `
+                <div class="draw-card" style="text-align: left;">
+                    <div style="font-weight:800; font-size: 16px; margin-bottom: 5px;">${req.type} | <span style="color:#10b981;">₹${req.amount}</span></div>
+                    <div style="font-size:12px; color:#64748b; margin-bottom: 10px;">User: ${req.user} (ID: ${req.userId}) <br> Details: ${req.details} <br> Date: ${formatDateIST(req.dateTime)}</div>
+                    <div class="admin-action-group">
+                        ${payBtn}
+                        <button id="btnApprove_${req.id}" class="btn-action btn-approve" onclick="handleAdminReq('${req.id}', 'Approved', 'btnApprove_${req.id}')">Approve</button>
+                        <button id="btnReject_${req.id}" class="btn-action btn-reject" onclick="handleAdminReq('${req.id}', 'Rejected', 'btnReject_${req.id}')">Reject</button>
+                    </div>
+                </div>`;
+            });
+        }
+
+        function handleAdminReq(txnId, status, btnElement) {
+            showPrompt(`Enter Remark for ${status}`, remark => {
+                if (remark === null) return;
+                sendPost({action: 'adminTxnAction', txnId, status, remark}, res => { 
+                    showAlert('Transaction Processed!'); 
+                    setTimeout(fetchSheetData, 1000); 
+                }, btnElement);
+            });
+        }
+
+        function renderAdminUsers(filter='') {
+            const container = document.getElementById('admin-users-container'); 
+            container.innerHTML = '';
+            document.getElementById('total-users-count').innerText = allUsers.length;
+            
+            let filteredList = allUsers.filter(u => u.name.toLowerCase().includes(filter.toLowerCase()) || u.phone.includes(filter));
+            if (filteredList.length === 0) {
+                container.innerHTML = `<div class="empty-state">No users found.</div>`; 
+                return;
+            }
+            
+            filteredList.forEach(u => {
+                let depW = parseInt(u.depositWallet); if(isNaN(depW)) depW = parseInt(u.wallet) || 0;
+                let winW = parseInt(u.winningWallet) || 0;
+                
+                container.innerHTML += `
+                <div class="draw-card" style="text-align: left;">
+                    <div style="font-weight:700; font-size: 16px; color:#0f172a; margin-bottom: 5px;">${u.name} (ID: ${u.id})</div>
+                    <div style="font-size:13px; color: #475569; line-height: 1.6;">
+                        <strong>Ph:</strong> ${u.phone} <br>
+                        <strong>Win Wallet:</strong> ₹${winW} | <strong>Dep Wallet:</strong> ₹${depW}
+                    </div>
+                    <div class="admin-action-group">
+                        <button class="btn-action btn-edit" onclick="openUserModal('${u.id}')">Edit Details</button>
+                    </div>
+                </div>`;
+            });
+        }
+
+        function renderAdminDraws() {
+            const container = document.getElementById('admin-draws-container'); 
+            container.innerHTML = ''; 
+            
+            if(allDraws.length === 0) {
+                container.innerHTML = '<div class="empty-state">No draws created yet.</div>';
+                return;
+            }
+
+            let liveDraws = allDraws.filter(d => d.status === 'LIVE');
+            let compDraws = allDraws.filter(d => d.status === 'COMPLETED');
+            
+            let html = '<div class="section-title" style="font-size:15px; color:#10b981; margin-top:10px;"><i class="fas fa-play-circle"></i> LIVE DRAWS</div>';
+            if(liveDraws.length === 0) html += '<p style="font-size:13px; color:#64748b; margin-bottom:15px; text-align:left;">No Live Draws.</p>';
+            
+            liveDraws.forEach(draw => {
+                html += `
+                <div class="draw-card" style="text-align: left; border-left: 4px solid #10b981;">
+                    <div style="font-weight:700; font-size: 16px; margin-bottom: 5px;">${draw.name} <span class="draw-status" style="float:right;">LIVE</span></div>
+                    <div style="font-size:13px; margin-bottom: 10px; color:#475569;">ID: ${draw.id} | Fee: ₹${draw.fee} | Prize: ₹${draw.prize}</div>
+                    <div class="admin-action-group">
+                        <button class="btn-action btn-edit" onclick="openDrawModal('${draw.id}')">Edit</button>
+                        <button id="btnDelDraw_${draw.id}" class="btn-action btn-reject" onclick="deleteDraw('${draw.id}', 'btnDelDraw_${draw.id}')">Delete</button>
+                    </div>
+                </div>`;
+            });
+            
+            html += '<div class="section-title" style="font-size:15px; color:#64748b; margin-top:25px;"><i class="fas fa-check-circle"></i> COMPLETED DRAWS</div>';
+            if(compDraws.length === 0) html += '<p style="font-size:13px; color:#64748b; margin-bottom:15px; text-align:left;">No Completed Draws.</p>';
+            
+            compDraws.forEach(draw => {
+                html += `
+                <div class="draw-card" style="text-align: left; border-left: 4px solid #64748b; opacity:0.8;">
+                    <div style="font-weight:700; font-size: 16px; margin-bottom: 5px;">${draw.name} <span class="draw-status completed" style="float:right;">COMPLETED</span></div>
+                    <div style="font-size:13px; margin-bottom: 10px; color:#475569;">ID: ${draw.id} | Fee: ₹${draw.fee} | Prize: ₹${draw.prize}</div>
+                    <div class="admin-action-group">
+                        <button id="btnDelDraw_${draw.id}" class="btn-action btn-reject" onclick="deleteDraw('${draw.id}', 'btnDelDraw_${draw.id}')">Delete</button>
+                    </div>
+                </div>`;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function openDrawModal(drawId=null) {
+            editingDrawId = drawId; 
+            document.getElementById("drawModal").style.display = "flex";
+            if (drawId) { 
+                let d = allDraws.find(x => x.id == drawId); 
+                document.getElementById("drawName").value = d.name; 
+                document.getElementById("entryFee").value = d.fee; 
+                document.getElementById("prizePool").value = d.prize; 
+            } else { 
+                document.getElementById("drawName").value = ''; 
+                document.getElementById("entryFee").value = ''; 
+                document.getElementById("prizePool").value = ''; 
+            }
+        }
+
+        function saveDraw(btnId) {
+            const name = document.getElementById("drawName").value; 
+            const fee = document.getElementById("entryFee").value; 
+            const prize = document.getElementById("prizePool").value;
+            
+            if(!name || !fee || !prize) return showAlert("Please fill all details!");
+            
+            sendPost({action: 'saveDraw', drawId: editingDrawId, name, fee, prize}, res => { 
+                closeAllModals(); 
+                showAlert("Draw Saved Successfully!"); 
+                setTimeout(fetchSheetData, 1000); 
+            }, btnId);
+        }
+
+        function deleteDraw(drawId, btnElement) { 
+            showConfirm("Delete this Draw completely?", () => { 
+                sendPost({action: 'deleteDraw', drawId}, r => { setTimeout(fetchSheetData, 1000); }, btnElement); 
+            }); 
+        }
+        
+        // Joined Users Fetch Logic -> from Transactions
+        function loadJoinedUsers() {
+            const dId = document.getElementById("adminDrawSelect").value; 
+            const dDate = document.getElementById("adminDate").value; 
+            const con = document.getElementById("usersContainer"); 
+            con.innerHTML = '';
+            
+            if(!dId) return; 
+            
+            // Search all Entry Fee transactions matching Draw ID
+            let jTxns = allTransactions.filter(x => x.type === 'Draw Entry Fee' && x.details.includes(dId));
+            
+            // Filter by Admin Date if selected
+            if (dDate) {
+                jTxns = jTxns.filter(x => {
+                    let dStr = getLocalDateStr(x.dateTime);
+                    return dStr === dDate;
+                });
+            }
+            
+            if(jTxns.length == 0) {
+                con.innerHTML = '<p style="font-size: 13px; color: #ef4444; font-weight:600;">No users found for this draw/date.</p>';
+                return;
+            }
+            
+            // Ensure unique users (if multiple transactions found)
+            let uniqueUsers = {};
+            jTxns.forEach(t => {
+                if(!uniqueUsers[t.userId]) uniqueUsers[t.userId] = t.userName;
+            });
+            
+            for (let uId in uniqueUsers) {
+                con.innerHTML += `
+                <label class="user-checkbox">
+                    <input type="checkbox" class="winner-cb" value="${uId}">${uniqueUsers[uId]} (ID: ${uId})
+                </label>`; 
+            }
+        }
+
+        function updateAdminDropdown() {
+            const sel = document.getElementById("adminDrawSelect"); 
+            sel.innerHTML = '<option value="">-- Select Live Draw --</option>';
+            allDraws.filter(d => d.status == 'LIVE').forEach(d => { 
+                sel.innerHTML += `<option value="${d.id}">${d.name} (ID: ${d.id})</option>`; 
+            });
+            document.getElementById("usersContainer").innerHTML = '';
+        }
+
+        function declareWinners(btnId) {
+            const dId = document.getElementById("adminDrawSelect").value; 
+            if(!dId) return showAlert("Please select a live draw!");
+            
+            let wIds = Array.from(document.querySelectorAll('.winner-cb:checked')).map(cb => cb.value);
+            if(wIds.length == 0) return showAlert("Please select at least one winner!");
+            
+            let d = allDraws.find(x => x.id == dId); 
+            if(!d) return;
+            let wAmt = Math.floor(parseInt(d.prize) / wIds.length);
+            
+            sendPost({
+                action: 'declareWinner', drawId: dId, winners: wIds, 
+                winAmount: wAmt, dateTime: getCurrentDateTime()
+            }, res => {
+                showAlert("Prize Distributed! Draw auto-restarted with new ID."); 
+                setTimeout(fetchSheetData, 1500); 
+            }, btnId);
+        }
+
+        function renderAdminSettings() {
+            document.getElementById('setAdminUpi').value = appSettings.adminUpi; 
+            document.getElementById('setRefBonus').value = appSettings.refBonus;
+            document.getElementById('setWelcomeBonus').value = appSettings.welcomeBonus; 
+            document.getElementById('setMinDep').value = appSettings.minDeposit; 
+            document.getElementById('setMinWit').value = appSettings.minWithdraw;
+        }
+
+        function saveAdminSettings(btnId) {
+            let u = document.getElementById('setAdminUpi').value;
+            let r = document.getElementById('setRefBonus').value;
+            let w = document.getElementById('setWelcomeBonus').value;
+            let d = document.getElementById('setMinDep').value;
+            let wi = document.getElementById('setMinWit').value;
+            
+            sendPost({
+                action:'updateSettings', adminUpi: u, refBonus: r, 
+                welcomeBonus: w, minDeposit: d, minWithdraw: wi
+            }, res => { 
+                showAlert('App Settings Saved!'); 
+                setTimeout(fetchSheetData, 1000);
+            }, btnId);
+        }
+
+        function saveUser(btnId) {
+            const name = document.getElementById("editUserName").value; 
+            const phone = document.getElementById("editUserPhone").value;
+            if(!name || !phone) return showAlert("Please fill Name and Phone minimum!");
+            
+            const uEmail = document.getElementById("editUserEmail").value;
+            const uPass = document.getElementById("editUserPassword").value;
+            const uBank = document.getElementById("editUserBank").value;
+            const uUpi = document.getElementById("editUserUpi").value;
+
+            sendPost({
+                action: 'updateUser', userId: editingUserId, name: name, 
+                phone: phone, email: uEmail, password: uPass, 
+                bank: uBank, upi: uUpi
+            }, res => {
+                showAlert("User details updated successfully!"); 
+                closeAllModals(); 
+                setTimeout(fetchSheetData, 1000); 
+            }, btnId);
+        }
+
+        // =====================================
+        // VIEW ROUTING
+        // =====================================
+        function switchView(viewId, pushHistory = true, replace = false) {
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            
+            const hEl = document.getElementById('appHeader'); 
+            if (viewId === 'homeView') {
+                hEl.classList.add('show-header');
+            } else {
+                hEl.classList.remove('show-header');
+            }
+            
+            closeNav();
+            
+            if(viewId === 'homeView') renderLiveDraws();
+            if(viewId === 'myDrawsView') renderMyDraws();
+            if(viewId === 'transactionsView') renderUserTransactions();
+            if(viewId === 'myReferralView') renderMyReferrals();
+            if(viewId === 'adminView') { 
+                updateAdminDropdown(); renderAdminSettings(); renderAdminRequests(); renderAdminUsers(); renderAdminDraws(); 
+            }
+            if(viewId === 'depositView') { 
+                document.getElementById('depPageView1').style.display='block'; 
+                document.getElementById('depPageView2').style.display='none'; 
+                document.getElementById('depPageView3').style.display='none'; 
+                document.getElementById('pageDepAmount').value = '';
+            }
+            if(viewId === 'walletView') updateWalletUI();
+
+            if (pushHistory) { 
+                if (replace) {
+                    history.replaceState({ view: viewId }, "", "#" + viewId);
+                } else {
+                    history.pushState({ view: viewId }, "", "#" + viewId);
+                }
+            }
+        }
+
+        window.addEventListener('popstate', e => {
+            if (e.state && e.state.view) {
+                if (['loginView','registerView','forgotView'].includes(e.state.view)) {
+                    if (currentUser) {
+                        switchView('homeView', false, true);
+                    } else {
+                        switchView(e.state.view, false);
+                    }
+                } else {
+                    switchView(e.state.view, false);
+                }
+            } else {
+                switchView(currentUser ? 'homeView' : 'loginView', false);
+            }
+        });
+
+        // Initialize App on Load
+        window.onload = function() {
+            setWalletLoading(); 
+            fetchSheetData();
+            
+            const hash = window.location.hash;
+            if (hash.includes('ref=')) { 
+                let m = hash.match(/ref=([^&]+)/); 
+                if (m && m[1]) document.getElementById('regReferral').value = m[1]; 
+            }
+            
+            setTimeout(() => {
+                if (hash.includes('homeView') && currentUser) {
+                    switchView('homeView', false, true);
+                } else if (hash.includes('registerView') || (hash.includes('ref=') && !currentUser)) {
+                    switchView('registerView', false, true);
+                } else {
+                    switchView('loginView', false, true);
+                }
+            }, 800); 
+        };
+    </script>
+</body>
 </html>
