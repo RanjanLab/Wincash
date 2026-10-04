@@ -70,20 +70,20 @@
         .wallet-section:active { transform: scale(0.95); }
         .wallet-section i { margin-right: 6px; font-size: 16px; }
 
-        /* Announcement Marquee Banner */
+        /* Professional Announcement Marquee Banner */
         .announcement-container {
-            display: flex; align-items: center; background: linear-gradient(90deg, #1e293b, #0f172a);
-            color: #fbbf24; padding: 10px 15px; border-radius: 12px; margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden;
+            display: flex; align-items: center; background: linear-gradient(90deg, #eff6ff, #dbeafe);
+            color: #1e293b; padding: 10px 15px; border-radius: 12px; margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #bfdbfe; overflow: hidden;
         }
         .announcement-icon {
-            font-size: 18px; color: #ef4444; margin-right: 12px; z-index: 2; 
-            background: #0f172a; padding-right: 10px; animation: blink 1.5s infinite;
+            font-size: 18px; color: #3b82f6; margin-right: 12px; z-index: 2; 
+            background: transparent; padding-right: 5px; animation: blink 1.5s infinite;
         }
         .marquee-wrapper { flex: 1; overflow: hidden; position: relative; white-space: nowrap; }
         .marquee-text {
-            display: inline-block; padding-left: 100%; font-size: 13px; font-weight: 600;
-            animation: scrollText 25s linear infinite; /* Slow scrolling speed */
+            display: inline-block; padding-left: 100%; font-size: 13px; font-weight: 700; color: #334155;
+            animation: scrollText 25s linear infinite;
         }
         @keyframes scrollText { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
@@ -151,9 +151,9 @@
         /* Draw Cards */
         .draw-card { background: #ffffff; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0; transition: 0.2s; }
         .draw-card:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); }
-        .draw-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px dashed #f1f5f9; padding-bottom: 12px; margin-bottom: 15px; }
+        .draw-card-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px dashed #f1f5f9; padding-bottom: 12px; margin-bottom: 15px; }
         .draw-name { font-size: 18px; font-weight: 800; color: #0f172a; text-align: left; }
-        .draw-id { display: block; font-size: 13px; color: #64748b; font-weight: 600; margin-top: 2px; text-align: left; }
+        .draw-id { display: block; font-size: 12px; color: #64748b; font-weight: 600; margin-top: 4px; text-align: left; }
         .draw-status { background: #ef4444; color: white; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
         .draw-status.completed { background: #64748b; }
         .draw-status.joined-tag { background: #3b82f6; }
@@ -434,7 +434,7 @@
         <!-- HOME -->
         <div id="homeView" class="view-section">
             
-            <!-- Announcement Marquee Banner -->
+            <!-- Professional Announcement Marquee Banner -->
             <div class="announcement-container">
                 <i class="fas fa-bullhorn announcement-icon"></i>
                 <div class="marquee-wrapper">
@@ -459,6 +459,7 @@
             </div>
             
             <div class="section-title"><i class="fas fa-circle"></i> LIVE DRAWS</div>
+            <!-- Draws Container -->
             <div id="live-draws-container"></div>
         </div>
 
@@ -467,6 +468,7 @@
             <div class="page-back-header" onclick="switchView('homeView')">
                 <i class="fas fa-arrow-left"></i> My Draws
             </div>
+            <!-- My Draws Container -->
             <div id="my-draws-container"></div>
         </div>
 
@@ -503,22 +505,30 @@
                     <label>Enter Deposit Amount (₹)</label>
                     <input type="number" id="pageDepAmount" placeholder="e.g. 500">
                 </div>
-                <button id="btnPayNow" class="submit-btn green" onclick="triggerDirectUpiPayment()">PAY NOW</button>
+                <button id="btnPayNow" class="submit-btn green" onclick="goToPaymentPage()">NEXT STEP</button>
             </div>
 
-            <!-- UPDATED DEPOSIT PAGE VIEW 2 (WITH COPY UPI FAILSAFE) -->
+            <!-- Page 2: QR Code and UTR Submission -->
             <div id="depPageView2" class="admin-form" style="display: none; text-align: center;">
-                <p style="font-size:13px; color:#ef4444; margin-bottom:15px; font-weight: 600;">If payment app didn't open automatically, please pay manually to this UPI ID:</p>
+                <p style="font-size:14px; font-weight:800; color:#1e293b; margin-bottom: 10px;">Pay ₹<span id="payAmountDisplay">0</span></p>
                 
-                <div style="background: #f1f5f9; padding: 12px; border-radius: 10px; font-weight: 800; color: #3b82f6; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px dashed #cbd5e1;">
-                    <span id="displayUpiId" style="font-size: 14px;">---</span>
-                    <button onclick="navigator.clipboard.writeText(appSettings.adminUpi); alert('UPI ID Copied Successfully!');" style="background:#6366f1; color: white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:700; font-size:11px;">COPY</button>
+                <!-- QR Code Block with Loading Spinner -->
+                <div style="background:#f8fafc; padding:15px; border-radius:12px; display:inline-block; margin-bottom:10px; border:1px solid #cbd5e1; position:relative;">
+                    <div id="qrSpinner" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);"><i class="fas fa-spinner fa-spin" style="font-size:24px; color:#3b82f6;"></i></div>
+                    <img id="paymentQRCode" src="" alt="UPI QR Code" style="width: 150px; height: 150px; position:relative; z-index:2; opacity:0;" onload="document.getElementById('qrSpinner').style.display='none'; this.style.opacity='1';">
+                    <p style="font-size:11px; color:#64748b; margin-top:8px; font-weight:600;">Scan QR Code to Pay</p>
                 </div>
+                
+                <p style="font-size:12px; color:#475569; margin-bottom:15px; font-weight:600;">
+                    UPI ID: <span id="displayUpiId" style="color:#3b82f6;">---</span> 
+                    <i class="fas fa-copy" style="cursor:pointer; color:#6366f1; margin-left:5px;" onclick="navigator.clipboard.writeText(appSettings.adminUpi); alert('UPI ID Copied!');"></i>
+                </p>
 
-                <p style="font-size:13px; color:#475569; margin-bottom:20px;">After successful UPI payment, please enter your UTR / Reference Transaction ID below:</p>
+                <hr style="border:0; border-top:1px dashed #cbd5e1; margin-bottom:15px;">
+
+                <p style="font-size:13px; color:#475569; margin-bottom:15px; font-weight:600;">Enter 12-digit UTR / Reference ID after payment:</p>
                 <div class="input-group">
-                    <label>UTR / Reference Transaction ID</label>
-                    <input type="text" id="pageDepUtr" placeholder="Enter 12-digit UTR Number">
+                    <input type="number" id="pageDepUtr" placeholder="Enter 12-digit UTR Number" style="text-align:center; font-weight:700; letter-spacing:1px; padding: 15px; font-size: 16px;">
                 </div>
                 <button id="btnDepSubmit" class="submit-btn green" onclick="submitPageDeposit('btnDepSubmit')">SUBMIT PAYMENT</button>
             </div>
@@ -578,6 +588,7 @@
             <div class="page-back-header" onclick="switchView('homeView')">
                 <i class="fas fa-arrow-left"></i> Transactions History
             </div>
+            <!-- Container -->
             <div id="user-transactions-container"></div>
         </div>
 
@@ -781,11 +792,23 @@
             navigator.serviceWorker.register(swURL).catch(console.error);
         }
 
+        // Hide banner permanently if already installed (standalone mode)
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            document.getElementById('installAppBanner').style.display = 'none';
+        }
+
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            document.getElementById('installAppBanner').classList.add('show-banner');
+            // Show banner only if not installed
+            if (!window.matchMedia('(display-mode: standalone)').matches) {
+                document.getElementById('installAppBanner').classList.add('show-banner');
+            }
+        });
+        
+        window.addEventListener('appinstalled', () => {
+            document.getElementById('installAppBanner').style.display = 'none';
         });
 
         function closeInstallBanner() {
@@ -871,35 +894,33 @@
             return Math.floor(1000000000 + Math.random() * 9000000000).toString(); 
         } 
         
-        function getCurrentDateTime() { 
-            const options = { 
-                timeZone: 'Asia/Kolkata', 
-                day: '2-digit', month: 'short', year: 'numeric', 
-                hour: '2-digit', minute: '2-digit', hour12: true 
-            };
-            return new Intl.DateTimeFormat('en-IN', options).format(new Date()); 
+        // =====================================
+        // ACCURATE DATE & TIME SYSTEM
+        // =====================================
+        function getCurrentDateTime() {
+            return new Date().toISOString(); 
         }
-        
+
         function formatDateIST(dateStr) {
             if (!dateStr) return '---';
             try {
                 let d = new Date(dateStr);
                 if (isNaN(d.getTime())) return dateStr; 
-                return new Intl.DateTimeFormat('en-IN', {
+                return d.toLocaleString('en-IN', {
                     timeZone: 'Asia/Kolkata',
                     day: '2-digit', month: 'short', year: 'numeric',
                     hour: '2-digit', minute: '2-digit', hour12: true
-                }).format(d);
+                });
             } catch(e) { return dateStr; }
         }
         
         function getLocalDateStr(dateStr) {
             try {
                 let d = new Date(dateStr);
-                if(isNaN(d)) return null;
-                let year = new Intl.DateTimeFormat('en-IN', { year: 'numeric', timeZone: 'Asia/Kolkata' }).format(d);
-                let month = new Intl.DateTimeFormat('en-IN', { month: '2-digit', timeZone: 'Asia/Kolkata' }).format(d);
-                let day = new Intl.DateTimeFormat('en-IN', { day: '2-digit', timeZone: 'Asia/Kolkata' }).format(d);
+                if(isNaN(d.getTime())) return null; 
+                let year = d.toLocaleString('en-IN', { year: 'numeric', timeZone: 'Asia/Kolkata' });
+                let month = d.toLocaleString('en-IN', { month: '2-digit', timeZone: 'Asia/Kolkata' });
+                let day = d.toLocaleString('en-IN', { day: '2-digit', timeZone: 'Asia/Kolkata' });
                 return `${year}-${month}-${day}`;
             } catch(e) { return null; }
         }
@@ -915,6 +936,9 @@
         let depositAmountTemp = 0; 
         let editingDrawId = null; 
         let editingUserId = null;
+        
+        // New State for Data Fetching Check
+        let isDataFetching = true;
 
         function openNav() { document.getElementById("mySidebar").style.left = "0"; document.getElementById("overlay").style.display = "block"; }
         function closeNav() { document.getElementById("mySidebar").style.left = "-280px"; document.getElementById("overlay").style.display = "none"; }
@@ -1040,9 +1064,15 @@
         function fetchSheetData() {
             if (SCRIPT_URL === 'YOUR_WEB_APP_URL_HERE') return;
             
+            isDataFetching = true; // Mark as fetching
+            if (document.getElementById('homeView').classList.contains('active')) renderLiveDraws();
+            if (document.getElementById('myDrawsView').classList.contains('active')) renderMyDraws();
+            if (document.getElementById('transactionsView').classList.contains('active')) renderUserTransactions();
+
             fetch(SCRIPT_URL + '?action=getData')
             .then(r => r.text())
             .then(text => {
+                isDataFetching = false; // Fetch complete
                 try {
                     let data = JSON.parse(text);
                     if(data.status === 'success') {
@@ -1073,6 +1103,7 @@
                             updateSidebar();
                         }
                         
+                        // Re-render UI after data load
                         if (document.getElementById('homeView').classList.contains('active')) renderLiveDraws();
                         if (document.getElementById('myDrawsView').classList.contains('active')) renderMyDraws();
                         if (document.getElementById('transactionsView').classList.contains('active')) renderUserTransactions();
@@ -1083,8 +1114,14 @@
                             renderAdminDraws(); 
                         }
                     }
-                } catch(e) {}
-            }).catch(e => {});
+                } catch(e) {
+                    console.error("Data processing failed", e);
+                }
+            }).catch(e => {
+                isDataFetching = false;
+                if (document.getElementById('homeView').classList.contains('active')) renderLiveDraws();
+                if (document.getElementById('myDrawsView').classList.contains('active')) renderMyDraws();
+            });
         }
 
         // =====================================
@@ -1202,32 +1239,36 @@
         }
 
         // =====================================
-        // UPDATED PAYMENT FLOW LOGIC
+        // QR-CODE DEPOSIT SYSTEM (WITH SPINNER)
         // =====================================
-        function triggerDirectUpiPayment() {
+        function goToPaymentPage() {
             depositAmountTemp = parseInt(document.getElementById('pageDepAmount').value);
             if (!depositAmountTemp || depositAmountTemp < appSettings.minDeposit) {
                 return showAlert(`Minimum deposit amount is ₹${appSettings.minDeposit}`);
             }
             
-            // Clean UPI ID and Format strictly as Person-to-Person (P2P) to bypass merchant security blocks
             const upiId = appSettings.adminUpi.trim();
-            const payeeName = "User"; // Removing 'App' keeps it strictly P2P
+            const payeeName = "WinCash"; 
             
-            const upiUrl = `upi://pay?pa=${upiId}&pn=${payeeName}&am=${depositAmountTemp}&cu=INR`;
+            // Standard UPI String
+            const upiUrl = `upi://pay?pa=${upiId}&pn=${payeeName}&am=${depositAmountTemp}&cu=INR&tn=Deposit`;
             
-            // Try to open the payment app automatically
-            window.location.href = upiUrl;
-
-            // Move to step 2 with Copy-Paste backup option
+            // Show Spinner & Hide Image temporarily
+            document.getElementById('qrSpinner').style.display = 'block';
+            document.getElementById('paymentQRCode').style.opacity = '0';
+            
+            // Generate QR Code dynamically
+            document.getElementById('paymentQRCode').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiUrl)}`;
+            
+            document.getElementById('payAmountDisplay').innerText = depositAmountTemp;
             document.getElementById('displayUpiId').innerText = upiId;
+            
             document.getElementById('depPageView1').style.display = 'none'; 
-            document.getElementById('pageDepUtr').value = ''; 
             document.getElementById('depPageView2').style.display = 'block';
         }
 
         function submitPageDeposit(btnId) {
-            let utr = document.getElementById('pageDepUtr').value;
+            let utr = document.getElementById('pageDepUtr').value.trim();
             if (!utr || utr.length < 6) return showAlert('Enter valid UTR or Ref Number!');
             
             sendPost({
@@ -1426,7 +1467,13 @@
 
         function renderUserTransactions() {
             const container = document.getElementById('user-transactions-container'); 
+            
+            if (isDataFetching) {
+                container.innerHTML = `<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading... Please Wait</div>`;
+                return;
+            }
             container.innerHTML = '';
+            
             if (!currentUser) return;
             
             const myReqs = allTransactions.filter(r => r.userId == currentUser.id);
@@ -1437,10 +1484,18 @@
             
             myReqs.forEach(req => {
                 let sc = req.status === 'Pending' ? '#f59e0b' : (req.status === 'Approved' ? '#10b981' : '#ef4444');
+                let displayType = req.type;
+                
+                // RED COLOR FOR DRAW PAID
+                if(req.type === 'Draw Entry Fee') {
+                    displayType = 'Paid (Draw Entry fee)'; // UPDATED TEXT HERE
+                    sc = '#ef4444'; 
+                }
+
                 container.innerHTML += `
                 <div class="draw-card" style="border-left:4px solid ${sc}; padding:15px; text-align: left; margin-bottom: 12px;">
                     <div style="display:flex; justify-content:space-between; margin-bottom:5px; align-items: center;">
-                        <strong style="font-size: 15px;">${req.type}</strong>
+                        <strong style="font-size: 15px; color:${sc === '#ef4444' ? '#ef4444' : '#1e293b'};">${displayType}</strong>
                         <span style="background:${sc}; color:white; padding: 4px 10px; border-radius: 12px; font-weight:700; font-size:10px;">${req.status}</span>
                     </div>
                     <div style="font-size:12px; color:#64748b; margin-bottom:8px;">
@@ -1459,6 +1514,11 @@
         // =====================================
         function renderLiveDraws() {
             const container = document.getElementById('live-draws-container'); 
+            
+            if (isDataFetching) {
+                container.innerHTML = `<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading Draws... Please Wait</div>`;
+                return;
+            }
             container.innerHTML = ''; 
             
             const liveDraws = allDraws.filter(d => d.status === 'LIVE');
@@ -1526,6 +1586,11 @@
 
         function renderMyDraws() {
             const container = document.getElementById('my-draws-container'); 
+            
+            if (isDataFetching) {
+                container.innerHTML = `<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading... Please Wait</div>`;
+                return;
+            }
             container.innerHTML = ''; 
             
             let myJoinedTxns = allTransactions.filter(t => t.userId == currentUser.id && t.type === 'Draw Entry Fee');
@@ -1557,10 +1622,14 @@
                     }
                 }
                 
+                // DATE & TIME STRICTLY BELOW DRAW ID
                 container.innerHTML += `
                 <div class="draw-card">
                     <div class="draw-card-header">
-                        <div class="draw-name">${drawName} <span class="draw-id">ID: ${dId || '---'}</span></div>
+                        <div class="draw-name">${drawName} 
+                            <span class="draw-id">ID: ${dId || '---'}</span>
+                            <span style="display: block; font-size: 11px; color: #94a3b8; font-weight: 500; margin-top: 2px;"><i class="far fa-clock"></i> ${formatDateIST(txn.dateTime)}</span>
+                        </div>
                         <div class="draw-status ${tagClass}">${txt}</div>
                     </div>
                     <div class="draw-details">
@@ -1604,10 +1673,17 @@
                     payBtn = `<a href="upi://pay?pa=${req.upiId}&pn=${encodeURIComponent(req.user)}&am=${req.amount}&cu=INR" class="btn-action" style="background:#3b82f6; color:white; text-decoration: none;"><i class="fas fa-paper-plane"></i> Pay</a>`;
                 }
                 
+                // FIX FOR UNDEFINED USERNAME
+                let uName = req.user || req.userName;
+                if (!uName || uName === 'undefined') {
+                    let foundU = allUsers.find(u => u.id == req.userId);
+                    uName = foundU ? foundU.name : 'Unknown User';
+                }
+                
                 container.innerHTML += `
                 <div class="draw-card" style="text-align: left;">
                     <div style="font-weight:800; font-size: 16px; margin-bottom: 5px;">${req.type} | <span style="color:#10b981;">₹${req.amount}</span></div>
-                    <div style="font-size:12px; color:#64748b; margin-bottom: 10px;">User: ${req.user} (ID: ${req.userId}) <br> Details: ${req.details} <br> Date: ${formatDateIST(req.dateTime)}</div>
+                    <div style="font-size:12px; color:#64748b; margin-bottom: 10px;">User: ${uName} (ID: ${req.userId}) <br> Details: ${req.details} <br> Date: ${formatDateIST(req.dateTime)}</div>
                     <div class="admin-action-group">
                         ${payBtn}
                         <button id="btnApprove_${req.id}" class="btn-action btn-approve" onclick="handleAdminReq('${req.id}', 'Approved', 'btnApprove_${req.id}')">Approve</button>
@@ -1863,6 +1939,17 @@
             
             closeNav();
             
+            // Re-inject loading states before data fills in (makes the UI feel snappy)
+            if(viewId === 'homeView' && allDraws.length === 0) {
+                document.getElementById('live-draws-container').innerHTML = '<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading Draws... Please Wait</div>';
+            }
+            if(viewId === 'myDrawsView' && allTransactions.length === 0) {
+                document.getElementById('my-draws-container').innerHTML = '<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading... Please Wait</div>';
+            }
+            if(viewId === 'transactionsView' && allTransactions.length === 0) {
+                document.getElementById('user-transactions-container').innerHTML = '<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading... Please Wait</div>';
+            }
+            
             if(viewId === 'homeView') renderLiveDraws();
             if(viewId === 'myDrawsView') renderMyDraws();
             if(viewId === 'transactionsView') renderUserTransactions();
@@ -1912,6 +1999,12 @@
             }
             
             setWalletLoading(); 
+            
+            // Show loaders properly before fetching data
+            if(currentUser) {
+                document.getElementById('live-draws-container').innerHTML = '<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading Draws... Please Wait</div>';
+            }
+
             fetchSheetData();
             loadAnnouncement();
             
