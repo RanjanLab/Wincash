@@ -506,7 +506,15 @@
                 <button id="btnPayNow" class="submit-btn green" onclick="triggerDirectUpiPayment()">PAY NOW</button>
             </div>
 
+            <!-- UPDATED DEPOSIT PAGE VIEW 2 (WITH COPY UPI FAILSAFE) -->
             <div id="depPageView2" class="admin-form" style="display: none; text-align: center;">
+                <p style="font-size:13px; color:#ef4444; margin-bottom:15px; font-weight: 600;">If payment app didn't open automatically, please pay manually to this UPI ID:</p>
+                
+                <div style="background: #f1f5f9; padding: 12px; border-radius: 10px; font-weight: 800; color: #3b82f6; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px dashed #cbd5e1;">
+                    <span id="displayUpiId" style="font-size: 14px;">---</span>
+                    <button onclick="navigator.clipboard.writeText(appSettings.adminUpi); alert('UPI ID Copied Successfully!');" style="background:#6366f1; color: white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:700; font-size:11px;">COPY</button>
+                </div>
+
                 <p style="font-size:13px; color:#475569; margin-bottom:20px;">After successful UPI payment, please enter your UTR / Reference Transaction ID below:</p>
                 <div class="input-group">
                     <label>UTR / Reference Transaction ID</label>
@@ -1194,7 +1202,7 @@
         }
 
         // =====================================
-        // WALLET ACTIONS
+        // UPDATED PAYMENT FLOW LOGIC
         // =====================================
         function triggerDirectUpiPayment() {
             depositAmountTemp = parseInt(document.getElementById('pageDepAmount').value);
@@ -1202,9 +1210,17 @@
                 return showAlert(`Minimum deposit amount is ₹${appSettings.minDeposit}`);
             }
             
-            const upiUrl = `upi://pay?pa=${appSettings.adminUpi}&pn=WinCashApp&am=${depositAmountTemp}&cu=INR`;
+            // Clean UPI ID and Format strictly as Person-to-Person (P2P) to bypass merchant security blocks
+            const upiId = appSettings.adminUpi.trim();
+            const payeeName = "User"; // Removing 'App' keeps it strictly P2P
+            
+            const upiUrl = `upi://pay?pa=${upiId}&pn=${payeeName}&am=${depositAmountTemp}&cu=INR`;
+            
+            // Try to open the payment app automatically
             window.location.href = upiUrl;
 
+            // Move to step 2 with Copy-Paste backup option
+            document.getElementById('displayUpiId').innerText = upiId;
             document.getElementById('depPageView1').style.display = 'none'; 
             document.getElementById('pageDepUtr').value = ''; 
             document.getElementById('depPageView2').style.display = 'block';
