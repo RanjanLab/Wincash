@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WinCash - Try Luck Get Real Cash</title>
+    <title>WinCash - Premium Gaming App</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
@@ -203,8 +203,8 @@
         .fab-btn { position: fixed; bottom: 25px; right: 25px; background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; cursor: pointer; z-index: 100; box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4); }
 
         /* Modals & Checkboxes */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
-        .modal-box { background: white; width: 100%; max-width: 400px; padding: 25px; border-radius: 20px; text-align: center; position: relative; max-height: 90vh; overflow-y: auto; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; }
+        .modal-box { background: white; width: 100%; max-width: 400px; padding: 25px; border-radius: 20px; text-align: center; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         .modal-close { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #64748b; }
         .user-checkbox { display: flex; align-items: center; padding: 12px 15px; background: #f8fafc; margin-bottom: 8px; border-radius: 10px; border: 1px solid #e2e8f0; cursor: pointer; text-align: left; }
         .user-checkbox input { width: 20px; height: 20px; margin-right: 12px; accent-color: #10b981; }
@@ -267,7 +267,7 @@
     </div>
     <div id="overlay" class="overlay" onclick="closeNav()"></div>
 
-    <!-- Modals -->
+    <!-- General Modals -->
     <div id="adminLoginModal" class="modal-overlay" style="z-index:3000;">
         <div class="modal-box">
             <span class="modal-close" onclick="document.getElementById('adminLoginModal').style.display='none'">&times;</span>
@@ -304,6 +304,51 @@
             <div style="display:flex; gap:10px;">
                 <button class="submit-btn" style="margin:0; background:#ef4444;" id="promptNoBtn">CANCEL</button>
                 <button id="promptYesBtn" class="submit-btn green" style="margin:0;">SUBMIT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. DEPOSIT ABANDONMENT MODAL (UPDATED - NO WHATSAPP) -->
+    <div id="depositCancelModal" class="modal-overlay" style="z-index:3000;">
+        <div class="modal-box" style="padding:25px;">
+            <i class="fas fa-exclamation-triangle" style="font-size: 45px; color: #f59e0b; margin-bottom:15px;"></i>
+            <h3 style="margin-bottom:10px; font-size:18px; color:#1e293b; font-weight:800;">Cancel Deposit?</h3>
+            <p style="font-size:13px; color:#64748b; margin-bottom:20px;">Are you sure you want to go back without entering UTR? This transaction will be marked as Failed.</p>
+            <div style="display:flex; gap:10px;">
+                <button class="submit-btn" style="margin:0; background:#ef4444; flex:1;" onclick="confirmCancelDeposit()">YES</button>
+                <button class="submit-btn green" style="margin:0; flex:1;" onclick="document.getElementById('depositCancelModal').style.display='none'">NO</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. TRANSACTION DETAILS MODAL (Professional Aligned Layout & Conditional WhatsApp) -->
+    <div id="txnDetailsModal" class="modal-overlay" style="z-index:3000;">
+        <div class="modal-box" style="padding:25px; text-align: left;">
+            <span class="modal-close" onclick="document.getElementById('txnDetailsModal').style.display='none'">&times;</span>
+            <div class="section-title" style="margin-bottom:15px; justify-content: center;"><i class="fas fa-receipt"></i> Transaction Details</div>
+            
+            <div style="background:#f8fafc; padding:10px 15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:15px; font-size:13px; color:#475569;">
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px dashed #cbd5e1;">
+                    <strong>Txn ID:</strong> <span id="dtlTxnId" style="color:#0f172a; font-weight:700; text-align:right;"></span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px dashed #cbd5e1;">
+                    <strong>Amount:</strong> <span id="dtlAmt" style="color:#0f172a; font-weight:800; text-align:right;"></span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px dashed #cbd5e1;">
+                    <strong>Status:</strong> <span id="dtlStatus" style="font-weight:800; text-align:right; color:white; padding: 4px 10px; border-radius: 12px; font-size: 11px;"></span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px dashed #cbd5e1;">
+                    <strong>Date:</strong> <span id="dtlDate" style="color:#0f172a; font-weight:600; text-align:right;"></span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0;">
+                    <strong>Details:</strong> <span id="dtlDesc" style="color:#1e293b; font-weight:600; text-align:right; max-width: 60%; word-break: break-word;"></span>
+                </div>
+            </div>
+            
+            <!-- Conditional WhatsApp Block -->
+            <div id="dtlWaSupportBlock" style="display:none;">
+                <p style="font-size:12px; color:#64748b; margin-bottom:12px; text-align:center; font-weight:600;">Need help verifying this payment?</p>
+                <a id="dtlWaLink" href="#" target="_blank" class="submit-btn" style="margin:0; background:#25d366; color:white; text-decoration:none;"><i class="fab fa-whatsapp"></i> VERIFY ON WHATSAPP</a>
             </div>
         </div>
     </div>
@@ -792,7 +837,6 @@
             navigator.serviceWorker.register(swURL).catch(console.error);
         }
 
-        // Hide banner permanently if already installed (standalone mode)
         if (window.matchMedia('(display-mode: standalone)').matches) {
             document.getElementById('installAppBanner').style.display = 'none';
         }
@@ -801,7 +845,6 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            // Show banner only if not installed
             if (!window.matchMedia('(display-mode: standalone)').matches) {
                 document.getElementById('installAppBanner').classList.add('show-banner');
             }
@@ -894,9 +937,6 @@
             return Math.floor(1000000000 + Math.random() * 9000000000).toString(); 
         } 
         
-        // =====================================
-        // ACCURATE DATE & TIME SYSTEM
-        // =====================================
         function getCurrentDateTime() {
             return new Date().toISOString(); 
         }
@@ -937,7 +977,6 @@
         let editingDrawId = null; 
         let editingUserId = null;
         
-        // New State for Data Fetching Check
         let isDataFetching = true;
 
         function openNav() { document.getElementById("mySidebar").style.left = "0"; document.getElementById("overlay").style.display = "block"; }
@@ -1064,7 +1103,7 @@
         function fetchSheetData() {
             if (SCRIPT_URL === 'YOUR_WEB_APP_URL_HERE') return;
             
-            isDataFetching = true; // Mark as fetching
+            isDataFetching = true; 
             if (document.getElementById('homeView').classList.contains('active')) renderLiveDraws();
             if (document.getElementById('myDrawsView').classList.contains('active')) renderMyDraws();
             if (document.getElementById('transactionsView').classList.contains('active')) renderUserTransactions();
@@ -1072,7 +1111,7 @@
             fetch(SCRIPT_URL + '?action=getData')
             .then(r => r.text())
             .then(text => {
-                isDataFetching = false; // Fetch complete
+                isDataFetching = false; 
                 try {
                     let data = JSON.parse(text);
                     if(data.status === 'success') {
@@ -1103,7 +1142,6 @@
                             updateSidebar();
                         }
                         
-                        // Re-render UI after data load
                         if (document.getElementById('homeView').classList.contains('active')) renderLiveDraws();
                         if (document.getElementById('myDrawsView').classList.contains('active')) renderMyDraws();
                         if (document.getElementById('transactionsView').classList.contains('active')) renderUserTransactions();
@@ -1125,15 +1163,13 @@
         }
 
         // =====================================
-        // ANNOUNCEMENT LOGIC (Frontend Only)
+        // ANNOUNCEMENT LOGIC
         // =====================================
         function loadAnnouncement() {
             let ann = localStorage.getItem('winCashAnnouncement');
-            
             if (!ann || ann.trim() === '') {
                 ann = "🎉 Welcome to WinCash! Play live draws and win real cash daily. Instant withdrawals available. Invite your friends to earn ₹50 bonus! 💸 Play & Win BIG!";
             }
-            
             document.getElementById('announcement-text').innerText = ann;
             
             if(document.getElementById('setAnnouncement')) {
@@ -1239,7 +1275,7 @@
         }
 
         // =====================================
-        // QR-CODE DEPOSIT SYSTEM (WITH SPINNER)
+        // DEPOSIT SYSTEM WITH CANCELLATION LOGIC
         // =====================================
         function goToPaymentPage() {
             depositAmountTemp = parseInt(document.getElementById('pageDepAmount').value);
@@ -1250,14 +1286,11 @@
             const upiId = appSettings.adminUpi.trim();
             const payeeName = "WinCash"; 
             
-            // Standard UPI String
             const upiUrl = `upi://pay?pa=${upiId}&pn=${payeeName}&am=${depositAmountTemp}&cu=INR&tn=Deposit`;
             
-            // Show Spinner & Hide Image temporarily
             document.getElementById('qrSpinner').style.display = 'block';
             document.getElementById('paymentQRCode').style.opacity = '0';
             
-            // Generate QR Code dynamically
             document.getElementById('paymentQRCode').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiUrl)}`;
             
             document.getElementById('payAmountDisplay').innerText = depositAmountTemp;
@@ -1265,6 +1298,28 @@
             
             document.getElementById('depPageView1').style.display = 'none'; 
             document.getElementById('depPageView2').style.display = 'block';
+        }
+
+        function confirmCancelDeposit() {
+            document.getElementById('depositCancelModal').style.display = 'none';
+            document.getElementById('depPageView2').style.display = 'none'; 
+            
+            let tId = generateTxnID();
+            let failedTxn = {
+                id: tId, type: 'Deposit', userId: currentUser.id, userName: currentUser.name,
+                amount: depositAmountTemp, details: 'Cancelled Without UTR', dateTime: getCurrentDateTime(), status: 'Failed'
+            };
+            
+            allTransactions.unshift(failedTxn);
+            
+            sendPost({
+                action: 'addTransaction', id: tId, type: 'Deposit', 
+                user: currentUser.name, userId: currentUser.id, 
+                amount: depositAmountTemp, details: `Cancelled Without UTR`, 
+                upiId: '', dateTime: getCurrentDateTime(), status: 'Failed'
+            }, r => { setTimeout(fetchSheetData, 1000); });
+            
+            switchView('homeView');
         }
 
         function submitPageDeposit(btnId) {
@@ -1283,7 +1338,16 @@
             }, btnId);
         }
 
+        // =====================================
+        // WITHDRAW FUNCTION (WITH BANK CHECK)
+        // =====================================
         function submitWithdraw(btnId) {
+            if (!currentUser.bank && !currentUser.upi) {
+                showAlert('Please add your Bank Details or UPI ID first to withdraw cash!');
+                switchView('bankView');
+                return;
+            }
+
             let amt = parseInt(document.getElementById('witAmount').value);
             if (!amt || amt < appSettings.minWithdraw) return showAlert(`Minimum withdrawal is ₹${appSettings.minWithdraw}`);
             
@@ -1303,9 +1367,49 @@
             }, btnId);
         }
 
+        // =====================================
+        // SHOW TXN DETAILS MODAL
+        // =====================================
+        function showTxnDetails(txnId) {
+            let req = allTransactions.find(t => t.id == txnId);
+            if(!req) return;
+            
+            let actualStatus = req.status;
+            if(req.details.includes('Cancelled Without UTR')) actualStatus = 'Failed';
+
+            // Determine Status Color for Modal
+            let statColor = '#3b82f6';
+            if(actualStatus === 'Approved') statColor = '#10b981';
+            else if (actualStatus === 'Pending') statColor = '#f59e0b'; 
+            else if (actualStatus === 'Rejected' || actualStatus === 'Failed') statColor = '#ef4444';
+
+            document.getElementById('dtlTxnId').innerText = req.id;
+            document.getElementById('dtlAmt').innerText = req.amount ? '₹' + req.amount : '---';
+            
+            let statEl = document.getElementById('dtlStatus');
+            statEl.innerText = actualStatus;
+            statEl.style.backgroundColor = statColor;
+            
+            document.getElementById('dtlDate').innerText = formatDateIST(req.dateTime);
+            document.getElementById('dtlDesc').innerText = req.details;
+            
+            let waBlock = document.getElementById('dtlWaSupportBlock');
+            if (actualStatus === 'Failed' || actualStatus === 'Rejected') {
+                waBlock.style.display = 'block';
+                let msg = encodeURIComponent(`Hello Admin, I need help with my transaction.\nTxn ID: ${req.id}\nStatus: ${actualStatus}\nAmount: ₹${req.amount}\nUser ID: ${currentUser.id}`);
+                document.getElementById('dtlWaLink').href = `https://wa.me/918873903209?text=${msg}`;
+            } else {
+                waBlock.style.display = 'none';
+            }
+            
+            document.getElementById('txnDetailsModal').style.display = 'flex';
+        }
+
+        // =====================================
+        // BANK LOGIC
+        // =====================================
         function renderBankDetails() {
             if (!currentUser) return;
-            
             let bInfo = currentUser.bank || "";
             let uInfo = currentUser.upi || "";
             
@@ -1320,9 +1424,7 @@
                         bName = parts[0].split(':')[1].trim();
                         bAcc = parts[1].split(':')[1].trim();
                         bIfsc = parts[2].split(':')[1].trim();
-                    } catch(e) {
-                        bName = bInfo;
-                    }
+                    } catch(e) { bName = bInfo; }
                 } else if(bInfo) {
                     bName = bInfo; 
                 }
@@ -1355,10 +1457,7 @@
             document.getElementById('bankDisplayCard').style.display = 'none';
             document.getElementById('bankEditForm').style.display = 'block';
         }
-        
-        function cancelBankEdit() {
-            renderBankDetails();
-        }
+        function cancelBankEdit() { renderBankDetails(); }
 
         function submitBank(btnId) {
             let name = document.getElementById('addBankName').value; 
@@ -1420,12 +1519,11 @@
         // =====================================
         function shareReferralLink() {
             const refCode = currentUser ? currentUser.id : "100001"; 
-            const currentUrl = window.location.href.split('#')[0];
-            const link = `${currentUrl}#ref=${refCode}`;
-            const msg = `🔥 घर बैठे गेम खेलो और असली पैसे जीतो! WinCash ऐप डाउनलोड करो और तुरंत ₹50 का फ्री बोनस पाओ!\n\n🎁 मेरा रेफरल कोड (User ID): ${refCode}\n👇 अभी ज्वाइन करें:\n${link}`;
+            const msg = `🔥 घर बैठे गेम खेलो और असली पैसे जीतो! WinCash ऐप डाउनलोड करो और तुरंत ₹50 का फ्री बोनस पाओ!\n\n🎁 मेरा रेफरल कोड (User ID): ${refCode}\n👇 अभी ज्वाइन करें:\n${window.location.href.split('#')[0]}#ref=${refCode}`;
             
             if (navigator.share) {
-                navigator.share({ title: 'WinCash Referral', text: msg, url: link }).catch(e => console.log(e));
+                // FIXED DOUBLE LINK: Only pass 'text' without 'url'
+                navigator.share({ title: 'WinCash Referral', text: msg }).catch(e => console.log(e));
             } else { 
                 navigator.clipboard.writeText(msg); 
                 showAlert('Referral link and text copied to clipboard!'); 
@@ -1465,6 +1563,9 @@
             });
         }
 
+        // =====================================
+        // UPDATED CLEAN TRANSACTIONS UI (Professional Row)
+        // =====================================
         function renderUserTransactions() {
             const container = document.getElementById('user-transactions-container'); 
             
@@ -1483,28 +1584,33 @@
             }
             
             myReqs.forEach(req => {
-                let sc = req.status === 'Pending' ? '#f59e0b' : (req.status === 'Approved' ? '#10b981' : '#ef4444');
+                let actualStatus = req.status;
+                if(req.details.includes('Cancelled Without UTR')) actualStatus = 'Failed';
+
+                let sc = '#3b82f6'; // default blue
                 let displayType = req.type;
                 
-                // RED COLOR FOR DRAW PAID
-                if(req.type === 'Draw Entry Fee') {
-                    displayType = 'Paid (Draw Entry fee)'; // UPDATED TEXT HERE
-                    sc = '#ef4444'; 
+                // Exact Color Logic requested
+                if (actualStatus === 'Rejected' || actualStatus === 'Failed') {
+                    sc = '#ef4444'; // Red
+                } else if (req.type === 'Draw Entry Fee') {
+                    displayType = 'Paid Draw Entry fee'; 
+                    sc = '#ef4444'; // Red
+                } else if (req.type === 'Deposit') {
+                    sc = '#10b981'; // Green
+                } else if (req.type === 'Withdrawal') {
+                    sc = '#d97706'; // Dark Yellow
+                } else if (req.type === 'Referral Bonus' || req.type === 'Winning Prize') {
+                    sc = '#10b981'; // Green
                 }
 
                 container.innerHTML += `
-                <div class="draw-card" style="border-left:4px solid ${sc}; padding:15px; text-align: left; margin-bottom: 12px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:5px; align-items: center;">
-                        <strong style="font-size: 15px; color:${sc === '#ef4444' ? '#ef4444' : '#1e293b'};">${displayType}</strong>
-                        <span style="background:${sc}; color:white; padding: 4px 10px; border-radius: 12px; font-weight:700; font-size:10px;">${req.status}</span>
+                <div class="draw-card" onclick="showTxnDetails('${req.id}')" style="border-left:4px solid ${sc}; padding:15px; margin-bottom: 12px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition:0.2s; background:#fff;">
+                    <div style="text-align: left; flex:1;">
+                        <strong style="font-size: 15px; color:${sc}; display:block; margin-bottom: 4px;">${displayType}</strong>
+                        <span style="background:${sc}; color:white; padding: 3px 10px; border-radius: 12px; font-weight:700; font-size:10px; display:inline-block;">${actualStatus}</span>
                     </div>
-                    <div style="font-size:12px; color:#64748b; margin-bottom:8px;">
-                        Txn ID: ${req.id} <br> ${formatDateIST(req.dateTime)}
-                    </div>
-                    <div style="display:flex; justify-content:space-between; font-size:13px; align-items: center;">
-                        <span style="color: #475569;">${req.details}</span>
-                        <strong style="color:${sc}; font-size: 16px;">${req.amount ? '₹'+req.amount : ''}</strong>
-                    </div>
+                    <strong style="color:${sc}; font-size: 18px; text-align:right;">${req.amount ? '₹'+req.amount : ''} <i class="fas fa-chevron-right" style="font-size:12px; color:#cbd5e1; margin-left:8px;"></i></strong>
                 </div>`;
             });
         }
@@ -1622,7 +1728,6 @@
                     }
                 }
                 
-                // DATE & TIME STRICTLY BELOW DRAW ID
                 container.innerHTML += `
                 <div class="draw-card">
                     <div class="draw-card-header">
@@ -1673,7 +1778,6 @@
                     payBtn = `<a href="upi://pay?pa=${req.upiId}&pn=${encodeURIComponent(req.user)}&am=${req.amount}&cu=INR" class="btn-action" style="background:#3b82f6; color:white; text-decoration: none;"><i class="fas fa-paper-plane"></i> Pay</a>`;
                 }
                 
-                // FIX FOR UNDEFINED USERNAME
                 let uName = req.user || req.userName;
                 if (!uName || uName === 'undefined') {
                     let foundU = allUsers.find(u => u.id == req.userId);
@@ -1927,6 +2031,14 @@
         // VIEW ROUTING
         // =====================================
         function switchView(viewId, pushHistory = true, replace = false) {
+            
+            // TRAP DEPOSIT ABANDONMENT
+            if (document.getElementById('depPageView2').style.display === 'block' && viewId !== 'depositView') {
+                document.getElementById('depositCancelModal').style.display = 'flex';
+                if (pushHistory) history.pushState({ view: 'depositView' }, "", "#depositView");
+                return;
+            }
+
             document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
             
@@ -1939,7 +2051,6 @@
             
             closeNav();
             
-            // Re-inject loading states before data fills in (makes the UI feel snappy)
             if(viewId === 'homeView' && allDraws.length === 0) {
                 document.getElementById('live-draws-container').innerHTML = '<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading Draws... Please Wait</div>';
             }
@@ -1976,6 +2087,12 @@
         }
 
         window.addEventListener('popstate', e => {
+            if (document.getElementById('depPageView2').style.display === 'block') {
+                document.getElementById('depositCancelModal').style.display = 'flex';
+                history.pushState({ view: 'depositView' }, "", "#depositView");
+                return;
+            }
+
             if (e.state && e.state.view) {
                 if (['loginView','registerView','forgotView'].includes(e.state.view)) {
                     if (currentUser) {
@@ -2000,7 +2117,6 @@
             
             setWalletLoading(); 
             
-            // Show loaders properly before fetching data
             if(currentUser) {
                 document.getElementById('live-draws-container').innerHTML = '<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading Draws... Please Wait</div>';
             }
