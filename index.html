@@ -30,6 +30,32 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
 
+        /* Premium Initial Splash Loading Screen */
+        #initialSplash {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #f4f6f9; z-index: 9999; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; transition: opacity 0.5s ease;
+        }
+        @keyframes floatLogo { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes shadowScale { 0%, 100% { transform: scale(1); opacity: 0.15; } 50% { transform: scale(0.6); opacity: 0.05; } }
+        @keyframes premiumBounce { 0%, 80%, 100% { transform: scale(0.5); opacity: 0.3; } 40% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 10px rgba(59, 130, 246, 0.6); } }
+        @keyframes pulseText { 0%, 100% {opacity: 0.5;} 50% {opacity: 1;} }
+        
+        .splash-logo-container { text-align: center; }
+        .splash-logo { width: 100px; margin-bottom: 5px; animation: floatLogo 2s ease-in-out infinite; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1)); }
+        .glow-shadow { width: 60px; height: 8px; background: #000; border-radius: 50%; margin: 0 auto 30px auto; filter: blur(3px); animation: shadowScale 2s ease-in-out infinite; }
+        
+        .loader-dots { display: flex; gap: 10px; justify-content: center; margin-bottom: 15px; margin-top: 10px; }
+        .loader-dots span {
+            width: 14px; height: 14px; background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 50%; display: inline-block;
+            animation: premiumBounce 1.4s infinite ease-in-out both;
+        }
+        .loader-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loader-dots span:nth-child(2) { animation-delay: -0.16s; }
+        .loader-dots span:nth-child(3) { animation-delay: 0s; }
+        .loading-text { font-size: 13px; font-weight: 700; color: #64748b; letter-spacing: 2px; text-transform: uppercase; animation: pulseText 2s infinite ease-in-out; }
+
         /* App Install Banner - Bottom Popup */
         #installAppBanner {
             display: flex; justify-content: space-between; align-items: center; 
@@ -60,7 +86,7 @@
         .header-left .left-menu-icon { font-size: 24px; cursor: pointer; color: #1e293b; padding: 5px; }
         .header-left .app-name {
             font-size: 24px; font-weight: 800; background: linear-gradient(to right, #f59e0b, #ef4444);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; letter-spacing: 0.5px;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.5px; text-transform: uppercase;
         }
         .wallet-section {
             display: flex; align-items: center; background: #f0fdf4; color: #059669;
@@ -124,7 +150,7 @@
         #loginView, #registerView, #forgotView { display: none; flex-direction: column; align-items: center; min-height: 95vh; width: 100%; text-align: center; padding: 40px 20px; background: #f4f6f9; }
         #loginView.active, #registerView.active, #forgotView.active { display: flex; }
         .auth-fullscreen-box { width: 100%; max-width: 450px; margin: 0 auto; }
-        .auth-logo-left { font-size: 32px; font-weight: 800; margin-bottom: 20px; text-align: left; background: linear-gradient(to right, #f59e0b, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; width: 100%; }
+        .auth-logo-left { font-size: 32px; font-weight: 800; margin-bottom: 20px; text-align: left; background: linear-gradient(to right, #f59e0b, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; width: 100%; text-transform: uppercase; }
         .auth-switch-text { margin-top: 20px; font-size: 14px; font-weight: 600; color: #64748b; text-align: center; }
         .auth-switch-text span { color: #6366f1; cursor: pointer; font-weight: 700; }
 
@@ -148,9 +174,9 @@
         .section-title { font-size: 18px; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; color: #1e293b; text-align: left; }
         .section-title i { color: #ef4444; margin-right: 8px; font-size: 16px; }
 
-        /* Draw Cards */
-        .draw-card { background: #ffffff; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0; transition: 0.2s; }
-        .draw-card:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); }
+        /* Draw Cards styling */
+        .draw-card { background: #ffffff; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05), 0 3px 6px rgba(0, 0, 0, 0.03); border: 1px solid #e2e8f0; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative; }
+        .draw-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.08), 0 4px 8px rgba(0,0,0,0.04); }
         .draw-card-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px dashed #f1f5f9; padding-bottom: 12px; margin-bottom: 15px; }
         .draw-name { font-size: 18px; font-weight: 800; color: #0f172a; text-align: left; }
         .draw-id { display: block; font-size: 12px; color: #64748b; font-weight: 600; margin-top: 4px; text-align: left; }
@@ -165,13 +191,51 @@
         .detail-box span { display: block; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
         .detail-box strong { font-size: 18px; font-weight: 800; color: #0f172a; }
         .detail-box .green-text { color: #10b981; }
-        
-        .join-btn { width: 100%; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 700; text-transform: uppercase; cursor: pointer; margin-top:10px; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3); display: inline-flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s;}
-        .join-btn.joined { background: #cbd5e1; color: #475569; cursor: not-allowed; box-shadow: none; }
-        .join-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
         .result-banner-won { background: #dcfce7; color: #16a34a; padding: 10px; border-radius: 10px; text-align: center; font-weight: 800; font-size: 15px; margin-top: 10px; border: 1px dashed #16a34a; }
         .result-banner-lost { background: #fee2e2; color: #ef4444; padding: 10px; border-radius: 10px; text-align: center; font-weight: 800; font-size: 15px; margin-top: 10px; border: 1px dashed #ef4444; }
+
+        /* Floating Clear Draw Cards */
+        .draw-row-card {
+            display: flex; flex-direction: column; gap: 8px; 
+            background: #ffffff; border-radius: 16px; padding: 18px; margin-bottom: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05), 0 3px 6px rgba(0, 0, 0, 0.03); 
+            border: 1px solid #e2e8f0; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); cursor: pointer; position: relative; overflow: hidden;
+        }
+        .draw-row-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.04); }
+        .draw-row-card.joined-card { opacity: 0.95; cursor: default; background: #f8fafc; }
+        .draw-row-card.joined-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05); }
+        
+        .draw-row-top, .draw-row-bottom { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .draw-row-title { font-size: 17px; font-weight: 800; color: #0f172a; letter-spacing: 0.5px; }
+        
+        .live-badge { 
+            background: #ef4444; color: white; font-size: 11px; font-weight: 800; 
+            padding: 4px 12px; border-radius: 12px; animation: blink 1.5s infinite; text-transform: uppercase;
+            display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+        }
+        .live-badge::before { content: ''; width: 6px; height: 6px; background: white; border-radius: 50%; display: inline-block; }
+        
+        .draw-row-stats { display: flex; flex-direction: column; font-size: 13px; color: #64748b; font-weight: 600; text-align: left; }
+        .draw-row-stats .highlight-prize { color: #10b981; font-weight: 800; font-size: 22px; line-height: 1; background: transparent; padding: 0; border: none; display: inline-block; }
+        
+        .join-btn-small {
+            position: relative; overflow: hidden;
+            background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; 
+            padding: 10px 24px; border-radius: 25px; font-size: 14px; font-weight: 800; 
+            cursor: pointer; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4); 
+            display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; 
+            transition: 0.2s;
+        }
+        .join-btn-small::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg); animation: shineLeftRight 2.5s infinite linear;
+        }
+        @keyframes shineLeftRight { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
+        
+        .join-btn-small.joined::after { display: none; }
+        .join-btn-small.joined { background: #f1f5f9; color: #64748b; box-shadow: none; border: 1px solid #cbd5e1; }
 
         /* Admin Forms & Nav */
         .admin-nav { display: flex; gap: 6px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
@@ -180,7 +244,7 @@
         .admin-tab-content { display: none; }
         .admin-tab-content.active { display: block; }
         
-        .admin-form { background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .admin-form { background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0; }
         .input-group { margin-bottom: 15px; text-align: left; }
         .input-group label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 6px; color: #475569; }
         .input-group input, .input-group select { width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 15px; background: #f8fafc; outline: none; }
@@ -215,6 +279,20 @@
 
     <!-- 100% Invisible Background Syncing -->
     <div id="globalLoader"></div>
+
+    <!-- Premium Initial App Splash Loading Screen -->
+    <div id="initialSplash">
+        <div class="splash-logo-container">
+            <img src="https://cdn-icons-png.flaticon.com/512/2933/2933116.png" alt="WinCash" class="splash-logo">
+            <div class="glow-shadow"></div>
+        </div>
+        <div style="font-size: 32px; font-weight: 800; background: linear-gradient(to right, #f59e0b, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; letter-spacing: 0.5px;">WinCash</div>
+        
+        <div class="loader-dots">
+            <span></span><span></span><span></span>
+        </div>
+        <div class="loading-text">Optimizing App...</div>
+    </div>
 
     <!-- App Install Bottom Popup Banner -->
     <div id="installAppBanner">
@@ -267,17 +345,20 @@
     </div>
     <div id="overlay" class="overlay" onclick="closeNav()"></div>
 
-    <!-- General Modals -->
-    <div id="adminLoginModal" class="modal-overlay" style="z-index:3000;">
-        <div class="modal-box">
-            <span class="modal-close" onclick="document.getElementById('adminLoginModal').style.display='none'">&times;</span>
-            <div class="section-title" style="justify-content: center;"><i class="fas fa-lock"></i> ADMIN LOGIN</div>
-            <div class="input-group"><label>Admin ID</label><input type="text" id="adminLoginId" placeholder="Enter Admin ID"></div>
-            <div class="input-group"><label>Password</label><input type="password" id="adminLoginPass" placeholder="Enter Password"></div>
-            <button class="submit-btn green" onclick="verifyAdminLogin()">LOGIN TO ADMIN</button>
+    <!-- Admin Full Screen Login Modal -->
+    <div id="adminLoginModal" class="modal-overlay" style="z-index:3000; background: #f4f6f9; display:none; flex-direction: column; justify-content: flex-start; align-items: center; padding: 40px 20px;">
+        <div class="auth-fullscreen-box" style="width: 100%; max-width: 450px; text-align: center; margin-top: 20px; position: relative;">
+            <span class="modal-close" style="position: absolute; top: -10px; right: 10px; font-size: 32px; cursor: pointer; color: #1e293b;" onclick="document.getElementById('adminLoginModal').style.display='none'">&times;</span>
+            <img src="https://cdn-icons-png.flaticon.com/512/2933/2933116.png" alt="Admin" style="width: 80px; margin-bottom: 15px;">
+            <div class="auth-logo-left" style="text-align: center; font-size: 32px; margin-bottom: 5px;">Admin Panel</div>
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 30px; font-weight: 500;">Secure Access Only</p>
+            <div class="input-group"><label style="text-align: left;">Admin ID</label><input type="text" id="adminLoginId" placeholder="Enter Admin ID"></div>
+            <div class="input-group"><label style="text-align: left;">Password</label><input type="password" id="adminLoginPass" placeholder="Enter Password"></div>
+            <button class="submit-btn green" onclick="verifyAdminLogin()" style="margin-top: 15px; padding: 16px; font-size: 16px;">SECURE LOGIN</button>
         </div>
     </div>
 
+    <!-- General Modals -->
     <div id="customAlert" class="modal-overlay" style="z-index:3000;">
         <div class="modal-box" style="padding:30px;">
             <i class="fas fa-bell" style="font-size: 40px; color: #3b82f6; margin-bottom:15px;"></i>
@@ -308,7 +389,7 @@
         </div>
     </div>
 
-    <!-- 1. DEPOSIT ABANDONMENT MODAL (UPDATED - NO WHATSAPP) -->
+    <!-- DEPOSIT ABANDONMENT MODAL -->
     <div id="depositCancelModal" class="modal-overlay" style="z-index:3000;">
         <div class="modal-box" style="padding:25px;">
             <i class="fas fa-exclamation-triangle" style="font-size: 45px; color: #f59e0b; margin-bottom:15px;"></i>
@@ -321,7 +402,7 @@
         </div>
     </div>
 
-    <!-- 2. TRANSACTION DETAILS MODAL (Professional Aligned Layout & Conditional WhatsApp) -->
+    <!-- TRANSACTION DETAILS MODAL -->
     <div id="txnDetailsModal" class="modal-overlay" style="z-index:3000;">
         <div class="modal-box" style="padding:25px; text-align: left;">
             <span class="modal-close" onclick="document.getElementById('txnDetailsModal').style.display='none'">&times;</span>
@@ -345,7 +426,6 @@
                 </div>
             </div>
             
-            <!-- Conditional WhatsApp Block -->
             <div id="dtlWaSupportBlock" style="display:none;">
                 <p style="font-size:12px; color:#64748b; margin-bottom:12px; text-align:center; font-weight:600;">Need help verifying this payment?</p>
                 <a id="dtlWaLink" href="#" target="_blank" class="submit-btn" style="margin:0; background:#25d366; color:white; text-decoration:none;"><i class="fab fa-whatsapp"></i> VERIFY ON WHATSAPP</a>
@@ -479,7 +559,7 @@
         <!-- HOME -->
         <div id="homeView" class="view-section">
             
-            <!-- Professional Announcement Marquee Banner -->
+            <!-- Announcement Marquee Banner -->
             <div class="announcement-container">
                 <i class="fas fa-bullhorn announcement-icon"></i>
                 <div class="marquee-wrapper">
@@ -633,7 +713,6 @@
             <div class="page-back-header" onclick="switchView('homeView')">
                 <i class="fas fa-arrow-left"></i> Transactions History
             </div>
-            <!-- Container -->
             <div id="user-transactions-container"></div>
         </div>
 
@@ -718,12 +797,15 @@
             <!-- Admin: All Requests -->
             <div id="allRequestsSec" class="admin-tab-content active">
                 <div class="section-title"><i class="fas fa-inbox"></i> USER REQUESTS</div>
+                <div class="input-group">
+                    <input type="text" id="adminReqSearch" placeholder="Search by User Name, User ID or Txn ID..." onkeyup="renderAdminRequests()">
+                </div>
                 <div id="admin-requests-container"></div>
             </div>
 
             <!-- Admin: All Users -->
             <div id="allUsersSec" class="admin-tab-content">
-                <div class="stat-card">
+                <div class="stat-card" style="border:none;">
                     <h2 id="total-users-count">0</h2>
                     <p>Total Registered Users</p>
                 </div>
@@ -736,7 +818,7 @@
             <!-- Admin: All Draws -->
             <div id="allDrawsSec" class="admin-tab-content">
                 <div id="admin-draws-container"></div>
-                <button class="fab-btn" onclick="openDrawModal()"><i class="fas fa-plus"></i></button>
+                <button class="fab-btn" onclick="openDrawModal()" style="border:none;"><i class="fas fa-plus"></i></button>
             </div>
 
             <!-- Admin: Declare Winner -->
@@ -751,6 +833,10 @@
                         <label>Select Live Draw</label>
                         <select id="adminDrawSelect" onchange="loadJoinedUsers()"></select>
                     </div>
+                    <div class="input-group">
+                        <label>Search Participant</label>
+                        <input type="text" id="adminWinnerSearch" placeholder="Search by Name or User ID..." onkeyup="loadJoinedUsers()">
+                    </div>
                     <div id="usersContainer" style="margin-bottom: 20px;"></div>
                     <button id="btnDeclareWinner" class="submit-btn green" onclick="declareWinners('btnDeclareWinner')">DECLARE WINNER(S)</button>
                 </div>
@@ -760,10 +846,6 @@
             <div id="settingsSec" class="admin-tab-content">
                 <div class="section-title"><i class="fas fa-cogs"></i> APP SETTINGS</div>
                 <div class="admin-form">
-                    <div class="input-group">
-                        <label>Announcement Marquee Text</label>
-                        <input type="text" id="setAnnouncement">
-                    </div>
                     <div class="input-group">
                         <label>Admin UPI ID (For Deposits)</label>
                         <input type="text" id="setAdminUpi">
@@ -808,7 +890,7 @@
             "short_name": "WinCash",
             "start_url": ".",
             "display": "standalone",
-            "background_color": "#f4f6f9",
+            "background_color": "#ffffff",
             "theme_color": "#ffffff",
             "icons": [{
                 "src": "https://cdn-icons-png.flaticon.com/512/2933/2933116.png",
@@ -874,7 +956,7 @@
         // ==========================================
         // YAHAN APNA APPS SCRIPT WEB APP URL DALEIN
         // ==========================================
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyR0qtfHhPKqe3ssYD0w2LP0cF_io-ZPqLxAigY45yM2mlw2TH6XmWR_RTt6NTLrFQ/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyFQQA2CuNtzLNu3i2XBvkRs_dFfhEFaIlKRiVzq_DI0u5gwSlnHQ3OWtHR_WZAdSyi/exec';
 
         // Custom Prompts & Alert
         function showAlert(msg) { 
@@ -977,6 +1059,8 @@
         let editingDrawId = null; 
         let editingUserId = null;
         
+        // Control Splash Screen Flag
+        let isFirstLoad = true;
         let isDataFetching = true;
 
         function openNav() { document.getElementById("mySidebar").style.left = "0"; document.getElementById("overlay").style.display = "block"; }
@@ -1066,6 +1150,7 @@
             let btnEl = typeof btnElement === 'string' ? document.getElementById(btnElement) : btnElement;
             let originalText = '';
             
+            // Note: During Join Flow, btnElement will be deliberately null so it doesn't interrupt custom loading
             if (btnEl) {
                 originalText = btnEl.innerHTML;
                 btnEl.disabled = true;
@@ -1077,6 +1162,7 @@
             if (SCRIPT_URL === 'YOUR_WEB_APP_URL_HERE') { 
                 resetBtn(btnEl, originalText);
                 showAlert('Please configure SCRIPT_URL in HTML code!'); 
+                if(isFirstLoad) { document.getElementById('initialSplash').style.opacity = '0'; setTimeout(()=> document.getElementById('initialSplash').style.display = 'none', 500); isFirstLoad = false; }
                 return; 
             }
 
@@ -1101,17 +1187,23 @@
         }
 
         function fetchSheetData() {
-            if (SCRIPT_URL === 'YOUR_WEB_APP_URL_HERE') return;
+            isDataFetching = true;
+            if (SCRIPT_URL === 'YOUR_WEB_APP_URL_HERE') {
+                isDataFetching = false;
+                if(isFirstLoad) { document.getElementById('initialSplash').style.opacity = '0'; setTimeout(()=> document.getElementById('initialSplash').style.display = 'none', 500); isFirstLoad = false; }
+                return;
+            }
             
-            isDataFetching = true; 
-            if (document.getElementById('homeView').classList.contains('active')) renderLiveDraws();
-            if (document.getElementById('myDrawsView').classList.contains('active')) renderMyDraws();
-            if (document.getElementById('transactionsView').classList.contains('active')) renderUserTransactions();
-
             fetch(SCRIPT_URL + '?action=getData')
             .then(r => r.text())
             .then(text => {
-                isDataFetching = false; 
+                isDataFetching = false;
+                if(isFirstLoad) {
+                    document.getElementById('initialSplash').style.opacity = '0';
+                    setTimeout(()=> document.getElementById('initialSplash').style.display = 'none', 500);
+                    isFirstLoad = false;
+                }
+
                 try {
                     let data = JSON.parse(text);
                     if(data.status === 'success') {
@@ -1157,6 +1249,11 @@
                 }
             }).catch(e => {
                 isDataFetching = false;
+                if(isFirstLoad) {
+                    document.getElementById('initialSplash').style.opacity = '0';
+                    setTimeout(()=> document.getElementById('initialSplash').style.display = 'none', 500);
+                    isFirstLoad = false;
+                }
                 if (document.getElementById('homeView').classList.contains('active')) renderLiveDraws();
                 if (document.getElementById('myDrawsView').classList.contains('active')) renderMyDraws();
             });
@@ -1172,9 +1269,6 @@
             }
             document.getElementById('announcement-text').innerText = ann;
             
-            if(document.getElementById('setAnnouncement')) {
-                document.getElementById('setAnnouncement').value = localStorage.getItem('winCashAnnouncement') || '';
-            }
             if(document.getElementById('adminAnnouncement')) {
                 document.getElementById('adminAnnouncement').value = localStorage.getItem('winCashAnnouncement') || '';
             }
@@ -1519,10 +1613,10 @@
         // =====================================
         function shareReferralLink() {
             const refCode = currentUser ? currentUser.id : "100001"; 
-            const msg = `🔥 घर बैठे गेम खेलो और असली पैसे जीतो! WinCash ऐप डाउनलोड करो और तुरंत ₹50 का फ्री बोनस पाओ!\n\n🎁 मेरा रेफरल कोड (User ID): ${refCode}\n👇 अभी ज्वाइन करें:\n${window.location.href.split('#')[0]}#ref=${refCode}`;
+            const bonusAmount = appSettings.welcomeBonus || 50; 
+            const msg = `🔥 घर बैठे गेम खेलो और असली पैसे जीतो! WinCash ऐप डाउनलोड करो और तुरंत ₹${bonusAmount} का फ्री बोनस पाओ!\n\n🎁 मेरा रेफरल कोड: ${refCode}\n👇 अभी ज्वाइन करें:\n${window.location.href.split('#')[0]}#ref=${refCode}`;
             
             if (navigator.share) {
-                // FIXED DOUBLE LINK: Only pass 'text' without 'url'
                 navigator.share({ title: 'WinCash Referral', text: msg }).catch(e => console.log(e));
             } else { 
                 navigator.clipboard.writeText(msg); 
@@ -1553,7 +1647,7 @@
             
             myRefs.forEach(r => { 
                 container.innerHTML += `
-                <div class="draw-card" style="padding:15px; margin-bottom:10px; text-align: left; border-left: 4px solid #10b981;">
+                <div class="draw-card" style="padding:15px; margin-bottom:10px; text-align: left;">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <strong>${r.name}</strong>
                         <span class="draw-status approved-tag">Joined</span>
@@ -1564,15 +1658,10 @@
         }
 
         // =====================================
-        // UPDATED CLEAN TRANSACTIONS UI (Professional Row)
+        // UPDATED CLEAN TRANSACTIONS UI 
         // =====================================
         function renderUserTransactions() {
             const container = document.getElementById('user-transactions-container'); 
-            
-            if (isDataFetching) {
-                container.innerHTML = `<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading... Please Wait</div>`;
-                return;
-            }
             container.innerHTML = '';
             
             if (!currentUser) return;
@@ -1587,30 +1676,36 @@
                 let actualStatus = req.status;
                 if(req.details.includes('Cancelled Without UTR')) actualStatus = 'Failed';
 
-                let sc = '#3b82f6'; // default blue
+                let sc = '#64748b'; 
                 let displayType = req.type;
+                let amtColor = '#000000'; 
                 
-                // Exact Color Logic requested
                 if (actualStatus === 'Rejected' || actualStatus === 'Failed') {
-                    sc = '#ef4444'; // Red
+                    sc = '#ef4444'; 
+                    amtColor = '#ef4444'; 
                 } else if (req.type === 'Draw Entry Fee') {
                     displayType = 'Paid Draw Entry fee'; 
-                    sc = '#ef4444'; // Red
+                    sc = '#3b82f6'; 
                 } else if (req.type === 'Deposit') {
-                    sc = '#10b981'; // Green
+                    sc = '#10b981'; 
+                    if(actualStatus === 'Approved') amtColor = '#10b981'; 
                 } else if (req.type === 'Withdrawal') {
-                    sc = '#d97706'; // Dark Yellow
+                    sc = '#f59e0b'; 
                 } else if (req.type === 'Referral Bonus' || req.type === 'Winning Prize') {
-                    sc = '#10b981'; // Green
+                    sc = '#10b981'; 
+                    amtColor = '#10b981'; 
                 }
 
                 container.innerHTML += `
-                <div class="draw-card" onclick="showTxnDetails('${req.id}')" style="border-left:4px solid ${sc}; padding:15px; margin-bottom: 12px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition:0.2s; background:#fff;">
+                <div class="draw-card" onclick="showTxnDetails('${req.id}')" style="padding:15px; margin-bottom: 12px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition:0.2s; background:#fff;">
                     <div style="text-align: left; flex:1;">
-                        <strong style="font-size: 15px; color:${sc}; display:block; margin-bottom: 4px;">${displayType}</strong>
-                        <span style="background:${sc}; color:white; padding: 3px 10px; border-radius: 12px; font-weight:700; font-size:10px; display:inline-block;">${actualStatus}</span>
+                        <strong style="font-size: 15px; color:#000000; display:block; margin-bottom: 4px;">${displayType}</strong>
+                        <div style="margin-bottom: 2px;">
+                            <span style="background:${sc}; color:white; padding: 3px 10px; border-radius: 12px; font-weight:700; font-size:10px; display:inline-block; margin-right:5px;">${actualStatus}</span>
+                            <span style="font-size: 11px; color: #64748b; font-weight: 500;"><i class="far fa-clock"></i> ${formatDateIST(req.dateTime)}</span>
+                        </div>
                     </div>
-                    <strong style="color:${sc}; font-size: 18px; text-align:right;">${req.amount ? '₹'+req.amount : ''} <i class="fas fa-chevron-right" style="font-size:12px; color:#cbd5e1; margin-left:8px;"></i></strong>
+                    <strong style="color:${amtColor}; font-size: 18px; text-align:right;">${req.amount ? '₹'+req.amount : ''} <i class="fas fa-chevron-right" style="font-size:12px; color:#cbd5e1; margin-left:8px;"></i></strong>
                 </div>`;
             });
         }
@@ -1622,7 +1717,9 @@
             const container = document.getElementById('live-draws-container'); 
             
             if (isDataFetching) {
-                container.innerHTML = `<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading Draws... Please Wait</div>`;
+                if(container.innerHTML === '') {
+                    container.innerHTML = `<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading Draws... Please Wait</div>`;
+                }
                 return;
             }
             container.innerHTML = ''; 
@@ -1636,17 +1733,30 @@
             liveDraws.forEach(draw => {
                 const isJoined = allTransactions.some(t => t.userId == currentUser.id && t.type === 'Draw Entry Fee' && t.details.includes(draw.id));
                 
+                const clickAttr = isJoined ? '' : `onclick="joinDraw('${draw.id}', 'btnJoin_${draw.id}')"`;
+                const btnHtml = isJoined 
+                    ? `<button class="join-btn-small joined" disabled><i class="fas fa-check-circle"></i> JOINED</button>` 
+                    : `<button id="btnJoin_${draw.id}" class="join-btn-small"><i class="fas fa-check-circle"></i> JOIN ₹${draw.fee}</button>`;
+                const cardClass = isJoined ? 'draw-row-card joined-card' : 'draw-row-card';
+
                 container.innerHTML += `
-                <div class="draw-card">
-                    <div class="draw-card-header">
-                        <div class="draw-name">${draw.name} <span class="draw-id">ID: ${draw.id}</span></div>
-                        <div class="draw-status" style="animation: blink 2s infinite;">LIVE</div>
+                <div class="${cardClass}" ${clickAttr}>
+                    <div class="draw-row-top" style="border-bottom: 1px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 2px;">
+                        <div>
+                            <div class="draw-row-title" style="margin-bottom: 4px;">${draw.name}</div>
+                            <div style="font-size: 13px; color: #64748b; font-weight: 600; text-align: left;">ID: ${draw.id}</div>
+                        </div>
+                        <div class="live-badge" style="align-self: flex-start;">LIVE</div>
                     </div>
-                    <div class="draw-details">
-                        <div class="detail-box"><span>Entry Fee</span><strong>₹ ${draw.fee}</strong></div>
-                        <div class="detail-box"><span>Prize Pool</span><strong class="green-text">₹ ${draw.prize}</strong></div>
+                    <div class="draw-row-bottom" style="padding-top: 4px; display: flex; align-items: center;">
+                        <div class="draw-row-stats" style="flex: 1;">
+                            <span class="prize-container" style="display:flex; flex-direction:column; align-items:flex-start;">
+                                <span style="font-size:12px; color:#64748b; font-weight:700; text-transform:uppercase; margin-bottom:2px;">Prize Pool</span>
+                                <span class="highlight-prize">₹${draw.prize}</span>
+                            </span>
+                        </div>
+                        ${btnHtml}
                     </div>
-                    ${isJoined ? `<button class="join-btn joined" disabled>Already Joined</button>` : `<button id="btnJoin_${draw.id}" class="join-btn" onclick="joinDraw('${draw.id}', 'btnJoin_${draw.id}')">Join Now</button>`}
                 </div>`;
             });
         }
@@ -1660,41 +1770,57 @@
             }
             
             let btn = document.getElementById(btnElementId);
-            let origText = btn ? btn.innerHTML : "Join Now";
+            let origText = btn ? btn.innerHTML : `<i class="fas fa-check-circle"></i> JOIN ₹${draw.fee}`;
             
             if(btn) {
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Wait...';
+                btn.style.opacity = '0.8';
             }
             
             showConfirm(`Do you want to join ${draw.name} for ₹${draw.fee}?`, 
                 function() {
                     sendPost({
-                        action: 'joinDraw', drawId: drawId, userId: currentUser.id, 
+                        action: 'joinDraw', drawId: drawId, drawName: draw.name, userId: currentUser.id, 
                         userName: currentUser.name, fee: draw.fee, dateTime: getCurrentDateTime()
                     }, res => {
                         if(res && res.status === 'error') {
                             showAlert(res.message || 'Error occurred');
+                            if(btn) {
+                                btn.disabled = false;
+                                btn.innerHTML = origText;
+                                btn.style.opacity = '1';
+                            }
                         } else {
-                            showAlert('Successfully Joined!'); 
+                            if(btn) {
+                                btn.className = 'join-btn-small joined';
+                                btn.innerHTML = '<i class="fas fa-check-circle"></i> JOINED';
+                                btn.style.opacity = '1';
+                            }
                         }
                         setTimeout(fetchSheetData, 1000); 
-                    }, btnElementId);
+                    }, null); 
                 },
                 function() {
                     if(btn) {
                         btn.disabled = false;
                         btn.innerHTML = origText;
+                        btn.style.opacity = '1';
                     }
                 }
             );
         }
 
+        // =====================================
+        // MY DRAWS (PERMANENT HISTORY FIX)
+        // =====================================
         function renderMyDraws() {
             const container = document.getElementById('my-draws-container'); 
             
             if (isDataFetching) {
-                container.innerHTML = `<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading... Please Wait</div>`;
+                if(container.innerHTML === '') {
+                    container.innerHTML = `<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading... Please Wait</div>`;
+                }
                 return;
             }
             container.innerHTML = ''; 
@@ -1710,21 +1836,31 @@
                 let dIdMatch = txn.details.match(/ID:\s*(\d+)/);
                 let dId = dIdMatch ? dIdMatch[1] : null;
                 
+                let nameMatch = txn.details.match(/\(([^)]+)\)$/);
+                let fallbackName = nameMatch ? nameMatch[1] : "Draw";
+                
                 let draw = allDraws.find(d => d.id == dId);
-                let drawName = draw ? draw.name : "Draw"; 
+                let drawName = draw ? draw.name : fallbackName; 
                 let drawPrize = draw ? draw.prize : '---';
                 
-                let isComp = draw ? (draw.status === 'COMPLETED') : false;
+                // IMPORTANT FIX: Agar draw allDraws list mein nahi hai (deleted hai), toh usko hamesha COMPLETED maane taaki history save rahe.
+                let isComp = draw ? (draw.status === 'COMPLETED') : true;
+                
                 let txt = isComp ? 'RESULT OUT' : 'JOINED';
                 let tagClass = isComp ? 'completed' : 'joined-tag';
                 
                 let res = '';
                 if(isComp) {
-                    let wonTxn = allTransactions.find(t => t.userId == currentUser.id && t.type === 'Winning Prize' && (t.details.includes(drawName) || t.details.includes(dId)));
+                    let wonTxn = allTransactions.find(t => {
+                        if (t.userId != currentUser.id || t.type !== 'Winning Prize') return false;
+                        if (dId) return t.details.includes(dId);
+                        return t.details.includes(drawName) && !t.details.includes('ID:');
+                    });
+                    
                     if(wonTxn) {
                         res = `<div class="result-banner-won">🎉 YOU WON ₹${wonTxn.amount}</div>`;
                     } else {
-                        res = `<div class="result-banner-lost">😔 Next Luck</div>`;
+                        res = `<div class="result-banner-lost">😔 Better Luck Next Time</div>`;
                     }
                 }
                 
@@ -1766,28 +1902,51 @@
             const container = document.getElementById('admin-requests-container'); 
             container.innerHTML = ''; 
             
+            let searchTerm = '';
+            if(document.getElementById('adminReqSearch')) {
+                searchTerm = document.getElementById('adminReqSearch').value.toLowerCase();
+            }
+
             let pendingReqs = allTransactions.filter(r => r.status === 'Pending');
             if (pendingReqs.length === 0) {
                 container.innerHTML = `<div class="empty-state">No pending requests.</div>`; 
                 return;
             }
             
+            let count = 0;
             pendingReqs.forEach(req => {
+                let foundU = allUsers.find(u => u.id == req.userId);
+                let uName = foundU ? foundU.name : (req.user || req.userName || 'Unknown User');
+                let uPhone = foundU ? foundU.phone : '';
+
+                if (searchTerm) {
+                    if (!uName.toLowerCase().includes(searchTerm) && 
+                        !String(req.userId).toLowerCase().includes(searchTerm) && 
+                        !String(req.id).toLowerCase().includes(searchTerm)) {
+                        return;
+                    }
+                }
+                
+                count++;
                 let payBtn = ''; 
                 if (req.type === 'Withdrawal' && req.upiId) {
                     payBtn = `<a href="upi://pay?pa=${req.upiId}&pn=${encodeURIComponent(req.user)}&am=${req.amount}&cu=INR" class="btn-action" style="background:#3b82f6; color:white; text-decoration: none;"><i class="fas fa-paper-plane"></i> Pay</a>`;
                 }
                 
-                let uName = req.user || req.userName;
-                if (!uName || uName === 'undefined') {
-                    let foundU = allUsers.find(u => u.id == req.userId);
-                    uName = foundU ? foundU.name : 'Unknown User';
+                let waBtn = '';
+                if (uPhone) {
+                    let waMsg = encodeURIComponent(`Hi ${uName}, this is Admin from WinCash. I am contacting you regarding your ${req.type} request of ₹${req.amount} (Txn ID: ${req.id}).`);
+                    waBtn = `<a href="https://wa.me/91${uPhone}?text=${waMsg}" target="_blank" style="color:#25d366; font-size:18px; margin-left:8px; text-decoration:none;"><i class="fab fa-whatsapp"></i></a>`;
                 }
                 
                 container.innerHTML += `
                 <div class="draw-card" style="text-align: left;">
                     <div style="font-weight:800; font-size: 16px; margin-bottom: 5px;">${req.type} | <span style="color:#10b981;">₹${req.amount}</span></div>
-                    <div style="font-size:12px; color:#64748b; margin-bottom: 10px;">User: ${uName} (ID: ${req.userId}) <br> Details: ${req.details} <br> Date: ${formatDateIST(req.dateTime)}</div>
+                    <div style="font-size:13px; color:#475569; margin-bottom: 10px; line-height: 1.6;">
+                        <strong>User:</strong> ${uName} (ID: ${req.userId}) ${waBtn}
+                        <br> <strong>Details:</strong> ${req.details} 
+                        <br> <strong>Date:</strong> <span style="color:#64748b; font-size: 11px;"><i class="far fa-clock"></i> ${formatDateIST(req.dateTime)}</span>
+                    </div>
                     <div class="admin-action-group">
                         ${payBtn}
                         <button id="btnApprove_${req.id}" class="btn-action btn-approve" onclick="handleAdminReq('${req.id}', 'Approved', 'btnApprove_${req.id}')">Approve</button>
@@ -1795,6 +1954,10 @@
                     </div>
                 </div>`;
             });
+
+            if (count === 0 && searchTerm !== '') {
+                container.innerHTML = `<div class="empty-state">No matching requests found.</div>`;
+            }
         }
 
         function handleAdminReq(txnId, status, btnElement) {
@@ -1868,7 +2031,7 @@
             
             compDraws.forEach(draw => {
                 html += `
-                <div class="draw-card" style="text-align: left; border-left: 4px solid #64748b; opacity:0.8;">
+                <div class="draw-card" style="text-align: left; opacity:0.8;">
                     <div style="font-weight:700; font-size: 16px; margin-bottom: 5px;">${draw.name} <span class="draw-status completed" style="float:right;">COMPLETED</span></div>
                     <div style="font-size:13px; margin-bottom: 10px; color:#475569;">ID: ${draw.id} | Fee: ₹${draw.fee} | Prize: ₹${draw.prize}</div>
                     <div class="admin-action-group">
@@ -1918,6 +2081,8 @@
         function loadJoinedUsers() {
             const dId = document.getElementById("adminDrawSelect").value; 
             const dDate = document.getElementById("adminDate").value; 
+            let searchTerm = document.getElementById("adminWinnerSearch") ? document.getElementById("adminWinnerSearch").value.toLowerCase() : "";
+            
             const con = document.getElementById("usersContainer"); 
             con.innerHTML = '';
             
@@ -1932,21 +2097,28 @@
                 });
             }
             
-            if(jTxns.length == 0) {
-                con.innerHTML = '<p style="font-size: 13px; color: #ef4444; font-weight:600;">No users found for this draw/date.</p>';
-                return;
-            }
-            
             let uniqueUsers = {};
             jTxns.forEach(t => {
-                if(!uniqueUsers[t.userId]) uniqueUsers[t.userId] = t.userName;
+                if(!uniqueUsers[t.userId]) uniqueUsers[t.userId] = t.userName || "Unknown";
             });
             
+            let count = 0;
             for (let uId in uniqueUsers) {
+                let uName = uniqueUsers[uId];
+                if (searchTerm) {
+                    if (!uName.toLowerCase().includes(searchTerm) && !String(uId).toLowerCase().includes(searchTerm)) {
+                        continue;
+                    }
+                }
+                count++;
                 con.innerHTML += `
                 <label class="user-checkbox">
-                    <input type="checkbox" class="winner-cb" value="${uId}">${uniqueUsers[uId]} (ID: ${uId})
+                    <input type="checkbox" class="winner-cb" value="${uId}">${uName} (ID: ${uId})
                 </label>`; 
+            }
+
+            if(count == 0) {
+                con.innerHTML = '<p style="font-size: 13px; color: #ef4444; font-weight:600;">No matching users found.</p>';
             }
         }
 
@@ -2032,7 +2204,6 @@
         // =====================================
         function switchView(viewId, pushHistory = true, replace = false) {
             
-            // TRAP DEPOSIT ABANDONMENT
             if (document.getElementById('depPageView2').style.display === 'block' && viewId !== 'depositView') {
                 document.getElementById('depositCancelModal').style.display = 'flex';
                 if (pushHistory) history.pushState({ view: 'depositView' }, "", "#depositView");
@@ -2050,16 +2221,6 @@
             }
             
             closeNav();
-            
-            if(viewId === 'homeView' && allDraws.length === 0) {
-                document.getElementById('live-draws-container').innerHTML = '<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading Draws... Please Wait</div>';
-            }
-            if(viewId === 'myDrawsView' && allTransactions.length === 0) {
-                document.getElementById('my-draws-container').innerHTML = '<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading... Please Wait</div>';
-            }
-            if(viewId === 'transactionsView' && allTransactions.length === 0) {
-                document.getElementById('user-transactions-container').innerHTML = '<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading... Please Wait</div>';
-            }
             
             if(viewId === 'homeView') renderLiveDraws();
             if(viewId === 'myDrawsView') renderMyDraws();
@@ -2117,10 +2278,6 @@
             
             setWalletLoading(); 
             
-            if(currentUser) {
-                document.getElementById('live-draws-container').innerHTML = '<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading Draws... Please Wait</div>';
-            }
-
             fetchSheetData();
             loadAnnouncement();
             
