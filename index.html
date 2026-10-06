@@ -198,7 +198,7 @@
         .draw-details { display: flex; justify-content: space-between; margin-bottom: 15px; gap: 12px; flex-wrap: wrap; }
         .detail-box { text-align: center; flex: 1; background: #f8fafc; padding: 12px 8px; border-radius: 12px; border: 1px solid #f1f5f9; }
         .detail-box span { display: block; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
-        .detail-box strong { font-size: 18px; font-weight: 800; color: #0f172a; }
+        .detail-box strong { font-size: 16px; font-weight: 800; color: #0f172a; }
         .detail-box .green-text { color: #10b981; }
 
         .result-banner-won { background: #dcfce7; color: #16a34a; padding: 10px; border-radius: 10px; text-align: center; font-weight: 800; font-size: 15px; margin-top: 10px; border: 1px dashed #16a34a; }
@@ -282,6 +282,30 @@
         .user-checkbox { display: flex; align-items: center; padding: 12px 15px; background: #f8fafc; margin-bottom: 8px; border-radius: 10px; border: 1px solid #e2e8f0; cursor: pointer; text-align: left; }
         .user-checkbox input { width: 20px; height: 20px; margin-right: 12px; accent-color: #10b981; }
         .empty-state { text-align: center; padding: 50px 20px; color: #94a3b8; font-weight: 600; font-size: 16px; }
+
+        /* Custom Admin Dropdown Styling */
+        .custom-select-wrapper { position: relative; text-align: left; width: 100%; }
+        .custom-select-display {
+            padding: 12px 15px; border-radius: 10px; border: 1px solid #cbd5e1;
+            font-size: 15px; background: #f8fafc; cursor: pointer; color: #475569;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .custom-select-display::after { content: '\f0d7'; font-family: 'FontAwesome'; }
+        .custom-select-options {
+            display: none; position: absolute; top: 100%; left: 0; right: 0;
+            background: white; border: 1px solid #cbd5e1; border-radius: 10px;
+            margin-top: 5px; z-index: 100; max-height: 250px; overflow-y: auto;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .custom-option {
+            padding: 12px 15px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s;
+        }
+        .custom-option:last-child { border-bottom: none; }
+        .custom-option:hover { background: #f8fafc; }
+        .custom-option-title { font-weight: 800; color: #0f172a; margin-bottom: 5px; font-size: 14px; }
+        .custom-option-details { font-size: 11px; color: #64748b; font-weight: 700; display:flex; gap:8px; flex-wrap:wrap;}
+        .custom-option-details span { background: #e2e8f0; padding: 3px 8px; border-radius: 6px; }
+        .custom-option-details .joined-badge { background: #dcfce7; color: #16a34a; }
     </style>
 </head>
 <body>
@@ -433,7 +457,6 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px dashed #cbd5e1;">
                     <strong>Details:</strong> <span id="dtlDesc" style="color:#1e293b; font-weight:600; text-align:right; max-width: 60%; word-break: break-word;"></span>
                 </div>
-                <!-- ADDED REMARK ROW -->
                 <div id="dtlRemarkRow" style="display:none; justify-content:space-between; align-items:center; padding:10px 0;">
                     <strong>Admin Remark:</strong> <span id="dtlRemark" style="color:#ef4444; font-weight:700; text-align:right; max-width: 60%; word-break: break-word;"></span>
                 </div>
@@ -746,7 +769,6 @@
 
         <!-- TRANSACTIONS -->
         <div id="transactionsView" class="view-section">
-            <!-- Updated sticky header with space at the top -->
             <div class="page-back-header" style="top: 0; padding-top: 25px;" onclick="switchView('homeView')">
                 <i class="fas fa-arrow-left"></i> Transactions History
             </div>
@@ -858,7 +880,7 @@
                 <button class="fab-btn" onclick="openDrawModal()" style="border:none;"><i class="fas fa-plus"></i></button>
             </div>
 
-            <!-- Admin: Declare Winner -->
+            <!-- Admin: Declare Winner (UPDATED WITH MANUAL & AUTO & CUSTOM DROPDOWN) -->
             <div id="declareWinnerSec" class="admin-tab-content">
                 <div class="section-title"><i class="fas fa-trophy"></i> DECLARE WINNER</div>
                 <div class="admin-form">
@@ -866,15 +888,44 @@
                         <label>Filter By Date</label>
                         <input type="date" id="adminDate" onchange="loadJoinedUsers()">
                     </div>
+                    
+                    <!-- CUSTOM DROPDOWN SELECTOR -->
                     <div class="input-group">
                         <label>Select Live Draw</label>
-                        <select id="adminDrawSelect" onchange="loadJoinedUsers()"></select>
+                        <div class="custom-select-wrapper" id="customDrawSelectWrapper">
+                            <div class="custom-select-display" onclick="toggleCustomSelect()">-- Select Live Draw --</div>
+                            <div class="custom-select-options" id="customDrawOptions"></div>
+                        </div>
+                        <input type="hidden" id="adminDrawSelect">
                     </div>
+
+                    <!-- Mode Toggle -->
                     <div class="input-group">
-                        <label>Search Participant</label>
-                        <input type="text" id="adminWinnerSearch" placeholder="Search by Name or User ID..." onkeyup="loadJoinedUsers()">
+                        <label>Winner Selection Mode</label>
+                        <div style="display:flex; gap:10px;">
+                            <button class="admin-nav-btn active" id="btnManualMode" onclick="toggleWinnerMode('manual')" style="background:#6366f1; color:white;">Manual</button>
+                            <button class="admin-nav-btn" id="btnAutoMode" onclick="toggleWinnerMode('auto')">Auto</button>
+                        </div>
                     </div>
-                    <div id="usersContainer" style="margin-bottom: 20px;"></div>
+
+                    <!-- Manual Mode Content -->
+                    <div id="manualWinnerSection">
+                        <div class="input-group">
+                            <label>Search Participant</label>
+                            <input type="text" id="adminWinnerSearch" placeholder="Search by Name or User ID..." onkeyup="loadJoinedUsers()">
+                        </div>
+                        <div id="usersContainer" style="margin-bottom: 20px; max-height: 250px; overflow-y: auto;"></div>
+                    </div>
+
+                    <!-- Auto Mode Content -->
+                    <div id="autoWinnerSection" style="display: none; margin-bottom: 20px;">
+                        <div class="input-group">
+                            <label>Number of Winners to Auto-Select</label>
+                            <input type="number" id="autoWinnerCount" placeholder="e.g. 5" min="1">
+                        </div>
+                        <p style="font-size:12px; color:#64748b; font-weight:600;">* System will randomly pick this many users from the joined participants list and distribute the prize equally.</p>
+                    </div>
+
                     <button id="btnDeclareWinner" class="submit-btn green" onclick="declareWinners('btnDeclareWinner')">DECLARE WINNER(S)</button>
                 </div>
             </div>
@@ -1133,8 +1184,32 @@
         let editingDrawId = null; 
         let editingUserId = null;
         
+        // Winner Selection Mode
+        let currentWinnerMode = 'manual';
+        
         // Control Data Syncing Flag
         let isDataFetching = true;
+
+        // Custom Select Logic
+        window.addEventListener('click', function(e) {
+            let wrapper = document.getElementById('customDrawSelectWrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                let opts = document.getElementById('customDrawOptions');
+                if(opts) opts.style.display = 'none';
+            }
+        });
+
+        function toggleCustomSelect() {
+            let opts = document.getElementById('customDrawOptions');
+            opts.style.display = opts.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function selectCustomDraw(id, name) {
+            document.getElementById('customDrawSelectWrapper').querySelector('.custom-select-display').innerHTML = `<span style="color:#0f172a; font-weight:700;">${name}</span> <span style="font-size:12px;">(ID: ${id})</span>`;
+            document.getElementById('adminDrawSelect').value = id;
+            document.getElementById('customDrawOptions').style.display = 'none';
+            loadJoinedUsers();
+        }
 
         function openNav() { document.getElementById("mySidebar").style.left = "0"; document.getElementById("overlay").style.display = "block"; }
         function closeNav() { document.getElementById("mySidebar").style.left = "-280px"; document.getElementById("overlay").style.display = "none"; }
@@ -1307,6 +1382,9 @@
                             renderAdminRequests(); 
                             renderAdminUsers(); 
                             renderAdminDraws(); 
+                            if (document.getElementById('declareWinnerSec').classList.contains('active')) {
+                                updateAdminDropdown(); 
+                            }
                         }
                     }
                 } catch(e) {
@@ -1325,7 +1403,7 @@
         function loadAnnouncement() {
             let ann = localStorage.getItem('winCashAnnouncement');
             if (!ann || ann.trim() === '') {
-                ann = "WinCash में आपका स्वागत है! Lucky Drow जॉइन करे और कैश जीतें। तुरंत पैसे निकालने की सुविधा उपलब्ध है। अपने दोस्तों को आमंत्रित करें और आकर्षक बोनस पाएं! 💸 खेलें और बड़ा जीतें!";
+                ann = "WinCash में आपका स्वागत है! Lucky Draw जॉइन करे और कैश जीतें। तुरंत पैसे निकालने की सुविधा उपलब्ध है। अपने दोस्तों को आमंत्रित करें और आकर्षक बोनस पाएं! 💸 खेलें और बड़ा जीतें!";
             }
             document.getElementById('announcement-text').innerText = ann;
             
@@ -1963,6 +2041,11 @@
                 let drawPrize = draw ? draw.prize : '---';
                 
                 let isComp = draw ? (draw.status === 'COMPLETED') : true;
+
+                // Total Winner Logic Replacement
+                let winnerTxns = allTransactions.filter(t => t.type === 'Winning Prize' && (dId ? t.details.includes(dId) : t.details.includes(drawName)));
+                let uniqueWinnersCount = new Set(winnerTxns.map(t => t.userId)).size;
+                let displayWinners = isComp ? (uniqueWinnersCount > 0 ? uniqueWinnersCount : 0) : 0;
                 
                 let txt = isComp ? 'RESULT OUT' : 'JOINED';
                 let tagClass = isComp ? 'completed' : 'joined-tag';
@@ -1980,6 +2063,8 @@
                     } else {
                         res = `<div class="result-banner-lost">😔 Better Luck Next Time</div>`;
                     }
+                } else {
+                    res = `<div style="background: #f8fafc; color: #64748b; padding: 10px; border-radius: 10px; text-align: center; font-weight: 800; font-size: 15px; margin-top: 10px; border: 1px dashed #cbd5e1;">⏳ Winner Declar Soon</div>`;
                 }
                 
                 container.innerHTML += `
@@ -1992,8 +2077,9 @@
                         <div class="draw-status ${tagClass}">${txt}</div>
                     </div>
                     <div class="draw-details">
-                        <div class="detail-box"><span>Paid Entry</span><strong>₹ ${txn.amount}</strong></div>
-                        <div class="detail-box"><span>Prize Pool</span><strong class="green-text">₹ ${drawPrize}</strong></div>
+                        <div class="detail-box"><span>Paid</span><strong>₹ ${txn.amount}</strong></div>
+                        <div class="detail-box"><span>Prize</span><strong class="green-text">₹ ${drawPrize}</strong></div>
+                        <div class="detail-box"><span>Total Winner</span><strong style="color:#3b82f6;"><i class="fas fa-trophy"></i> ${displayWinners}</strong></div>
                     </div>
                     ${res}
                 </div>`;
@@ -2007,7 +2093,11 @@
             document.querySelectorAll('.admin-tab-content').forEach(content => content.classList.remove('active'));
             document.querySelectorAll('.admin-nav-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+            
+            // Only add active to the top nav buttons, ignore manual/auto toggles
+            if (event.currentTarget.classList.contains('admin-nav-btn') && !event.currentTarget.id.includes('Mode')) {
+                event.currentTarget.classList.add('active');
+            }
             
             if(tabId === 'allRequestsSec') renderAdminRequests();
             if(tabId === 'allUsersSec') renderAdminUsers();
@@ -2195,6 +2285,65 @@
                 sendPost({action: 'deleteDraw', drawId}, r => { setTimeout(fetchSheetData, 1000); }, btnElement); 
             }); 
         }
+
+        // =====================================
+        // WINNER DECLARATION (MANUAL & AUTO & CUSTOM DROPDOWN)
+        // =====================================
+        function toggleWinnerMode(mode) {
+            currentWinnerMode = mode;
+            if(mode === 'manual') {
+                document.getElementById('manualWinnerSection').style.display = 'block';
+                document.getElementById('autoWinnerSection').style.display = 'none';
+                
+                document.getElementById('btnManualMode').style.background = '#6366f1';
+                document.getElementById('btnManualMode').style.color = 'white';
+                
+                document.getElementById('btnAutoMode').style.background = '#e2e8f0';
+                document.getElementById('btnAutoMode').style.color = '#475569';
+            } else {
+                document.getElementById('autoWinnerSection').style.display = 'block';
+                document.getElementById('manualWinnerSection').style.display = 'none';
+                
+                document.getElementById('btnAutoMode').style.background = '#6366f1';
+                document.getElementById('btnAutoMode').style.color = 'white';
+                
+                document.getElementById('btnManualMode').style.background = '#e2e8f0';
+                document.getElementById('btnManualMode').style.color = '#475569';
+            }
+        }
+
+        function updateAdminDropdown() {
+            const optsContainer = document.getElementById("customDrawOptions");
+            const hiddenInput = document.getElementById("adminDrawSelect");
+            const display = document.getElementById("customDrawSelectWrapper").querySelector('.custom-select-display');
+
+            optsContainer.innerHTML = '';
+            hiddenInput.value = '';
+            display.innerHTML = '-- Select Live Draw --';
+
+            let liveDraws = allDraws.filter(d => d.status == 'LIVE');
+
+            if(liveDraws.length === 0) {
+                optsContainer.innerHTML = '<div class="custom-option" style="text-align:center; color:#ef4444; padding: 15px;">No Live Draws Available</div>';
+                return;
+            }
+
+            liveDraws.forEach(d => {
+                let joinedTxns = allTransactions.filter(t => t.type === 'Draw Entry Fee' && t.details.includes(d.id));
+                let joinedCount = new Set(joinedTxns.map(t => t.userId)).size;
+
+                optsContainer.innerHTML += `
+                    <div class="custom-option" onclick="selectCustomDraw('${d.id}', '${d.name.replace(/'/g, "\\'")}')">
+                        <div class="custom-option-title">${d.name}</div>
+                        <div class="custom-option-details">
+                            <span>ID: ${d.id}</span>
+                            <span>Fee: ₹${d.fee}</span>
+                            <span class="joined-badge"><i class="fas fa-users"></i> ${joinedCount} Joined</span>
+                        </div>
+                    </div>`;
+            });
+            document.getElementById("usersContainer").innerHTML = '';
+        }
         
         function loadJoinedUsers() {
             const dId = document.getElementById("adminDrawSelect").value; 
@@ -2240,21 +2389,45 @@
             }
         }
 
-        function updateAdminDropdown() {
-            const sel = document.getElementById("adminDrawSelect"); 
-            sel.innerHTML = '<option value="">-- Select Live Draw --</option>';
-            allDraws.filter(d => d.status == 'LIVE').forEach(d => { 
-                sel.innerHTML += `<option value="${d.id}">${d.name} (ID: ${d.id})</option>`; 
-            });
-            document.getElementById("usersContainer").innerHTML = '';
-        }
-
         function declareWinners(btnId) {
             const dId = document.getElementById("adminDrawSelect").value; 
             if(!dId) return showAlert("Please select a live draw!");
             
-            let wIds = Array.from(document.querySelectorAll('.winner-cb:checked')).map(cb => cb.value);
-            if(wIds.length == 0) return showAlert("Please select at least one winner!");
+            let wIds = [];
+
+            if (currentWinnerMode === 'manual') {
+                wIds = Array.from(document.querySelectorAll('.winner-cb:checked')).map(cb => cb.value);
+                if(wIds.length == 0) return showAlert("Please select at least one winner manually!");
+            } else {
+                // Auto Mode Logic
+                let numWinners = parseInt(document.getElementById("autoWinnerCount").value);
+                if(isNaN(numWinners) || numWinners <= 0) return showAlert("Please enter a valid number of winners to auto-select!");
+
+                const dDate = document.getElementById("adminDate").value; 
+                let jTxns = allTransactions.filter(x => x.type === 'Draw Entry Fee' && x.details.includes(dId));
+                if (dDate) {
+                    jTxns = jTxns.filter(x => {
+                        let dStr = getLocalDateStr(x.dateTime);
+                        return dStr === dDate;
+                    });
+                }
+
+                // Get Unique Joined Users
+                let uniqueUsersObj = {};
+                jTxns.forEach(t => { uniqueUsersObj[t.userId] = true; });
+                let uniqueUsersArr = Object.keys(uniqueUsersObj);
+
+                if (uniqueUsersArr.length === 0) return showAlert("No users have joined this draw!");
+                
+                // Adjust if requested winners are more than participants
+                if (numWinners > uniqueUsersArr.length) {
+                    numWinners = uniqueUsersArr.length;
+                }
+
+                // Shuffle array and pick first N users
+                let shuffled = uniqueUsersArr.sort(() => 0.5 - Math.random());
+                wIds = shuffled.slice(0, numWinners);
+            }
             
             let d = allDraws.find(x => x.id == dId); 
             if(!d) return;
@@ -2264,7 +2437,7 @@
                 action: 'declareWinner', drawId: dId, winners: wIds, 
                 winAmount: wAmt, dateTime: getCurrentDateTime()
             }, res => {
-                showAlert("Prize Distributed! Draw auto-restarted with new ID."); 
+                showAlert(`Prize Distributed to ${wIds.length} Winner(s)! Draw auto-restarted with new ID.`); 
                 setTimeout(fetchSheetData, 1500); 
             }, btnId);
         }
