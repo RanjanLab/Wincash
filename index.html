@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WinCash - Try Luck Win Cash</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -15,7 +13,7 @@
             margin: 0; 
             padding: 0; 
             box-sizing: border-box; 
-            font-family: 'Poppins', sans-serif; 
+            font-family: Arial, sans-serif; 
         }
         body { 
             background-color: #f4f6f9; 
@@ -143,7 +141,12 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Page Back Header */
-        .page-back-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 18px; font-weight: 800; color: #1e293b; cursor: pointer; }
+        .page-back-header { 
+            display: flex; align-items: center; gap: 12px; margin-bottom: 20px; 
+            font-size: 18px; font-weight: 800; color: #1e293b; cursor: pointer; 
+            position: sticky; top: -20px; background: #f4f6f9; z-index: 90; 
+            padding: 20px 0 10px 0; margin-top: -20px;
+        }
         .page-back-header i { font-size: 18px; color: #6366f1; background: #e0e7ff; padding: 10px; border-radius: 12px; }
 
         /* Full Screen Auth Styling */
@@ -637,11 +640,13 @@
             </div>
             
             <div id="depPageView1" class="admin-form" style="text-align: center;">
-                <p style="font-size:13px; color:#64748b; margin-bottom:20px; font-weight:600;">Minimum Deposit Amount: ₹<span id="txtPageMinDep">100</span></p>
                 <div class="input-group">
-                    <label>Enter Deposit Amount (₹)</label>
-                    <input type="number" id="pageDepAmount" placeholder="e.g. 500">
+                    <label style="text-align: left;">Enter Deposit Amount (₹)</label>
+                    <input type="number" id="pageDepAmount" placeholder="e.g. 500" oninput="checkDepMin()">
                 </div>
+                <p id="depMinError" style="font-size:12px; color:#ef4444; margin-top:-10px; margin-bottom:15px; font-weight:600; text-align:left; display:none;">
+                    * Minimum Deposit: ₹<span id="txtPageMinDep">100</span>
+                </p>
                 <button id="btnPayNow" class="submit-btn green" onclick="goToPaymentPage()">NEXT STEP</button>
             </div>
 
@@ -670,6 +675,7 @@
                 <button id="btnDepSubmit" class="submit-btn green" onclick="submitPageDeposit('btnDepSubmit')">SUBMIT PAYMENT</button>
             </div>
 
+            <!-- Page 3: Deposit Success -->
             <div id="depPageView3" class="admin-form" style="display: none; text-align: center; padding: 40px 20px;">
                 <i class="fas fa-check-circle" style="font-size: 60px; color: #10b981; margin-bottom: 15px;"></i>
                 <h3 style="font-size: 20px; color: #0f172a; margin-bottom: 10px;">Payment Completed!</h3>
@@ -683,14 +689,28 @@
             <div class="page-back-header" onclick="switchView('walletView')">
                 <i class="fas fa-arrow-left"></i> Withdraw Cash
             </div>
-            <div class="admin-form" style="text-align: center;">
-                <p style="font-size:14px; font-weight:700; color:#10b981; margin-bottom:15px; background: #ecfdf5; padding: 10px; border-radius: 8px; border: 1px dashed #10b981;">Available Winning Balance: ₹<span id="txtWitBal">0</span></p>
+            
+            <!-- Page 1: Withdraw Request Form -->
+            <div id="witPageView1" class="admin-form" style="text-align: center;">
                 <div class="input-group">
-                    <label>Enter Amount (₹)</label>
-                    <input type="number" id="witAmount" placeholder="e.g. 500">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:6px;">
+                        <label style="margin-bottom:0;">Enter Amount (₹)</label>
+                        <span style="font-size:12px; font-weight:700; color:#10b981;">Winning Balance: ₹<span id="txtWitBal">0</span></span>
+                    </div>
+                    <input type="number" id="witAmount" placeholder="e.g. 500" oninput="checkWitMin()">
                 </div>
-                <p style="font-size:12px; color:#ef4444; margin-top:-5px; margin-bottom:15px; font-weight:600;">* Minimum Withdrawal: ₹<span id="txtMinWit">200</span></p>
+                <p id="witMinError" style="font-size:12px; color:#ef4444; margin-top:-10px; margin-bottom:15px; font-weight:600; text-align:left; display:none;">
+                    * Minimum Withdrawal: ₹<span id="txtMinWit">200</span>
+                </p>
                 <button id="btnWitSubmit" class="submit-btn" onclick="submitWithdraw('btnWitSubmit')">SUBMIT REQUEST</button>
+            </div>
+
+            <!-- Page 2: Withdraw Success -->
+            <div id="witPageView2" class="admin-form" style="display: none; text-align: center; padding: 40px 20px;">
+                <i class="fas fa-check-circle" style="font-size: 60px; color: #10b981; margin-bottom: 15px;"></i>
+                <h3 style="font-size: 20px; color: #0f172a; margin-bottom: 10px;">Withdrawal Requested!</h3>
+                <p style="font-size: 14px; color: #64748b; margin-bottom: 25px;">कृपया प्रतीक्षा करें। अगले 24 घंटों के भीतर राशि आपके अकाउंट में सफलतापूर्वक ट्रांसफर कर दी जाएगी।</p>
+                <button class="submit-btn green" onclick="switchView('homeView')">BACK TO HOME</button>
             </div>
         </div>
 
@@ -722,7 +742,8 @@
 
         <!-- TRANSACTIONS -->
         <div id="transactionsView" class="view-section">
-            <div class="page-back-header" onclick="switchView('homeView')">
+            <!-- Updated sticky header with space at the top -->
+            <div class="page-back-header" style="top: 0; padding-top: 25px;" onclick="switchView('homeView')">
                 <i class="fas fa-arrow-left"></i> Transactions History
             </div>
             <div id="user-transactions-container"></div>
@@ -981,6 +1002,29 @@
                 input.type = "password";
                 iconElement.classList.remove("fa-eye-slash");
                 iconElement.classList.add("fa-eye");
+            }
+        }
+
+        // Check Deposit & Withdraw Min limits dynamically
+        function checkDepMin() {
+            let val = document.getElementById('pageDepAmount').value;
+            let amt = parseInt(val);
+            let err = document.getElementById('depMinError');
+            if (val !== "" && amt < appSettings.minDeposit) {
+                err.style.display = 'block';
+            } else {
+                err.style.display = 'none';
+            }
+        }
+
+        function checkWitMin() {
+            let val = document.getElementById('witAmount').value;
+            let amt = parseInt(val);
+            let err = document.getElementById('witMinError');
+            if (val !== "" && amt < appSettings.minWithdraw) {
+                err.style.display = 'block';
+            } else {
+                err.style.display = 'none';
             }
         }
 
@@ -1386,9 +1430,11 @@
         function goToPaymentPage() {
             depositAmountTemp = parseInt(document.getElementById('pageDepAmount').value);
             if (!depositAmountTemp || depositAmountTemp < appSettings.minDeposit) {
+                document.getElementById('depMinError').style.display = 'block';
                 return showAlert(`Minimum deposit amount is ₹${appSettings.minDeposit}`);
             }
             
+            document.getElementById('depMinError').style.display = 'none';
             const upiId = appSettings.adminUpi.trim();
             const payeeName = "WinCash"; 
             
@@ -1455,8 +1501,12 @@
             }
 
             let amt = parseInt(document.getElementById('witAmount').value);
-            if (!amt || amt < appSettings.minWithdraw) return showAlert(`Minimum withdrawal is ₹${appSettings.minWithdraw}`);
+            if (!amt || amt < appSettings.minWithdraw) {
+                document.getElementById('witMinError').style.display = 'block';
+                return showAlert(`Minimum withdrawal is ₹${appSettings.minWithdraw}`);
+            }
             
+            document.getElementById('witMinError').style.display = 'none';
             let winWallet = parseInt(currentUser.winningWallet) || 0;
             if (amt > winWallet) return showAlert('Insufficient Winning Wallet Balance!');
             
@@ -1465,10 +1515,13 @@
                 user: currentUser.name, userId: currentUser.id, amount: amt, 
                 details: `Transfer to Bank/UPI`, upiId: currentUser.upi || '', dateTime: getCurrentDateTime()
             }, res => {
-                showAlert('Withdraw Request Submitted Successfully!'); 
                 currentUser.winningWallet = winWallet - amt; 
                 localStorage.setItem('winCashUser', JSON.stringify(currentUser));
-                switchView('walletView'); 
+                
+                // Show Withdraw Success Page
+                document.getElementById('witPageView1').style.display = 'none';
+                document.getElementById('witPageView2').style.display = 'block';
+                
                 setTimeout(fetchSheetData, 1000);
             }, btnId);
         }
@@ -1500,7 +1553,8 @@
             document.getElementById('dtlDesc').innerText = req.details;
             
             let waBlock = document.getElementById('dtlWaSupportBlock');
-            if (actualStatus === 'Failed' || actualStatus === 'Rejected') {
+            // Modified line below to include 'Pending'
+            if (actualStatus === 'Failed' || actualStatus === 'Rejected' || actualStatus === 'Pending') {
                 waBlock.style.display = 'block';
                 let msg = encodeURIComponent(`Hello Admin, I need help with my transaction.\nTxn ID: ${req.id}\nStatus: ${actualStatus}\nAmount: ₹${req.amount}\nUser ID: ${currentUser.id}`);
                 document.getElementById('dtlWaLink').href = `https://wa.me/918873903209?text=${msg}`;
@@ -1708,8 +1762,9 @@
                     amtColor = '#10b981'; 
                 }
 
+                // CHANGED: The entire wrapper is now clickable to view details
                 container.innerHTML += `
-                <div class="draw-card" style="padding:15px; margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center; transition:0.2s; background:#fff;">
+                <div class="draw-card" onclick="showTxnDetails('${req.id}')" style="padding:15px; margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center; transition:0.2s; background:#fff; cursor:pointer;">
                     <div style="text-align: left; flex:1;">
                         <strong style="font-size: 15px; color:#000000; display:block; margin-bottom: 4px;">${displayType}</strong>
                         <div style="margin-bottom: 2px;">
@@ -1719,7 +1774,7 @@
                     </div>
                     <div style="text-align: right;">
                         <strong style="color:${amtColor}; font-size: 18px; display: block; margin-bottom: 8px;">${req.amount ? '₹'+req.amount : ''}</strong>
-                        <button style="background: #e2e8f0; color: #475569; border: none; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer;" onclick="showTxnDetails('${req.id}')">DETAILS</button>
+                        <button style="background: #e2e8f0; color: #475569; border: none; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer;">DETAILS</button>
                     </div>
                 </div>`;
             });
@@ -2278,6 +2333,13 @@
                 document.getElementById('depPageView2').style.display='none'; 
                 document.getElementById('depPageView3').style.display='none'; 
                 document.getElementById('pageDepAmount').value = '';
+                document.getElementById('depMinError').style.display = 'none';
+            }
+            if(viewId === 'withdrawView') { 
+                document.getElementById('witPageView1').style.display='block'; 
+                document.getElementById('witPageView2').style.display='none'; 
+                document.getElementById('witAmount').value = '';
+                document.getElementById('witMinError').style.display = 'none';
             }
             if(viewId === 'walletView') updateWalletUI();
             if(viewId === 'bankView') renderBankDetails();
