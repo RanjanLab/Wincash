@@ -582,7 +582,7 @@
             <div class="announcement-container">
                 <i class="fas fa-bullhorn announcement-icon"></i>
                 <div class="marquee-wrapper">
-                    <span class="marquee-text" id="announcement-text">🎉 Welcome to WinCash! Play live draws and win real cash daily. Instant withdrawals available. Invite your friends to earn ₹50 bonus! 💸 Play & Win BIG!</span>
+                    <span class="marquee-text" id="announcement-text">🎉 WinCash में आपका स्वागत है! Lucky Draw ज्वाइन करे और असली कैश जीतें। तुरंत पैसे निकालने की सुविधा उपलब्ध है। अपने दोस्तों को आमंत्रित करें और बोनस पाएं! 💸 खेलें और बड़ा जीत</span>
                 </div>
             </div>
 
@@ -1700,7 +1700,7 @@
         function shareReferralLink() {
             const refCode = currentUser ? currentUser.id : "100001"; 
             const bonusAmount = appSettings.welcomeBonus || 50; 
-            const msg = `🔥 घर बैठे गेम खेलो और असली पैसे जीतो! WinCash ऐप डाउनलोड करो और तुरंत ₹${bonusAmount} का फ्री बोनस पाओ!\n\n🎁 मेरा रेफरल कोड: ${refCode}\n👇 अभी ज्वाइन करें:\n${window.location.href.split('#')[0]}#ref=${refCode}`;
+            const msg = `🔥 Lucky drow खेलो और असली पैसे जीतो! WinCash ऐप डाउनलोड करो और तुरंत ₹${bonusAmount} का फ्री बोनस पाओ!\n\n🎁 मेरा रेफरल कोड: ${refCode}\n👇 अभी ज्वाइन करें:\n${window.location.href.split('#')[0]}#ref=${refCode}`;
             
             if (navigator.share) {
                 navigator.share({ title: 'WinCash Referral', text: msg }).catch(e => console.log(e));
