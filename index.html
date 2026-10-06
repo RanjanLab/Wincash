@@ -430,8 +430,12 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px dashed #cbd5e1;">
                     <strong>Date:</strong> <span id="dtlDate" style="color:#0f172a; font-weight:600; text-align:right;"></span>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px dashed #cbd5e1;">
                     <strong>Details:</strong> <span id="dtlDesc" style="color:#1e293b; font-weight:600; text-align:right; max-width: 60%; word-break: break-word;"></span>
+                </div>
+                <!-- ADDED REMARK ROW -->
+                <div id="dtlRemarkRow" style="display:none; justify-content:space-between; align-items:center; padding:10px 0;">
+                    <strong>Admin Remark:</strong> <span id="dtlRemark" style="color:#ef4444; font-weight:700; text-align:right; max-width: 60%; word-break: break-word;"></span>
                 </div>
             </div>
             
@@ -1552,6 +1556,22 @@
             document.getElementById('dtlDate').innerText = formatDateIST(req.dateTime);
             document.getElementById('dtlDesc').innerText = req.details;
             
+            // ADMIN REMARK LOGIC
+            let remarkRow = document.getElementById('dtlRemarkRow');
+            if (req.remark && req.remark.trim() !== '') {
+                remarkRow.style.display = 'flex';
+                document.getElementById('dtlRemark').innerText = req.remark;
+                if (actualStatus === 'Approved') {
+                    document.getElementById('dtlRemark').style.color = '#10b981';
+                } else if (actualStatus === 'Rejected' || actualStatus === 'Failed') {
+                    document.getElementById('dtlRemark').style.color = '#ef4444';
+                } else {
+                    document.getElementById('dtlRemark').style.color = '#f59e0b';
+                }
+            } else {
+                remarkRow.style.display = 'none';
+            }
+            
             let waBlock = document.getElementById('dtlWaSupportBlock');
             // Modified line below to include 'Pending'
             if (actualStatus === 'Failed' || actualStatus === 'Rejected' || actualStatus === 'Pending') {
@@ -1762,7 +1782,6 @@
                     amtColor = '#10b981'; 
                 }
 
-                // CHANGED: The entire wrapper is now clickable to view details
                 container.innerHTML += `
                 <div class="draw-card" onclick="showTxnDetails('${req.id}')" style="padding:15px; margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center; transition:0.2s; background:#fff; cursor:pointer;">
                     <div style="text-align: left; flex:1;">
