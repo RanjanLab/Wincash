@@ -34,7 +34,7 @@
         #initialSplash {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #f4f6f9; z-index: 9999; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; transition: opacity 0.5s ease;
+            justify-content: center; align-items: center; transition: opacity 0.4s ease;
         }
         @keyframes floatLogo { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
         @keyframes shadowScale { 0%, 100% { transform: scale(1); opacity: 0.15; } 50% { transform: scale(0.6); opacity: 0.05; } }
@@ -86,7 +86,7 @@
         .header-left .left-menu-icon { font-size: 24px; cursor: pointer; color: #1e293b; padding: 5px; }
         .header-left .app-name {
             font-size: 24px; font-weight: 800; background: linear-gradient(to right, #f59e0b, #ef4444);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.5px; text-transform: uppercase;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.5px;
         }
         .wallet-section {
             display: flex; align-items: center; background: #f0fdf4; color: #059669;
@@ -150,9 +150,15 @@
         #loginView, #registerView, #forgotView { display: none; flex-direction: column; align-items: center; min-height: 95vh; width: 100%; text-align: center; padding: 40px 20px; background: #f4f6f9; }
         #loginView.active, #registerView.active, #forgotView.active { display: flex; }
         .auth-fullscreen-box { width: 100%; max-width: 450px; margin: 0 auto; }
-        .auth-logo-left { font-size: 32px; font-weight: 800; margin-bottom: 20px; text-align: left; background: linear-gradient(to right, #f59e0b, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; width: 100%; text-transform: uppercase; }
+        .auth-logo-left { font-size: 32px; font-weight: 800; margin-bottom: 20px; text-align: left; background: linear-gradient(to right, #f59e0b, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; width: 100%; }
         .auth-switch-text { margin-top: 20px; font-size: 14px; font-weight: 600; color: #64748b; text-align: center; }
         .auth-switch-text span { color: #6366f1; cursor: pointer; font-weight: 700; }
+        
+        /* Password Eye Toggle Input Group */
+        .password-wrapper { position: relative; display: block; }
+        .password-wrapper input { width: 100%; padding: 12px 15px; padding-right: 45px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 15px; background: #f8fafc; outline: none; }
+        .password-wrapper .toggle-password { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #64748b; font-size: 18px; transition: 0.2s; }
+        .password-wrapper .toggle-password:hover { color: #1e293b; }
 
         /* Contact Us Footer Icons */
         .login-footer-contact { margin-top: 35px; border-top: 1px dashed #cbd5e1; padding-top: 20px; width: 100%; }
@@ -163,7 +169,7 @@
         .contact-email { background: #ea4335; } .contact-whatsapp { background: #25d366; } .contact-telegram { background: #0088cc; }
 
         /* Referral Banner */
-        .refer-banner { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; padding: 20px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; cursor: pointer; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3); }
+        .refer-banner { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; padding: 20px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3); }
         .refer-banner .text h3 { font-size: 20px; font-weight: 800; line-height: 1.2; text-align: left; }
         .refer-banner .text p { font-size: 12px; opacity: 0.9; margin: 3px 0 10px 0; text-align: left; }
         .refer-banner-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
@@ -200,10 +206,10 @@
             display: flex; flex-direction: column; gap: 8px; 
             background: #ffffff; border-radius: 16px; padding: 18px; margin-bottom: 16px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05), 0 3px 6px rgba(0, 0, 0, 0.03); 
-            border: 1px solid #e2e8f0; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); cursor: pointer; position: relative; overflow: hidden;
+            border: 1px solid #e2e8f0; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative; overflow: hidden;
         }
         .draw-row-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.04); }
-        .draw-row-card.joined-card { opacity: 0.95; cursor: default; background: #f8fafc; }
+        .draw-row-card.joined-card { opacity: 0.95; background: #f8fafc; }
         .draw-row-card.joined-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05); }
         
         .draw-row-top, .draw-row-bottom { display: flex; justify-content: space-between; align-items: center; width: 100%; }
@@ -235,7 +241,7 @@
         @keyframes shineLeftRight { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
         
         .join-btn-small.joined::after { display: none; }
-        .join-btn-small.joined { background: #f1f5f9; color: #64748b; box-shadow: none; border: 1px solid #cbd5e1; }
+        .join-btn-small.joined { background: #f1f5f9; color: #64748b; box-shadow: none; border: 1px solid #cbd5e1; cursor: default; }
 
         /* Admin Forms & Nav */
         .admin-nav { display: flex; gap: 6px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
@@ -247,7 +253,7 @@
         .admin-form { background: #ffffff; padding: 20px; border-radius: 16px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0; }
         .input-group { margin-bottom: 15px; text-align: left; }
         .input-group label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 6px; color: #475569; }
-        .input-group input, .input-group select { width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 15px; background: #f8fafc; outline: none; }
+        .input-group input:not(.toggle-password input), .input-group select { width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 15px; background: #f8fafc; outline: none; }
         
         .submit-btn { width: 100%; background: #6366f1; color: white; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 10px; display: inline-flex; justify-content: center; align-items: center; gap: 8px; }
         .submit-btn.green { background: #10b981; }
@@ -482,7 +488,10 @@
                 </div>
                 <div class="input-group">
                     <label>Password</label>
-                    <input type="password" id="loginPassword" placeholder="Enter password">
+                    <div class="password-wrapper">
+                        <input type="password" id="loginPassword" placeholder="Enter password">
+                        <i class="fas fa-eye toggle-password" onclick="togglePassword('loginPassword', this)"></i>
+                    </div>
                 </div>
                 <div style="text-align: right; margin-bottom: 10px;">
                     <span style="font-size: 13px; color: #6366f1; font-weight: 600; cursor: pointer;" onclick="switchView('forgotView')">Forgot Password?</span>
@@ -521,7 +530,10 @@
                 </div>
                 <div class="input-group">
                     <label>Password</label>
-                    <input type="password" id="regPassword" placeholder="Create password">
+                    <div class="password-wrapper">
+                        <input type="password" id="regPassword" placeholder="Create password">
+                        <i class="fas fa-eye toggle-password" onclick="togglePassword('regPassword', this)"></i>
+                    </div>
                 </div>
                 <div class="input-group">
                     <label>Referral Code (User ID)</label>
@@ -568,12 +580,12 @@
             </div>
 
             <!-- Referral Banner -->
-            <div class="refer-banner" onclick="shareReferralLink()">
+            <div class="refer-banner">
                 <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <div class="text" style="flex: 1;">
                         <h3>Refer & Earn</h3>
                         <p>Invite friends and get ₹<span id="banner-ref-amount">50</span> bonus!</p>
-                        <div class="share-invite-btn-small" onclick="event.stopPropagation(); shareReferralLink();">
+                        <div class="share-invite-btn-small" onclick="shareReferralLink();">
                             <i class="fas fa-share-alt"></i> Share Invite Now
                         </div>
                     </div>
@@ -958,6 +970,20 @@
         // ==========================================
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyFQQA2CuNtzLNu3i2XBvkRs_dFfhEFaIlKRiVzq_DI0u5gwSlnHQ3OWtHR_WZAdSyi/exec';
 
+        // Password Eye Toggle Function
+        function togglePassword(inputId, iconElement) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                iconElement.classList.remove("fa-eye");
+                iconElement.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                iconElement.classList.remove("fa-eye-slash");
+                iconElement.classList.add("fa-eye");
+            }
+        }
+
         // Custom Prompts & Alert
         function showAlert(msg) { 
             document.getElementById('alertMessage').innerText = msg; 
@@ -1059,8 +1085,7 @@
         let editingDrawId = null; 
         let editingUserId = null;
         
-        // Control Splash Screen Flag
-        let isFirstLoad = true;
+        // Control Data Syncing Flag
         let isDataFetching = true;
 
         function openNav() { document.getElementById("mySidebar").style.left = "0"; document.getElementById("overlay").style.display = "block"; }
@@ -1150,7 +1175,6 @@
             let btnEl = typeof btnElement === 'string' ? document.getElementById(btnElement) : btnElement;
             let originalText = '';
             
-            // Note: During Join Flow, btnElement will be deliberately null so it doesn't interrupt custom loading
             if (btnEl) {
                 originalText = btnEl.innerHTML;
                 btnEl.disabled = true;
@@ -1162,7 +1186,6 @@
             if (SCRIPT_URL === 'YOUR_WEB_APP_URL_HERE') { 
                 resetBtn(btnEl, originalText);
                 showAlert('Please configure SCRIPT_URL in HTML code!'); 
-                if(isFirstLoad) { document.getElementById('initialSplash').style.opacity = '0'; setTimeout(()=> document.getElementById('initialSplash').style.display = 'none', 500); isFirstLoad = false; }
                 return; 
             }
 
@@ -1190,7 +1213,6 @@
             isDataFetching = true;
             if (SCRIPT_URL === 'YOUR_WEB_APP_URL_HERE') {
                 isDataFetching = false;
-                if(isFirstLoad) { document.getElementById('initialSplash').style.opacity = '0'; setTimeout(()=> document.getElementById('initialSplash').style.display = 'none', 500); isFirstLoad = false; }
                 return;
             }
             
@@ -1198,11 +1220,6 @@
             .then(r => r.text())
             .then(text => {
                 isDataFetching = false;
-                if(isFirstLoad) {
-                    document.getElementById('initialSplash').style.opacity = '0';
-                    setTimeout(()=> document.getElementById('initialSplash').style.display = 'none', 500);
-                    isFirstLoad = false;
-                }
 
                 try {
                     let data = JSON.parse(text);
@@ -1249,11 +1266,6 @@
                 }
             }).catch(e => {
                 isDataFetching = false;
-                if(isFirstLoad) {
-                    document.getElementById('initialSplash').style.opacity = '0';
-                    setTimeout(()=> document.getElementById('initialSplash').style.display = 'none', 500);
-                    isFirstLoad = false;
-                }
                 if (document.getElementById('homeView').classList.contains('active')) renderLiveDraws();
                 if (document.getElementById('myDrawsView').classList.contains('active')) renderMyDraws();
             });
@@ -1697,7 +1709,7 @@
                 }
 
                 container.innerHTML += `
-                <div class="draw-card" onclick="showTxnDetails('${req.id}')" style="padding:15px; margin-bottom: 12px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition:0.2s; background:#fff;">
+                <div class="draw-card" style="padding:15px; margin-bottom: 12px; display:flex; justify-content:space-between; align-items:center; transition:0.2s; background:#fff;">
                     <div style="text-align: left; flex:1;">
                         <strong style="font-size: 15px; color:#000000; display:block; margin-bottom: 4px;">${displayType}</strong>
                         <div style="margin-bottom: 2px;">
@@ -1705,13 +1717,16 @@
                             <span style="font-size: 11px; color: #64748b; font-weight: 500;"><i class="far fa-clock"></i> ${formatDateIST(req.dateTime)}</span>
                         </div>
                     </div>
-                    <strong style="color:${amtColor}; font-size: 18px; text-align:right;">${req.amount ? '₹'+req.amount : ''} <i class="fas fa-chevron-right" style="font-size:12px; color:#cbd5e1; margin-left:8px;"></i></strong>
+                    <div style="text-align: right;">
+                        <strong style="color:${amtColor}; font-size: 18px; display: block; margin-bottom: 8px;">${req.amount ? '₹'+req.amount : ''}</strong>
+                        <button style="background: #e2e8f0; color: #475569; border: none; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer;" onclick="showTxnDetails('${req.id}')">DETAILS</button>
+                    </div>
                 </div>`;
             });
         }
 
         // =====================================
-        // DRAW ACTIONS (User)
+        // DRAW ACTIONS (OPTIMISTIC SILENT SYNC)
         // =====================================
         function renderLiveDraws() {
             const container = document.getElementById('live-draws-container'); 
@@ -1733,14 +1748,13 @@
             liveDraws.forEach(draw => {
                 const isJoined = allTransactions.some(t => t.userId == currentUser.id && t.type === 'Draw Entry Fee' && t.details.includes(draw.id));
                 
-                const clickAttr = isJoined ? '' : `onclick="joinDraw('${draw.id}', 'btnJoin_${draw.id}')"`;
                 const btnHtml = isJoined 
                     ? `<button class="join-btn-small joined" disabled><i class="fas fa-check-circle"></i> JOINED</button>` 
-                    : `<button id="btnJoin_${draw.id}" class="join-btn-small"><i class="fas fa-check-circle"></i> JOIN ₹${draw.fee}</button>`;
+                    : `<button id="btnJoin_${draw.id}" class="join-btn-small" onclick="joinDraw('${draw.id}', 'btnJoin_${draw.id}')"><i class="fas fa-check-circle"></i> JOIN ₹${draw.fee}</button>`;
                 const cardClass = isJoined ? 'draw-row-card joined-card' : 'draw-row-card';
 
                 container.innerHTML += `
-                <div class="${cardClass}" ${clickAttr}>
+                <div class="${cardClass}">
                     <div class="draw-row-top" style="border-bottom: 1px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 2px;">
                         <div>
                             <div class="draw-row-title" style="margin-bottom: 4px;">${draw.name}</div>
@@ -1770,43 +1784,74 @@
             }
             
             let btn = document.getElementById(btnElementId);
-            let origText = btn ? btn.innerHTML : `<i class="fas fa-check-circle"></i> JOIN ₹${draw.fee}`;
-            
-            if(btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Wait...';
-                btn.style.opacity = '0.8';
-            }
             
             showConfirm(`Do you want to join ${draw.name} for ₹${draw.fee}?`, 
                 function() {
+                    
+                    // ====================================================
+                    // OPTIMISTIC LOCAL UI UPDATE (SILENT & INSTANT REACTION)
+                    // ====================================================
+                    let fee = parseInt(draw.fee);
+                    let dep = parseInt(currentUser.depositWallet);
+                    if (isNaN(dep)) dep = parseInt(currentUser.wallet) || 0;
+                    let win = parseInt(currentUser.winningWallet) || 0;
+                    
+                    // Instantly deduct from local wallet
+                    if (dep >= fee) {
+                        currentUser.depositWallet = dep - fee;
+                    } else {
+                        currentUser.depositWallet = 0;
+                        currentUser.winningWallet = win - (fee - dep);
+                    }
+                    localStorage.setItem('winCashUser', JSON.stringify(currentUser));
+                    updateWalletUI(); 
+
+                    // Instantly change button to Joined visually
+                    if(btn) {
+                        btn.parentElement.parentElement.classList.add('joined-card');
+                        btn.className = 'join-btn-small joined';
+                        btn.innerHTML = '<i class="fas fa-check-circle"></i> JOINED';
+                        btn.style.opacity = '1';
+                        btn.onclick = null;
+                        btn.removeAttribute('onclick');
+                    }
+
+                    // Instantly add temporary transaction so 'My Draws' & 'History' update
+                    let tempTxn = {
+                        id: "TXN" + generateTxnID(),
+                        type: 'Draw Entry Fee',
+                        userId: currentUser.id,
+                        userName: currentUser.name,
+                        amount: fee,
+                        details: `Joined Draw ${draw.name} (ID: ${draw.id})`,
+                        dateTime: getCurrentDateTime(),
+                        status: 'Approved'
+                    };
+                    allTransactions.unshift(tempTxn);
+
+                    // Re-render other views silently if user navigates away fast
+                    if(document.getElementById('transactionsView').classList.contains('active')) renderUserTransactions();
+                    if(document.getElementById('myDrawsView').classList.contains('active')) renderMyDraws();
+
+                    // ====================================================
+                    // SILENT SERVER SYNC (Invisible to user)
+                    // ====================================================
                     sendPost({
                         action: 'joinDraw', drawId: drawId, drawName: draw.name, userId: currentUser.id, 
                         userName: currentUser.name, fee: draw.fee, dateTime: getCurrentDateTime()
                     }, res => {
                         if(res && res.status === 'error') {
-                            showAlert(res.message || 'Error occurred');
-                            if(btn) {
-                                btn.disabled = false;
-                                btn.innerHTML = origText;
-                                btn.style.opacity = '1';
-                            }
+                            // On error, revert and refresh
+                            showAlert(res.message || 'Error occurred while saving to server.');
+                            fetchSheetData(); 
                         } else {
-                            if(btn) {
-                                btn.className = 'join-btn-small joined';
-                                btn.innerHTML = '<i class="fas fa-check-circle"></i> JOINED';
-                                btn.style.opacity = '1';
-                            }
+                            // On Success, fetch full updated data completely silently
+                            fetchSheetData(); 
                         }
-                        setTimeout(fetchSheetData, 1000); 
                     }, null); 
                 },
                 function() {
-                    if(btn) {
-                        btn.disabled = false;
-                        btn.innerHTML = origText;
-                        btn.style.opacity = '1';
-                    }
+                    // Canceled Prompt
                 }
             );
         }
@@ -1817,7 +1862,7 @@
         function renderMyDraws() {
             const container = document.getElementById('my-draws-container'); 
             
-            if (isDataFetching) {
+            if (isDataFetching && allTransactions.length === 0) {
                 if(container.innerHTML === '') {
                     container.innerHTML = `<div class="empty-state" style="padding-top:40px;"><i class="fas fa-spinner fa-spin" style="font-size:30px; color:#3b82f6; margin-bottom:15px;"></i><br>Loading... Please Wait</div>`;
                 }
@@ -1843,7 +1888,6 @@
                 let drawName = draw ? draw.name : fallbackName; 
                 let drawPrize = draw ? draw.prize : '---';
                 
-                // IMPORTANT FIX: Agar draw allDraws list mein nahi hai (deleted hai), toh usko hamesha COMPLETED maane taaki history save rahe.
                 let isComp = draw ? (draw.status === 'COMPLETED') : true;
                 
                 let txt = isComp ? 'RESULT OUT' : 'JOINED';
@@ -2277,9 +2321,16 @@
             }
             
             setWalletLoading(); 
-            
             fetchSheetData();
             loadAnnouncement();
+
+            // Premium Fast-Loading Splash Screen Logic
+            // Force hide the splash after exactly 1 second, regardless of fetch status.
+            setTimeout(() => {
+                const splash = document.getElementById('initialSplash');
+                splash.style.opacity = '0';
+                setTimeout(() => splash.style.display = 'none', 400); // 400ms CSS transition
+            }, 1000);
             
             const hash = window.location.hash;
             if (hash.includes('ref=')) { 
