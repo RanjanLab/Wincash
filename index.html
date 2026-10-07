@@ -396,7 +396,7 @@
         <div class="modal-box" style="padding:30px;">
             <i class="fas fa-bell" style="font-size: 40px; color: #3b82f6; margin-bottom:15px;"></i>
             <h3 style="margin-bottom:20px; font-size:16px; color:#1e293b;" id="alertMessage">Message</h3>
-            <button class="submit-btn green" onclick="closeAlert()" style="margin:0;">OKAY</button>
+            <button id="alertOkBtn" class="submit-btn green" style="margin:0;">OKAY</button>
         </div>
     </div>
     
@@ -1083,10 +1083,21 @@
             }
         }
 
-        // Custom Prompts & Alert
-        function showAlert(msg) { 
+        // Custom Prompts & Alert with Callback Support
+        function showAlert(msg, callback = null) { 
             document.getElementById('alertMessage').innerText = msg; 
             document.getElementById('customAlert').style.display = 'flex'; 
+
+            let btn = document.getElementById('alertOkBtn');
+            let newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+
+            newBtn.onclick = function() {
+                closeAlert();
+                if (typeof callback === 'function') {
+                    callback();
+                }
+            };
         }
         function closeAlert() { 
             document.getElementById('customAlert').style.display = 'none'; 
@@ -1577,9 +1588,9 @@
         // =====================================
         function submitWithdraw(btnId) {
             if (!currentUser.bank && !currentUser.upi) {
-                showAlert('Please add your Bank Details or UPI ID first to withdraw cash!');
-                switchView('bankView');
-                return;
+                return showAlert('Please add your Bank Details or UPI ID first to withdraw cash!', function() {
+                    switchView('bankView');
+                });
             }
 
             let amt = parseInt(document.getElementById('witAmount').value);
@@ -1616,7 +1627,9 @@
             if(!req) return;
             
             let actualStatus = req.status;
-            if(req.details.includes('Cancelled Without UTR')) actualStatus = 'Failed';
+            if(req.status !== 'Approved' && req.details.includes('Cancelled Without UTR')) {
+                actualStatus = 'Failed';
+            }
 
             // Determine Status Color for Modal
             let statColor = '#3b82f6';
@@ -1838,7 +1851,9 @@
             
             myReqs.forEach(req => {
                 let actualStatus = req.status;
-                if(req.details.includes('Cancelled Without UTR')) actualStatus = 'Failed';
+                if(req.status !== 'Approved' && req.details.includes('Cancelled Without UTR')) {
+                    actualStatus = 'Failed';
+                }
 
                 let sc = '#64748b'; 
                 let displayType = req.type;
@@ -1932,7 +1947,9 @@
             if (!draw) return;
             
             if (getTotalWallet() < parseInt(draw.fee)) {
-                return showAlert("Insufficient Wallet Balance! Please deposit cash to join.");
+                return showAlert("Insufficient Wallet Balance! Please deposit cash to join.", function() {
+                    switchView('depositView');
+                });
             }
             
             let btn = document.getElementById(btnElementId);
@@ -2107,59 +2124,70 @@
         }
 
         function renderAdminRequests() {
-            const container = document.getElementById('admin-requests-container'); 
-            container.innerHTML = ''; 
-            
+            const container = document.getElementById('admin-requests-container');
+            container.innerHTML = '';
+
             let searchTerm = '';
             if(document.getElementById('adminReqSearch')) {
                 searchTerm = document.getElementById('adminReqSearch').value.toLowerCase();
             }
 
-            let pendingReqs = allTransactions.filter(r => r.status === 'Pending');
-            if (pendingReqs.length === 0) {
-                container.innerHTML = `<div class="empty-state">No pending requests.</div>`; 
+            // Include pending AND cancelled without UTR (only if Failed, so we don't show already approved/rejected ones)
+            let displayReqs = allTransactions.filter(r => r.status === 'Pending' || (r.status === 'Failed' && r.details.includes('Cancelled Without UTR')));
+            
+            if (displayReqs.length === 0) {
+                container.innerHTML = `<div class="empty-state">No pending or cancelled requests.</div>`;
                 return;
             }
-            
+
             let count = 0;
-            pendingReqs.forEach(req => {
+            displayReqs.forEach(req => {
                 let foundU = allUsers.find(u => u.id == req.userId);
                 let uName = foundU ? foundU.name : (req.user || req.userName || 'Unknown User');
                 let uPhone = foundU ? foundU.phone : '';
 
                 if (searchTerm) {
-                    if (!uName.toLowerCase().includes(searchTerm) && 
-                        !String(req.userId).toLowerCase().includes(searchTerm) && 
+                    if (!uName.toLowerCase().includes(searchTerm) &&
+                        !String(req.userId).toLowerCase().includes(searchTerm) &&
                         !String(req.id).toLowerCase().includes(searchTerm)) {
                         return;
                     }
                 }
-                
+
                 count++;
-                let payBtn = ''; 
+                let payBtn = '';
                 if (req.type === 'Withdrawal' && req.upiId) {
                     payBtn = `<a href="upi://pay?pa=${req.upiId}&pn=${encodeURIComponent(req.user)}&am=${req.amount}&cu=INR" class="btn-action" style="background:#3b82f6; color:white; text-decoration: none;"><i class="fas fa-paper-plane"></i> Pay</a>`;
                 }
-                
+
                 let waBtn = '';
                 if (uPhone) {
                     let waMsg = encodeURIComponent(`Hi ${uName}, this is Admin from WinCash. I am contacting you regarding your ${req.type} request of ₹${req.amount} (Txn ID: ${req.id}).`);
                     waBtn = `<a href="https://wa.me/91${uPhone}?text=${waMsg}" target="_blank" style="color:#25d366; font-size:18px; margin-left:8px; text-decoration:none;"><i class="fab fa-whatsapp"></i></a>`;
                 }
+
+                let isCancelled = req.status === 'Failed' && req.details.includes('Cancelled Without UTR');
                 
+                let actionBtns = `
+                <div class="admin-action-group">
+                    ${payBtn}
+                    <button id="btnApprove_${req.id}" class="btn-action btn-approve" onclick="handleAdminReq('${req.id}', 'Approved', 'btnApprove_${req.id}')">Approve</button>
+                    <button id="btnReject_${req.id}" class="btn-action btn-reject" onclick="handleAdminReq('${req.id}', 'Rejected', 'btnReject_${req.id}')">Reject</button>
+                </div>`;
+                
+                let statusColor = isCancelled ? '#ef4444' : '#f59e0b';
+                let typeColor = isCancelled ? '#ef4444' : '#10b981';
+                let statusText = isCancelled ? 'Failed (No UTR)' : 'Pending';
+
                 container.innerHTML += `
-                <div class="draw-card" style="text-align: left;">
-                    <div style="font-weight:800; font-size: 16px; margin-bottom: 5px;">${req.type} | <span style="color:#10b981;">₹${req.amount}</span></div>
+                <div class="draw-card" style="text-align: left; opacity: ${isCancelled ? '0.85' : '1'};">
+                    <div style="font-weight:800; font-size: 16px; margin-bottom: 5px;">${req.type} | <span style="color:${typeColor};">₹${req.amount}</span> <span style="float:right; font-size:11px; font-weight: 700; padding: 4px 10px; border-radius: 12px; background:${statusColor}; color:white;">${statusText}</span></div>
                     <div style="font-size:13px; color:#475569; margin-bottom: 10px; line-height: 1.6;">
                         <strong>User:</strong> ${uName} (ID: ${req.userId}) ${waBtn}
-                        <br> <strong>Details:</strong> ${req.details} 
+                        <br> <strong>Details:</strong> ${req.details}
                         <br> <strong>Date:</strong> <span style="color:#64748b; font-size: 11px;"><i class="far fa-clock"></i> ${formatDateIST(req.dateTime)}</span>
                     </div>
-                    <div class="admin-action-group">
-                        ${payBtn}
-                        <button id="btnApprove_${req.id}" class="btn-action btn-approve" onclick="handleAdminReq('${req.id}', 'Approved', 'btnApprove_${req.id}')">Approve</button>
-                        <button id="btnReject_${req.id}" class="btn-action btn-reject" onclick="handleAdminReq('${req.id}', 'Rejected', 'btnReject_${req.id}')">Reject</button>
-                    </div>
+                    ${actionBtns}
                 </div>`;
             });
 
@@ -2169,10 +2197,56 @@
         }
 
         function handleAdminReq(txnId, status, btnElement) {
-            showPrompt(`Enter Remark for ${status}`, remark => {
+            let req = allTransactions.find(t => t.id == txnId);
+            
+            if (status === 'Approved' && req && req.details.includes('Cancelled Without UTR')) {
+                let remarkText = "Credited Deposit Wallet";
+                
+                // Optimistic UI Update
+                req.status = 'Approved';
+                req.remark = remarkText;
+                
+                if (currentUser && req.userId == currentUser.id) {
+                    currentUser.depositWallet = (parseInt(currentUser.depositWallet) || 0) + parseInt(req.amount);
+                    localStorage.setItem('winCashUser', JSON.stringify(currentUser));
+                    updateWalletUI();
+                }
+                
+                let targetUser = allUsers.find(u => u.id == req.userId);
+                if (targetUser) {
+                    targetUser.depositWallet = (parseInt(targetUser.depositWallet) || 0) + parseInt(req.amount);
+                }
+
+                sendPost({action: 'adminTxnAction', txnId, status, remark: remarkText}, res => { 
+                    showAlert('Transaction Approved & Balance Added!'); 
+                    renderAdminRequests();
+                    setTimeout(fetchSheetData, 1000); 
+                }, btnElement);
+                return;
+            }
+
+            let promptText = `Enter Remark for ${status}`;
+            showPrompt(promptText, remark => {
                 if (remark === null) return;
+                
+                req.status = status;
+                req.remark = remark;
+
+                if (status === 'Approved' && req.type === 'Deposit') {
+                    if (currentUser && req.userId == currentUser.id) {
+                        currentUser.depositWallet = (parseInt(currentUser.depositWallet) || 0) + parseInt(req.amount);
+                        localStorage.setItem('winCashUser', JSON.stringify(currentUser));
+                        updateWalletUI();
+                    }
+                    let targetUser = allUsers.find(u => u.id == req.userId);
+                    if (targetUser) {
+                        targetUser.depositWallet = (parseInt(targetUser.depositWallet) || 0) + parseInt(req.amount);
+                    }
+                }
+
                 sendPost({action: 'adminTxnAction', txnId, status, remark}, res => { 
                     showAlert('Transaction Processed!'); 
+                    renderAdminRequests();
                     setTimeout(fetchSheetData, 1000); 
                 }, btnElement);
             });
