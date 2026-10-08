@@ -2641,24 +2641,23 @@
             }
         });
 
-        // Initialize App on Load
-        window.onload = function() {
+        // Initialize App on Load (Instantly via DOMContentLoaded)
+        document.addEventListener('DOMContentLoaded', function() {
             let savedUser = localStorage.getItem('winCashUser');
             if (savedUser) {
                 try { currentUser = JSON.parse(savedUser); } catch(e) {}
             }
             
             setWalletLoading(); 
-            fetchSheetData();
+            fetchSheetData(); // Fetches instantly as DOM is ready
             loadAnnouncement();
 
-            // Premium Fast-Loading Splash Screen Logic
-            // Force hide the splash after exactly 1 second, regardless of fetch status.
+            // Premium Fast-Loading Splash Screen Logic (3 Seconds)
             setTimeout(() => {
                 const splash = document.getElementById('initialSplash');
                 splash.style.opacity = '0';
                 setTimeout(() => splash.style.display = 'none', 400); // 400ms CSS transition
-            }, 1000);
+            }, 3000);
             
             const hash = window.location.hash;
             if (hash.includes('ref=')) { 
@@ -2683,7 +2682,7 @@
                     }
                 }, 500); 
             }
-        };
+        });
     </script>
 </body>
 </html>
