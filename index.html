@@ -28,10 +28,28 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.4;} }
 
+        /* Notification Permission Lock Overlay */
+        #permissionOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95); z-index: 99999;
+            display: flex; justify-content: center; align-items: center; padding: 20px;
+        }
+        .permission-card {
+            background: #ffffff; width: 100%; max-width: 380px; padding: 30px 20px;
+            border-radius: 20px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        .permission-card img { width: 70px; margin-bottom: 15px; animation: floatLogo 2s ease-in-out infinite; }
+        .permission-card h3 { font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 10px; }
+        .permission-card p { font-size: 13px; color: #64748b; margin-bottom: 25px; line-height: 1.5; font-weight: 500; }
+        .permission-btn-group { display: flex; gap: 10px; }
+        .perm-btn { flex: 1; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; border: none; }
+        .perm-allow { background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 4px 15px rgba(16,185,129,0.3); }
+        .perm-deny { background: #e2e8f0; color: #475569; }
+
         /* Premium Initial Splash Loading Screen */
         #initialSplash {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #f4f6f9; z-index: 9999; display: flex; flex-direction: column; 
+            background: #f4f6f9; z-index: 9998; display: flex; flex-direction: column; 
             justify-content: center; align-items: center; transition: opacity 0.4s ease;
         }
         @keyframes floatLogo { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
@@ -62,9 +80,7 @@
             box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
             transform: translateY(100%); transition: transform 0.4s ease-in-out;
         }
-        #installAppBanner.show-banner {
-            transform: translateY(0);
-        }
+        #installAppBanner.show-banner { transform: translateY(0); }
         .banner-actions { display: flex; align-items: center; gap: 12px; }
         .later-btn { background: transparent; border: none; color: #64748b; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; }
         .install-app-btn {
@@ -72,6 +88,21 @@
             padding: 8px 18px; border-radius: 20px; font-size: 12px; font-weight: 700; 
             cursor: pointer; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); text-transform: uppercase;
         }
+
+        /* In-App Notification Toast Popup */
+        #appNotificationToast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-150px);
+            background: #0f172a; color: white; padding: 14px 20px; border-radius: 16px;
+            z-index: 4000; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 14px;
+            max-width: 90%; width: 400px; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid #334155; cursor: pointer;
+        }
+        #appNotificationToast.show { transform: translateX(-50%) translateY(0); }
+        .toast-icon { font-size: 24px; color: #fbbf24; background: rgba(251, 191, 36, 0.1); padding: 10px; border-radius: 12px; }
+        .toast-content { flex: 1; text-align: left; }
+        .toast-title { font-size: 14px; font-weight: 800; color: #f8fafc; margin-bottom: 2px; }
+        .toast-desc { font-size: 12px; color: #94a3b8; font-weight: 500; line-height: 1.3; }
+        .toast-close { font-size: 18px; color: #64748b; cursor: pointer; padding: 5px; }
 
         /* Header */
         .header {
@@ -297,9 +328,7 @@
             margin-top: 5px; z-index: 100; max-height: 250px; overflow-y: auto;
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
-        .custom-option {
-            padding: 12px 15px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s;
-        }
+        .custom-option { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s; }
         .custom-option:last-child { border-bottom: none; }
         .custom-option:hover { background: #f8fafc; }
         .custom-option-title { font-weight: 800; color: #0f172a; margin-bottom: 5px; font-size: 14px; }
@@ -310,8 +339,31 @@
 </head>
 <body>
 
+    <!-- Notification Permission Lock Overlay -->
+    <div id="permissionOverlay">
+        <div class="permission-card">
+            <img src="https://cdn-icons-png.flaticon.com/512/2933/2933116.png" alt="WinCash">
+            <h3>Enable Notifications</h3>
+            <p>WinCash ऐप को सुचारू रूप से चलाने और लकी ड्रा जीतने के अलर्ट प्राप्त करने के लिए नोटिफिकेशन अनुमति (Allow) आवश्यक है।</p>
+            <div class="permission-btn-group">
+                <button class="perm-btn perm-deny" onclick="denyPermission()">DENY</button>
+                <button class="perm-btn perm-allow" onclick="allowPermission()">ALLOW</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 100% Invisible Background Syncing -->
     <div id="globalLoader"></div>
+
+    <!-- In-App Notification Toast Popup -->
+    <div id="appNotificationToast" onclick="switchToLiveDraws()">
+        <div class="toast-icon"><i class="fas fa-bell"></i></div>
+        <div class="toast-content">
+            <div class="toast-title" id="toastTitle">Lucky Draw Alert!</div>
+            <div class="toast-desc" id="toastDesc">नया मेगा जैकपॉट लाइव है! अभी ज्वाइन करें और बड़ा कैश जीतें।</div>
+        </div>
+        <div class="toast-close" onclick="event.stopPropagation(); closeAppToast();">&times;</div>
+    </div>
 
     <!-- Premium Initial App Splash Loading Screen -->
     <div id="initialSplash">
@@ -495,7 +547,7 @@
             <span class="modal-close" onclick="closeAllModals()">&times;</span>
             <div class="section-title" style="justify-content: center;"><i class="fas fa-user-edit"></i> EDIT USER</div>
             <div class="input-group"><label>User Name</label><input type="text" id="editUserName" placeholder="Name"></div>
-            <div class="input-group"><label>Mobile Number</label><input type="number" id="editUserPhone" placeholder="Phone"></div>
+            <div class="input-group"><label>Mobile Number (10 digits)</label><input type="number" id="editUserPhone" placeholder="Phone" maxlength="10"></div>
             <div class="input-group"><label>Email</label><input type="email" id="editUserEmail" placeholder="Email"></div>
             <div class="input-group"><label>Password</label><input type="text" id="editUserPassword" placeholder="Password"></div>
             <div class="input-group"><label>Bank Details</label><input type="text" id="editUserBank" placeholder="A/C No, IFSC Code"></div>
@@ -513,8 +565,8 @@
                 <img src="https://cdn-icons-png.flaticon.com/512/2933/2933116.png" alt="WinCash" style="width: 80px; margin-bottom: 15px;">
                 <div class="auth-logo-left" style="text-align: center;">WinCash</div>
                 <div class="input-group">
-                    <label>Mobile Number</label>
-                    <input type="number" id="loginPhone" placeholder="Enter mobile number">
+                    <label>Mobile Number (10 digits)</label>
+                    <input type="number" id="loginPhone" placeholder="Enter 10-digit mobile number" maxlength="10" oninput="if(this.value.length > 10) this.value = this.value.slice(0,10);">
                 </div>
                 <div class="input-group">
                     <label>Password</label>
@@ -551,8 +603,8 @@
                     <input type="text" id="regName" placeholder="Enter your name">
                 </div>
                 <div class="input-group">
-                    <label>Mobile Number</label>
-                    <input type="number" id="regPhone" placeholder="Enter mobile number">
+                    <label>Mobile Number (10 digits)</label>
+                    <input type="number" id="regPhone" placeholder="Enter 10-digit mobile number" maxlength="10" oninput="if(this.value.length > 10) this.value = this.value.slice(0,10);">
                 </div>
                 <div class="input-group">
                     <label>Email Address</label>
@@ -585,11 +637,11 @@
             <div class="auth-fullscreen-box">
                 <div class="auth-logo-left">Forgot Password</div>
                 <p style="font-size: 13px; color: #64748b; margin-bottom: 20px; text-align: left; font-weight: 500;">
-                    कृपया अपना मोबाइल नंबर दर्ज करें। आपका पासवर्ड आपके रजिस्टर्ड ईमेल आईडी पर भेज दिया जाएगा।
+                    कृपया अपना 10 अंकों का मोबाइल नंबर दर्ज करें। आपका पासवर्ड आपके रजिस्टर्ड ईमेल आईडी पर भेज दिया जाएगा।
                 </p>
                 <div class="input-group">
-                    <label>Mobile Number</label>
-                    <input type="number" id="forgotPhone" placeholder="Enter mobile number">
+                    <label>Mobile Number (10 digits)</label>
+                    <input type="number" id="forgotPhone" placeholder="Enter 10-digit mobile number" maxlength="10" oninput="if(this.value.length > 10) this.value = this.value.slice(0,10);">
                 </div>
                 <button id="btnForgotPass" class="submit-btn green" onclick="submitForgotPassword('btnForgotPass')">GET PASSWORD</button>
                 <div class="auth-switch-text">
@@ -614,7 +666,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <div class="text" style="flex: 1;">
                         <h3>Refer & Earn</h3>
-                        <p>Invite friends and get ₹<span id="banner-ref-amount">...</span> bonus!</p>
+                        <p>Invite friends and get bonus!</p>
                         <div class="share-invite-btn-small" onclick="shareReferralLink();">
                             <i class="fas fa-share-alt"></i> Share Invite Now
                         </div>
@@ -672,7 +724,7 @@
                     <input type="number" id="pageDepAmount" placeholder="Enter Amount" oninput="checkDepMin()">
                 </div>
                 <p id="depMinError" style="font-size:12px; color:#ef4444; margin-top:-10px; margin-bottom:15px; font-weight:600; text-align:left; display:none;">
-                    * Minimum Deposit: ₹<span id="txtPageMinDep">100</span>
+                    * Minimum Deposit: ₹<span id="txtPageMinDep">...</span>
                 </p>
                 <button id="btnPayNow" class="submit-btn green" onclick="goToPaymentPage()">NEXT STEP</button>
             </div>
@@ -727,7 +779,7 @@
                     <input type="number" id="witAmount" placeholder="Enter Amount" oninput="checkWitMin()">
                 </div>
                 <p id="witMinError" style="font-size:12px; color:#ef4444; margin-top:-10px; margin-bottom:15px; font-weight:600; text-align:left; display:none;">
-                    * Minimum Withdrawal: ₹<span id="txtMinWit">200</span>
+                    * Minimum Withdrawal: ₹<span id="txtMinWit">...</span>
                 </p>
                 <button id="btnWitSubmit" class="submit-btn" onclick="submitWithdraw('btnWitSubmit')">SUBMIT REQUEST</button>
             </div>
@@ -880,7 +932,7 @@
                 <button class="fab-btn" onclick="openDrawModal()" style="border:none;"><i class="fas fa-plus"></i></button>
             </div>
 
-            <!-- Admin: Declare Winner (UPDATED WITH MANUAL & AUTO & CUSTOM DROPDOWN) -->
+            <!-- Admin: Declare Winner -->
             <div id="declareWinnerSec" class="admin-tab-content">
                 <div class="section-title"><i class="fas fa-trophy"></i> DECLARE WINNER</div>
                 <div class="admin-form">
@@ -1042,6 +1094,30 @@
         }
 
         // ==========================================
+        // NOTIFICATION PERMISSION LOCK LOGIC
+        // ==========================================
+        function checkNotificationPermissionState() {
+            let perm = localStorage.getItem('winCashNotifPerm');
+            if (perm === 'allowed') {
+                document.getElementById('permissionOverlay').style.display = 'none';
+            } else {
+                document.getElementById('permissionOverlay').style.display = 'flex';
+            }
+        }
+
+        function allowPermission() {
+            localStorage.setItem('winCashNotifPerm', 'allowed');
+            document.getElementById('permissionOverlay').style.display = 'none';
+            if ('Notification' in window) {
+                Notification.requestPermission();
+            }
+        }
+
+        function denyPermission() {
+            alert("⚠️ ऐप का उपयोग करने के लिए नोटिफिकेशन अनुमति (Allow) देना अनिवार्य है।");
+        }
+
+        // ==========================================
         // YAHAN APNA APPS SCRIPT WEB APP URL DALEIN
         // ==========================================
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwHI2rEGDaAv-PnK3bRBj0mV5SayOYRrLwJtwceYjzXqdTJLb5_91CacBVd9sJcPYLP/exec';
@@ -1184,7 +1260,7 @@
         }
 
         // Global States
-        let appSettings = { adminUpi: 'ranjankumar3209@nyes', minDeposit: 100, minWithdraw: 200, refBonus: 50, welcomeBonus: 50 };
+        let appSettings = { adminUpi: 'ranjankumar3209@nyes', minDeposit: 100, minWithdraw: 200, refBonus: 10, welcomeBonus: 10 };
         let currentUser = null; 
         let allUsers = []; 
         let allTransactions = []; 
@@ -1371,7 +1447,6 @@
                             });
                         }
                         
-                        document.getElementById('banner-ref-amount').innerText = appSettings.refBonus;
                         document.getElementById('txtPageMinDep').innerText = appSettings.minDeposit;
                         document.getElementById('txtMinWit').innerText = appSettings.minWithdraw;
                         
@@ -1437,12 +1512,57 @@
         }
 
         // =====================================
+        // PUSH NOTIFICATION SYSTEM (ATTRACTIVE & SHORT)
+        // =====================================
+        function showAppToast(title, desc) {
+            if (localStorage.getItem('winCashNotifPerm') !== 'allowed') return;
+            document.getElementById('toastTitle').innerText = title;
+            document.getElementById('toastDesc').innerText = desc;
+            let toast = document.getElementById('appNotificationToast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                closeAppToast();
+            }, 5000);
+        }
+
+        function closeAppToast() {
+            document.getElementById('appNotificationToast').classList.remove('show');
+        }
+
+        function switchToLiveDraws() {
+            closeAppToast();
+            if (currentUser) {
+                switchView('homeView');
+            } else {
+                switchView('loginView');
+            }
+        }
+
+        function initPushNotificationSimulator() {
+            let notificationTriggers = [
+                { title: "🔥 Mega Jackpot Live!", desc: "नया लकी ड्रा लाइव है! छोटा एंट्री शुल्क और बड़ा इनाम। अभी ज्वाइन करें!" },
+                { title: "💰 Winning Alert!", desc: "क्या आपने अपनी विनिंग राशि चेक की? दोस्तों को रेफर करें और बोनस पाएं!" },
+                { title: "⭐ Try Your Luck!", desc: "आज का दिन लकी हो सकता है! तुरंत WinCash खोलें और ड्रा में हिस्सा लें।" }
+            ];
+
+            // Trigger attractive short push notifications automatically
+            setInterval(() => {
+                if (localStorage.getItem('winCashNotifPerm') === 'allowed') {
+                    let randomIndex = Math.floor(Math.random() * notificationTriggers.length);
+                    let notif = notificationTriggers[randomIndex];
+                    showAppToast(notif.title, notif.desc);
+                }
+            }, 4 * 60 * 60 * 1000); // 3 times a day interval
+        }
+
+        // =====================================
         // AUTHENTICATION
         // =====================================
         function loginUser(btnId) {
-            const phone = document.getElementById('loginPhone').value; 
+            const phone = document.getElementById('loginPhone').value.trim(); 
             const pass = document.getElementById('loginPassword').value;
             if (!phone || !pass) return showAlert('Please enter credentials!');
+            if (phone.length !== 10) return showAlert('Mobile number must be exactly 10 digits!');
             
             sendPost({action: 'login', phone, password: pass}, res => {
                 if (res.status === 'success') {
@@ -1459,14 +1579,15 @@
         }
 
         function registerUser(btnId) {
-            const name = document.getElementById('regName').value; 
-            const phone = document.getElementById('regPhone').value;
-            const email = document.getElementById('regEmail').value; 
+            const name = document.getElementById('regName').value.trim(); 
+            const phone = document.getElementById('regPhone').value.trim();
+            const email = document.getElementById('regEmail').value.trim(); 
             const pass = document.getElementById('regPassword').value;
             const refCode = document.getElementById('regReferral').value; 
             const terms = document.getElementById('regTerms').checked;
             
             if (!name || !phone || !pass || !email) return showAlert('Please fill all fields!');
+            if (phone.length !== 10) return showAlert('Mobile number must be exactly 10 digits!');
             if (!terms) return showAlert('Please accept Terms & Conditions!');
 
             sendPost({
@@ -1496,8 +1617,9 @@
         }
 
         function submitForgotPassword(btnId) { 
-            const phone = document.getElementById('forgotPhone').value;
-            if(!phone) return showAlert('कृपया अपना मोबाइल नंबर दर्ज करें!');
+            const phone = document.getElementById('forgotPhone').value.trim();
+            if(!phone) return showAlert('कृपया अपना 10 अंकों का मोबाइल नंबर दर्ज करें!');
+            if(phone.length !== 10) return showAlert('Mobile number must be exactly 10 digits!');
             
             sendPost({action: 'forgotPassword', phone: phone}, res => {
                 if(res.status === 'success') {
@@ -1611,7 +1733,6 @@
                 currentUser.winningWallet = winWallet - amt; 
                 localStorage.setItem('winCashUser', JSON.stringify(currentUser));
                 
-                // Show Withdraw Success Page
                 document.getElementById('witPageView1').style.display = 'none';
                 document.getElementById('witPageView2').style.display = 'block';
                 
@@ -1631,7 +1752,6 @@
                 actualStatus = 'Failed';
             }
 
-            // Determine Status Color for Modal
             let statColor = '#3b82f6';
             if(actualStatus === 'Approved') statColor = '#10b981';
             else if (actualStatus === 'Pending') statColor = '#f59e0b'; 
@@ -1647,7 +1767,6 @@
             document.getElementById('dtlDate').innerText = formatDateIST(req.dateTime);
             document.getElementById('dtlDesc').innerText = req.details;
             
-            // ADMIN REMARK LOGIC
             let remarkRow = document.getElementById('dtlRemarkRow');
             if (req.remark && req.remark.trim() !== '') {
                 remarkRow.style.display = 'flex';
@@ -1664,7 +1783,6 @@
             }
             
             let waBlock = document.getElementById('dtlWaSupportBlock');
-            // Modified line below to include 'Pending'
             if (actualStatus === 'Failed' || actualStatus === 'Rejected' || actualStatus === 'Pending') {
                 waBlock.style.display = 'block';
                 let msg = encodeURIComponent(`Hello Admin, I need help with my transaction.\nTxn ID: ${req.id}\nStatus: ${actualStatus}\nAmount: ₹${req.amount}\nUser ID: ${currentUser.id}`);
@@ -1790,7 +1908,7 @@
         // =====================================
         function shareReferralLink() {
             const refCode = currentUser ? currentUser.id : "100001"; 
-            const bonusAmount = appSettings.welcomeBonus || 50; 
+            const bonusAmount = appSettings.welcomeBonus || 10; 
             const msg = `🔥 Lucky drow खेलो और असली पैसे जीतो! WinCash ऐप डाउनलोड करो और तुरंत ₹${bonusAmount} का फ्री बोनस पाओ!\n\n🎁 मेरा रेफरल कोड: ${refCode}\n👇 अभी ज्वाइन करें:\n${window.location.href.split('#')[0]}#ref=${refCode}`;
             
             if (navigator.share) {
@@ -1956,16 +2074,11 @@
             
             showConfirm(`Do you want to join ${draw.name} for ₹${draw.fee}?`, 
                 function() {
-                    
-                    // ====================================================
-                    // OPTIMISTIC LOCAL UI UPDATE (SILENT & INSTANT REACTION)
-                    // ====================================================
                     let fee = parseInt(draw.fee);
                     let dep = parseInt(currentUser.depositWallet);
                     if (isNaN(dep)) dep = parseInt(currentUser.wallet) || 0;
                     let win = parseInt(currentUser.winningWallet) || 0;
                     
-                    // Instantly deduct from local wallet
                     if (dep >= fee) {
                         currentUser.depositWallet = dep - fee;
                     } else {
@@ -1975,7 +2088,6 @@
                     localStorage.setItem('winCashUser', JSON.stringify(currentUser));
                     updateWalletUI(); 
 
-                    // Instantly change button to Joined visually
                     if(btn) {
                         btn.parentElement.parentElement.classList.add('joined-card');
                         btn.className = 'join-btn-small joined';
@@ -1985,7 +2097,6 @@
                         btn.removeAttribute('onclick');
                     }
 
-                    // Instantly add temporary transaction so 'My Draws' & 'History' update
                     let tempTxn = {
                         id: "TXN" + generateTxnID(),
                         type: 'Draw Entry Fee',
@@ -1998,30 +2109,22 @@
                     };
                     allTransactions.unshift(tempTxn);
 
-                    // Re-render other views silently if user navigates away fast
                     if(document.getElementById('transactionsView').classList.contains('active')) renderUserTransactions();
                     if(document.getElementById('myDrawsView').classList.contains('active')) renderMyDraws();
 
-                    // ====================================================
-                    // SILENT SERVER SYNC (Invisible to user)
-                    // ====================================================
                     sendPost({
                         action: 'joinDraw', drawId: drawId, drawName: draw.name, userId: currentUser.id, 
                         userName: currentUser.name, fee: draw.fee, dateTime: getCurrentDateTime()
                     }, res => {
                         if(res && res.status === 'error') {
-                            // On error, revert and refresh
                             showAlert(res.message || 'Error occurred while saving to server.');
                             fetchSheetData(); 
                         } else {
-                            // On Success, fetch full updated data completely silently
                             fetchSheetData(); 
                         }
                     }, null); 
                 },
-                function() {
-                    // Canceled Prompt
-                }
+                function() {}
             );
         }
 
@@ -2059,7 +2162,6 @@
                 
                 let isComp = draw ? (draw.status === 'COMPLETED') : true;
 
-                // Total Winner Logic Replacement
                 let winnerTxns = allTransactions.filter(t => t.type === 'Winning Prize' && (dId ? t.details.includes(dId) : t.details.includes(drawName)));
                 let uniqueWinnersCount = new Set(winnerTxns.map(t => t.userId)).size;
                 let displayWinners = isComp ? (uniqueWinnersCount > 0 ? uniqueWinnersCount : 0) : 0;
@@ -2111,7 +2213,6 @@
             document.querySelectorAll('.admin-nav-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             
-            // Only add active to the top nav buttons, ignore manual/auto toggles
             if (event.currentTarget.classList.contains('admin-nav-btn') && !event.currentTarget.id.includes('Mode')) {
                 event.currentTarget.classList.add('active');
             }
@@ -2132,7 +2233,6 @@
                 searchTerm = document.getElementById('adminReqSearch').value.toLowerCase();
             }
 
-            // Include pending AND cancelled without UTR (only if Failed, so we don't show already approved/rejected ones)
             let displayReqs = allTransactions.filter(r => r.status === 'Pending' || (r.status === 'Failed' && r.details.includes('Cancelled Without UTR')));
             
             if (displayReqs.length === 0) {
@@ -2202,7 +2302,6 @@
             if (status === 'Approved' && req && req.details.includes('Cancelled Without UTR')) {
                 let remarkText = "Credited Deposit Wallet";
                 
-                // Optimistic UI Update
                 req.status = 'Approved';
                 req.remark = remarkText;
                 
@@ -2361,7 +2460,7 @@
         }
 
         // =====================================
-        // WINNER DECLARATION (MANUAL & AUTO & CUSTOM DROPDOWN)
+        // WINNER DECLARATION
         // =====================================
         function toggleWinnerMode(mode) {
             currentWinnerMode = mode;
@@ -2473,7 +2572,6 @@
                 wIds = Array.from(document.querySelectorAll('.winner-cb:checked')).map(cb => cb.value);
                 if(wIds.length == 0) return showAlert("Please select at least one winner manually!");
             } else {
-                // Auto Mode Logic
                 let numWinners = parseInt(document.getElementById("autoWinnerCount").value);
                 if(isNaN(numWinners) || numWinners <= 0) return showAlert("Please enter a valid number of winners to auto-select!");
 
@@ -2486,19 +2584,16 @@
                     });
                 }
 
-                // Get Unique Joined Users
                 let uniqueUsersObj = {};
                 jTxns.forEach(t => { uniqueUsersObj[t.userId] = true; });
                 let uniqueUsersArr = Object.keys(uniqueUsersObj);
 
                 if (uniqueUsersArr.length === 0) return showAlert("No users have joined this draw!");
                 
-                // Adjust if requested winners are more than participants
                 if (numWinners > uniqueUsersArr.length) {
                     numWinners = uniqueUsersArr.length;
                 }
 
-                // Shuffle array and pick first N users
                 let shuffled = uniqueUsersArr.sort(() => 0.5 - Math.random());
                 wIds = shuffled.slice(0, numWinners);
             }
@@ -2545,8 +2640,9 @@
 
         function saveUser(btnId) {
             const name = document.getElementById("editUserName").value; 
-            const phone = document.getElementById("editUserPhone").value;
+            const phone = document.getElementById("editUserPhone").value.trim();
             if(!name || !phone) return showAlert("Please fill Name and Phone minimum!");
+            if(phone.length !== 10) return showAlert("Mobile number must be exactly 10 digits!");
             
             const uEmail = document.getElementById("editUserEmail").value;
             const uPass = document.getElementById("editUserPassword").value;
@@ -2641,22 +2737,24 @@
             }
         });
 
-        // Initialize App on Load (Instantly via DOMContentLoaded)
+        // Initialize App on Load
         document.addEventListener('DOMContentLoaded', function() {
+            checkNotificationPermissionState();
+
             let savedUser = localStorage.getItem('winCashUser');
             if (savedUser) {
                 try { currentUser = JSON.parse(savedUser); } catch(e) {}
             }
             
             setWalletLoading(); 
-            fetchSheetData(); // Fetches instantly as DOM is ready
+            fetchSheetData(); 
             loadAnnouncement();
+            initPushNotificationSimulator();
 
-            // Premium Fast-Loading Splash Screen Logic (3 Seconds)
             setTimeout(() => {
                 const splash = document.getElementById('initialSplash');
                 splash.style.opacity = '0';
-                setTimeout(() => splash.style.display = 'none', 400); // 400ms CSS transition
+                setTimeout(() => splash.style.display = 'none', 400);
             }, 3000);
             
             const hash = window.location.hash;
